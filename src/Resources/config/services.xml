@@ -14,9 +14,9 @@
 
         <service
                 id="epubli_permission.service.permission_discovery"
-                class="Epubli\PermissionBundle\Service\AuthPermissionDiscovery"/>
+                class="Epubli\PermissionBundle\Service\PermissionDiscovery"/>
         <service
-                id="Epubli\PermissionBundle\Service\AuthPermissionDiscovery"
+                id="Epubli\PermissionBundle\Service\PermissionDiscovery"
                 alias="epubli_permission.service.permission_discovery"/>
 
         <service

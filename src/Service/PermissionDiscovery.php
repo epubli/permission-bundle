@@ -8,15 +8,13 @@ use Doctrine\Common\Annotations\Reader;
 use Epubli\PermissionBundle\Annotation\AuthPermission;
 use Epubli\PermissionBundle\AuthPermissionEndpoint;
 use Epubli\PermissionBundle\AuthPermissionEntity;
-use Exception;
 use ReflectionClass;
 use ReflectionException;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
-use Symfony\Component\HttpKernel\Config\FileLocator;
 
-class AuthPermissionDiscovery
+class PermissionDiscovery
 {
     /**
      * @var Reader

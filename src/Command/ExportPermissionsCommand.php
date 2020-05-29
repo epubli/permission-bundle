@@ -5,7 +5,7 @@ namespace Epubli\PermissionBundle\Command;
 use DateInterval;
 use DateTime;
 use Epubli\PermissionBundle\DependencyInjection\Configuration;
-use Epubli\PermissionBundle\Service\AuthPermissionDiscovery;
+use Epubli\PermissionBundle\Service\PermissionDiscovery;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ServerException;
@@ -21,10 +21,10 @@ class ExportPermissionsCommand extends Command
 {
     protected static $defaultName = 'epubli:export-permissions';
 
-    /** @var AuthPermissionDiscovery */
+    /** @var PermissionDiscovery */
     private $permissionDiscovery;
 
-    public function __construct(AuthPermissionDiscovery $permissionDiscovery)
+    public function __construct(PermissionDiscovery $permissionDiscovery)
     {
         parent::__construct();
         $this->permissionDiscovery = $permissionDiscovery;

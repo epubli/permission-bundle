@@ -3,8 +3,8 @@
 namespace Epubli\PermissionBundle\EventSubscriber;
 
 use ApiPlatform\Core\Action\ExceptionAction;
-use Epubli\PermissionBundle\Service\AuthPermissionDiscovery;
 use Epubli\PermissionBundle\Service\AuthToken;
+use Epubli\PermissionBundle\Service\PermissionDiscovery;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -21,12 +21,12 @@ class PermissionSubscriber implements EventSubscriberInterface
     /** @var RequestStack */
     private $requestStack;
 
-    /** @var AuthPermissionDiscovery */
+    /** @var PermissionDiscovery */
     private $permissionDiscovery;
 
     public function __construct(
         RequestStack $requestStack,
-        AuthPermissionDiscovery $permissionDiscovery
+        PermissionDiscovery $permissionDiscovery
     ) {
         $this->requestStack = $requestStack;
         $this->permissionDiscovery = $permissionDiscovery;
