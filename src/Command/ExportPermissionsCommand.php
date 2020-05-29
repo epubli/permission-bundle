@@ -4,6 +4,7 @@ namespace Epubli\PermissionBundle\Command;
 
 use DateInterval;
 use DateTime;
+use Epubli\PermissionBundle\DependencyInjection\Configuration;
 use Epubli\PermissionBundle\Service\AuthPermissionDiscovery;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
@@ -37,6 +38,13 @@ class ExportPermissionsCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        if ($this->permissionDiscovery->getMicroserviceName() === Configuration::DEFAULT_MICROSERVICE_NAME) {
+            $output->writeln(
+                'Please make sure to set the name of your microservice in config/packages/epubli_permission.yaml!'
+            );
+            return 1;
+        }
+
         $permissions = $this->permissionDiscovery->getAllPermissionKeysWithDescriptions();
         $permissions = $this->removeDuplicates($permissions);
 
