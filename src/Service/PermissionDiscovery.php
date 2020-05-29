@@ -14,6 +14,10 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
 
+/**
+ * Class PermissionDiscovery
+ * @package Epubli\PermissionBundle\Service
+ */
 class PermissionDiscovery
 {
     /**

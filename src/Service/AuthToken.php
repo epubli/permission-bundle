@@ -4,6 +4,10 @@ namespace Epubli\PermissionBundle\Service;
 
 use Symfony\Component\HttpFoundation\RequestStack;
 
+/**
+ * Class AuthToken
+ * @package Epubli\PermissionBundle\Service
+ */
 class AuthToken
 {
     public const ATTRIBUTE_KEY = 'epubli_permission_token_payload';
