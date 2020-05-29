@@ -6,7 +6,7 @@ use ApiPlatform\Core\Action\PlaceholderAction;
 use ApiPlatform\Core\Annotation\ApiResource;
 use Doctrine\Common\Annotations\Reader;
 use Epubli\PermissionBundle\Annotation\Permission;
-use Epubli\PermissionBundle\AuthPermissionEndpoint;
+use Epubli\PermissionBundle\EndpointWithPermission;
 use Epubli\PermissionBundle\EntityWithPermissions;
 use ReflectionClass;
 use ReflectionException;
@@ -174,7 +174,7 @@ class PermissionDiscovery
     /**
      * @param ReflectionClass $reflectionClass
      * @param Permission $permissionAnnotation
-     * @return AuthPermissionEndpoint[]
+     * @return EndpointWithPermission[]
      */
     private function getEndpointsOfClass(ReflectionClass $reflectionClass, Permission $permissionAnnotation): array
     {
@@ -225,7 +225,7 @@ class PermissionDiscovery
      * @param array $apiPlatformOperations
      * @param array|null $permissionOperations
      * @param bool $isItemOperation
-     * @return AuthPermissionEndpoint[]
+     * @return EndpointWithPermission[]
      */
     public function getEndpointsOfOperations(
         ?string $routePrefix,
@@ -266,7 +266,7 @@ class PermissionDiscovery
      * @param string $operationName
      * @param array $data
      * @param bool $isItemOperation
-     * @return AuthPermissionEndpoint
+     * @return EndpointWithPermission
      */
     private function getEndpoint(
         ?string $routePrefix,
@@ -274,7 +274,7 @@ class PermissionDiscovery
         string $operationName,
         array $data,
         bool $isItemOperation
-    ): AuthPermissionEndpoint {
+    ): EndpointWithPermission {
         $path = '/api';
         if ($routePrefix !== null) {
             $path .= '/' . trim($routePrefix, '/');
@@ -316,7 +316,7 @@ class PermissionDiscovery
 
         $permissionKey = implode('.', [$this->microserviceName, $className, $action]);
 
-        return new AuthPermissionEndpoint($path, $regex, $httpMethod, $controllerClass, $permissionKey);
+        return new EndpointWithPermission($path, $regex, $httpMethod, $controllerClass, $permissionKey);
     }
 
     /**

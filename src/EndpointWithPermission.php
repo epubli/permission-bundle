@@ -3,10 +3,10 @@
 namespace Epubli\PermissionBundle;
 
 /**
- * Class AuthPermissionEndpoint
+ * Class EndpointWithPermission
  * @package Epubli\PermissionBundle
  */
-class AuthPermissionEndpoint
+class EndpointWithPermission
 {
     /** @var string */
     private $path;
