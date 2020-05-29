@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services
+        http://symfony.com/schema/dic/services/services-1.0.xsd">
+    <services>
+        <defaults autowire="true" autoconfigure="true" public="false"/>
+        <service
+                id="epubli_permission.service.auth_token"
+                class="Epubli\PermissionBundle\Service\AuthToken"/>
+        <service
+                id="Epubli\PermissionBundle\Service\AuthToken"
+                alias="epubli_permission.service.auth_token"/>
+
+        <service
+                id="epubli_permission.service.permission_discovery"
+                class="Epubli\PermissionBundle\Service\AuthPermissionDiscovery"/>
+        <service
+                id="Epubli\PermissionBundle\Service\AuthPermissionDiscovery"
+                alias="epubli_permission.service.permission_discovery"/>
+
+        <service
+                id="epubli_permission.event_subscriber.auth_token_subscriber"
+                class="Epubli\PermissionBundle\EventSubscriber\AuthTokenSubscriber"/>
+        <service
+                id="Epubli\PermissionBundle\EventSubscriber\AuthTokenSubscriber"
+                alias="epubli_permission.event_subscriber.auth_token_subscriber"/>
+
+        <service
+                id="epubli_permission.event_subscriber.permission_subscriber"
+                class="Epubli\PermissionBundle\EventSubscriber\PermissionSubscriber"/>
+        <service
+                id="Epubli\PermissionBundle\EventSubscriber\PermissionSubscriber"
+                alias="epubli_permission.event_subscriber.permission_subscriber"/>
+    </services>
+</container>

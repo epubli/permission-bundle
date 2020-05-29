@@ -1,0 +1,28 @@
+{
+    "name": "epubli/permission-bundle",
+    "description": "Package to ease the use of permissions",
+    "license": "MIT",
+    "type": "symfony-bundle",
+    "authors": [
+        {
+            "name": "Stefan Zick",
+            "email": "s.zick@epubli.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.2",
+        "api-platform/api-pack": "^1.2",
+        "ext-json": "*",
+        "doctrine/orm": "^2.6",
+        "symfony/framework-bundle": "^4.4",
+        "guzzlehttp/guzzle": "^6.5"
+    },
+    "suggest": {
+
+    },
+    "autoload": {
+        "psr-4": {
+            "Epubli\\PermissionBundle\\": "src/"
+        }
+    }
+}
