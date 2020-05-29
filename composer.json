@@ -1,5 +1,5 @@
 {
-    "name": "epubli/permission-bundle",
+    "name": "epubli4/permission-bundle",
     "description": "Package to ease the use of permissions",
     "license": "MIT",
     "type": "symfony-bundle",
