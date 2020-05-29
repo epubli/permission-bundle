@@ -41,9 +41,9 @@ return [
 ];
 ```
 
-## Usage
+## Configuration
 
-Make sure to insert the name of your microservice in `config/packages/epubli_permission.yaml`
+Make sure to insert the name of your microservice in `config/packages/epubli_permission.yaml` (create this file if it doesn't already exist)
 Example:
 ```yaml
 // config/packages/epubli_permission.yaml
@@ -51,6 +51,8 @@ Example:
 epubli_permission:
   microservice_name: user
 ```
+
+## Usage
 
 TODO
 
