@@ -7,7 +7,7 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use Doctrine\Common\Annotations\Reader;
 use Epubli\PermissionBundle\Annotation\Permission;
 use Epubli\PermissionBundle\AuthPermissionEndpoint;
-use Epubli\PermissionBundle\AuthPermissionEntity;
+use Epubli\PermissionBundle\EntityWithPermissions;
 use ReflectionClass;
 use ReflectionException;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
@@ -32,7 +32,7 @@ class PermissionDiscovery
     private $rootDir;
 
     /**
-     * @var AuthPermissionEntity[]|null
+     * @var EntityWithPermissions[]|null
      */
     private $entities;
 
@@ -165,7 +165,7 @@ class PermissionDiscovery
                 continue;
             }
 
-            $this->entities[] = new AuthPermissionEntity(
+            $this->entities[] = new EntityWithPermissions(
                 $classPath, $permissionAnnotation, $this->getEndpointsOfClass($reflectionClass, $permissionAnnotation)
             );
         }
