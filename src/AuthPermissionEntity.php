@@ -2,7 +2,7 @@
 
 namespace Epubli\PermissionBundle;
 
-use Epubli\PermissionBundle\Annotation\AuthPermission;
+use Epubli\PermissionBundle\Annotation\Permission;
 
 /**
  * Class AuthPermissionEntity
@@ -12,7 +12,7 @@ class AuthPermissionEntity
 {
     /** @var string */
     private $classPath;
-    /** @var AuthPermission */
+    /** @var Permission */
     private $annotation;
     /** @var AuthPermissionEndpoint[] */
     private $endpoints;
@@ -20,10 +20,10 @@ class AuthPermissionEntity
     /**
      * AuthPermissionEntity constructor.
      * @param string $classPath
-     * @param AuthPermission $annotation
+     * @param Permission $annotation
      * @param AuthPermissionEndpoint[] $endpoints
      */
-    public function __construct(string $classPath, AuthPermission $annotation, array $endpoints)
+    public function __construct(string $classPath, Permission $annotation, array $endpoints)
     {
         $this->classPath = $classPath;
         $this->annotation = $annotation;
@@ -39,9 +39,9 @@ class AuthPermissionEntity
     }
 
     /**
-     * @return AuthPermission
+     * @return Permission
      */
-    public function getAnnotation(): AuthPermission
+    public function getAnnotation(): Permission
     {
         return $this->annotation;
     }

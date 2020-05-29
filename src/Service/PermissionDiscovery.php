@@ -5,7 +5,7 @@ namespace Epubli\PermissionBundle\Service;
 use ApiPlatform\Core\Action\PlaceholderAction;
 use ApiPlatform\Core\Annotation\ApiResource;
 use Doctrine\Common\Annotations\Reader;
-use Epubli\PermissionBundle\Annotation\AuthPermission;
+use Epubli\PermissionBundle\Annotation\Permission;
 use Epubli\PermissionBundle\AuthPermissionEndpoint;
 use Epubli\PermissionBundle\AuthPermissionEntity;
 use ReflectionClass;
@@ -156,10 +156,10 @@ class PermissionDiscovery
 
             $reflectionClass = new ReflectionClass($classPath);
 
-            /** @var AuthPermission $permissionAnnotation */
+            /** @var Permission $permissionAnnotation */
             $permissionAnnotation = $this->annotationReader->getClassAnnotation(
                 $reflectionClass,
-                AuthPermission::class
+                Permission::class
             );
             if (!$permissionAnnotation) {
                 continue;
@@ -173,10 +173,10 @@ class PermissionDiscovery
 
     /**
      * @param ReflectionClass $reflectionClass
-     * @param AuthPermission $permissionAnnotation
+     * @param Permission $permissionAnnotation
      * @return AuthPermissionEndpoint[]
      */
-    private function getEndpointsOfClass(ReflectionClass $reflectionClass, AuthPermission $permissionAnnotation): array
+    private function getEndpointsOfClass(ReflectionClass $reflectionClass, Permission $permissionAnnotation): array
     {
         /** @var ApiResource $apiPlatformAnnotation */
         $apiPlatformAnnotation = $this->annotationReader->getClassAnnotation(

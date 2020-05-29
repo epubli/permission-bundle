@@ -9,7 +9,7 @@ namespace Epubli\PermissionBundle\Annotation;
  * @Annotation
  * @Target("CLASS")
  */
-class AuthPermission
+class Permission
 {
     /**
      * @var string[]|null
