@@ -170,4 +170,4 @@ $ php bin/console epubli:export-permissions
 - ApiPlatform Subresources
 - Permissions for properties instead of whole entities
 - Performance needs to be increased (Caching?)
-- Permissions form the anonymous role need to be applied if no token exists
+- Permissions from the anonymous role need to be applied if no token exists
