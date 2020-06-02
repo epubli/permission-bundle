@@ -54,6 +54,34 @@ epubli_permission:
 
 ## Usage
 
+### AuthToken
+
+You can use this like a service. It supports autowiring. This gives you access to the properties of the access/refresh token of the user.
+
+You should call `$authToken->isValid()` before any other method on this object to make sure that the token exists and is valid.
+
+__IMPORTANT: At this moment it does NOT support autowiring in the constructor!__
+
+```php
+namespace App\Controller;
+
+use Epubli\PermissionBundle\Service\AuthToken;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+
+class TestAction extends AbstractController
+{
+    public function __invoke(AuthToken $authToken)
+    {
+        var_dump('Is the token present and valid: ' . $authToken->isValid());
+        var_dump('Is it an access token: ' . $authToken->isAccessToken());
+        var_dump('or an refresh token: ' . $authToken->isRefreshToken());
+        var_dump('This is the unique json token identifier: ' . $authToken->getJTI());
+        var_dump('The id of the user: ' . $authToken->getUserId());
+        var_dump('Checking for permissions: ' . $authToken->hasPermissionKey('user.user.delete'));
+    }
+}
+```
+
 TODO
 
 ## TODO
