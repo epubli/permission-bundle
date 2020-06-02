@@ -62,6 +62,24 @@ epubli_permission:
 
 ## Usage
 
+### Generally
+
+If you don't have anything specified in your @ApiResource you don't need to specify anything in your @Permission.
+This is the bare minimum and will create permissions for every endpoint.
+```php
+use ApiPlatform\Core\Annotation\ApiResource;
+use Epubli\PermissionBundle\Annotation\Permission;
+
+/**
+ * @ApiResource()
+ * @Permission()
+ */
+class ExampleEntity
+{
+
+}
+```
+
 ### AuthToken
 
 You can use this like a service. It supports autowiring. This gives you access to the properties of the access/refresh token of the user.
@@ -140,10 +158,16 @@ class JsonWebTokenTest extends OrmApiPlatformTestCase
 }
 ```
 
+### Export Command
+To export the permissions of your microservice to the user microservice
+you need to execute the following __in the docker container__:
+```console
+$ php bin/console epubli:export-permissions
+```
 
+## Things which need to be done
 
-TODO
-
-## TODO
-
-TODO
+- ApiPlatform Subresources
+- Permissions for properties instead of whole entities
+- Performance needs to be increased (Caching?)
+- Permissions form the anonymous role need to be applied if no token exists
