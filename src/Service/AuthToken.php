@@ -15,6 +15,9 @@ class AuthToken
     /** @var string|null */
     private $jti;
 
+    /** @var string|null */
+    private $userId;
+
     /** @var string[] */
     private $permissionKeys = [];
 
@@ -35,11 +38,12 @@ class AuthToken
             return;
         }
 
-        if (!isset($payload['jti'], $payload['roles'])) {
+        if (!isset($payload['jti'], $payload['roles'], $payload['user_id'])) {
             return;
         }
 
         $this->jti = $payload['jti'];
+        $this->userId = $payload['user_id'];
         $this->permissionKeys = $payload['permissions'] ?? [];
         $this->isRefreshToken = in_array('refresh_token', $payload['roles']);
         $this->isValid = true;
@@ -63,6 +67,15 @@ class AuthToken
     public function getJTI(): ?string
     {
         return $this->jti;
+    }
+
+    /**
+     * If this token is valid then this wont't be null.
+     * @return int|null
+     */
+    public function getUserId(): ?int
+    {
+        return $this->userId;
     }
 
     /**
