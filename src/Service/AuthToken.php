@@ -49,21 +49,37 @@ class AuthToken
         $this->isValid = true;
     }
 
+    /**
+     * Retruns true if the token exists and every required field is present
+     * @return bool
+     */
     public function isValid(): bool
     {
         return $this->isValid;
     }
 
+    /**
+     * If this token is valid AND a refresh token then this will return true.
+     * @return bool
+     */
     public function isRefreshToken(): bool
     {
         return $this->isValid && $this->isRefreshToken;
     }
 
+    /**
+     * If this token is valid AND an access token then this will return true.
+     * @return bool
+     */
     public function isAccessToken(): bool
     {
         return $this->isValid && !$this->isRefreshToken;
     }
 
+    /**
+     * If this token is valid then this wont't be null.
+     * @return string|null
+     */
     public function getJTI(): ?string
     {
         return $this->jti;
