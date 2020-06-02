@@ -32,5 +32,12 @@
         <service
                 id="Epubli\PermissionBundle\EventSubscriber\PermissionSubscriber"
                 alias="epubli_permission.event_subscriber.permission_subscriber"/>
+
+        <service
+                id="epubli_permission.command.export_permissions_command"
+                class="Epubli\PermissionBundle\Command\ExportPermissionsCommand"/>
+        <service
+                id="Epubli\PermissionBundle\Command\ExportPermissionsCommand"
+                alias="epubli_permission.command.export_permissions_command"/>
     </services>
 </container>
