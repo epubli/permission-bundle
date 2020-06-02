@@ -108,11 +108,11 @@ class TestAction extends AbstractController
 
 ### Tests
 
-To test your application with this bundle you need some way to send JsonWebTokens to it, otherwise testing the endpoints would be impossible.
+To test your application with this bundle you need some way to send JsonWebTokens to it, otherwise testing the endpoints would be impossible, your requests would be denied.
 
 You will need at least version v0.1.21 of https://github.com/epubli/api-platform-test
 
-The easy way is to just include following into your test cases. That way every request will have the access rights to every endpoint.
+The easiest way is to just include the following into your test cases. That way every request will have the access rights to every endpoint.
 ```php
 use Epubli\ApiPlatform\TestBundle\OrmApiPlatformTestCase;
 use Epubli\PermissionBundle\Traits\JsonWebTokenMockTrait;
