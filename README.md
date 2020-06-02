@@ -60,8 +60,6 @@ You can use this like a service. It supports autowiring. This gives you access t
 
 You should call `$authToken->isValid()` before any other method on this object to make sure that the token exists and is valid.
 
-__IMPORTANT: At this moment it does NOT support autowiring in the constructor!__
-
 ```php
 namespace App\Controller;
 

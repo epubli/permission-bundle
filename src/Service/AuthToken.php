@@ -12,6 +12,12 @@ class AuthToken
 {
     public const ATTRIBUTE_KEY = 'epubli_permission_token_payload';
 
+    /** @var RequestStack */
+    private $requestStack;
+
+    /** @var bool */
+    private $isInitialized = false;
+
     /** @var string|null */
     private $jti;
 
@@ -29,7 +35,17 @@ class AuthToken
 
     public function __construct(RequestStack $requestStack)
     {
-        $request = $requestStack->getCurrentRequest();
+        $this->requestStack = $requestStack;
+    }
+
+    /**
+     * This method is called before any other method is called.
+     */
+    private function initialize()
+    {
+        $this->isInitialized = true;
+
+        $request = $this->requestStack->getCurrentRequest();
         if ($request === null) {
             return;
         }
@@ -55,6 +71,9 @@ class AuthToken
      */
     public function isValid(): bool
     {
+        if (!$this->isInitialized) {
+            $this->initialize();
+        }
         return $this->isValid;
     }
 
@@ -64,6 +83,9 @@ class AuthToken
      */
     public function isRefreshToken(): bool
     {
+        if (!$this->isInitialized) {
+            $this->initialize();
+        }
         return $this->isValid && $this->isRefreshToken;
     }
 
@@ -73,6 +95,9 @@ class AuthToken
      */
     public function isAccessToken(): bool
     {
+        if (!$this->isInitialized) {
+            $this->initialize();
+        }
         return $this->isValid && !$this->isRefreshToken;
     }
 
@@ -82,6 +107,9 @@ class AuthToken
      */
     public function getJTI(): ?string
     {
+        if (!$this->isInitialized) {
+            $this->initialize();
+        }
         return $this->jti;
     }
 
@@ -91,6 +119,9 @@ class AuthToken
      */
     public function getUserId(): ?int
     {
+        if (!$this->isInitialized) {
+            $this->initialize();
+        }
         return $this->userId;
     }
 
@@ -100,6 +131,9 @@ class AuthToken
      */
     public function hasPermissionKey(string $permissionKey): bool
     {
+        if (!$this->isInitialized) {
+            $this->initialize();
+        }
         return in_array($permissionKey, $this->permissionKeys, true);
     }
 }
