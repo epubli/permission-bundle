@@ -2,9 +2,8 @@
 
 namespace Epubli\PermissionBundle\Command;
 
-use DateInterval;
-use DateTime;
 use Epubli\PermissionBundle\DependencyInjection\Configuration;
+use Epubli\PermissionBundle\Service\JsonWebTokenMockCreator;
 use Epubli\PermissionBundle\Service\PermissionDiscovery;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
@@ -24,10 +23,14 @@ class ExportPermissionsCommand extends Command
     /** @var PermissionDiscovery */
     private $permissionDiscovery;
 
-    public function __construct(PermissionDiscovery $permissionDiscovery)
+    /** @var JsonWebTokenMockCreator */
+    private $mockJsonWebToken;
+
+    public function __construct(PermissionDiscovery $permissionDiscovery, JsonWebTokenMockCreator $mockJsonWebToken)
     {
         parent::__construct();
         $this->permissionDiscovery = $permissionDiscovery;
+        $this->mockJsonWebToken = $mockJsonWebToken;
     }
 
     protected function configure(): void
@@ -64,7 +67,9 @@ class ExportPermissionsCommand extends Command
                         'permissions' => $permissions,
                     ],
                     'header' => [
-                        'HTTP_AUTHORIZATION' => 'Bearer ' . $this->getMockAccessToken()
+                        'HTTP_AUTHORIZATION' => $this->mockJsonWebToken->getMockAuthorizationHeader(
+                            ['user.role.create_permissions']
+                        )
                     ]
                 ]
             );
@@ -105,28 +110,5 @@ class ExportPermissionsCommand extends Command
         }
 
         return $newPermissions;
-    }
-
-    private function getMockAccessToken()
-    {
-        $mockAccessTokenPayload = [
-            'iss' => 'https://epubli.de',
-            'sub' => '-1',
-            'user_id' => -1,
-            'jti' => '-1',
-            'exp' => (new DateTime())->add(new DateInterval('PT60M'))->getTimestamp(),
-            'roles' => ['access_token'],
-            'permissions' => ['user.role.create_permissions'],
-        ];
-
-        return implode(
-            '.',
-            array_map(
-                static function ($item) {
-                    return base64_encode(json_encode($item));
-                },
-                ['empty', $mockAccessTokenPayload, 'empty']
-            )
-        );
     }
 }

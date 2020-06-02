@@ -39,5 +39,14 @@
         <service
                 id="Epubli\PermissionBundle\Command\ExportPermissionsCommand"
                 alias="epubli_permission.command.export_permissions_command"/>
+
+        <service
+                id="epubli_permission.service.json_web_token_mock_creator"
+                class="Epubli\PermissionBundle\Service\JsonWebTokenMockCreator"
+                public="true"/>
+        <service
+                id="Epubli\PermissionBundle\Service\JsonWebTokenMockCreator"
+                alias="epubli_permission.service.json_web_token_mock_creator"
+                public="true"/>
     </services>
 </container>

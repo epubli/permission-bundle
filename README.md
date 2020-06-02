@@ -25,6 +25,7 @@ following command to download the latest stable version of this bundle:
 
 ```console
 $ composer require epubli4/permission-bundle
+$ composer require l0wskilled/api-platform-test >=0.1.21
 ```
 
 #### Step 2: Enable the Bundle
@@ -79,6 +80,60 @@ class TestAction extends AbstractController
     }
 }
 ```
+
+### Tests
+
+To test your application with this bundle you need some way to send JsonWebTokens to it, otherwise testing the endpoints would be impossible.
+
+You will need at least version v0.1.21 of https://github.com/epubli/api-platform-test
+
+The easy way is to just include following into your test cases. That way every request will have the access rights to every endpoint.
+```php
+use Epubli\ApiPlatform\TestBundle\OrmApiPlatformTestCase;
+use Epubli\PermissionBundle\Traits\JsonWebTokenMockTrait;
+
+class JsonWebTokenTest extends OrmApiPlatformTestCase
+{
+    use JsonWebTokenMockTrait;
+
+    public static function setUpBeforeClass(): void
+    {
+        self::setUpJsonWebTokenMockCreator();
+        self::$headers = ['HTTP_AUTHORIZATION' => self::$jsonWebTokenMockCreator->getMockAuthorizationHeaderForThisMicroservice()];
+    }
+}
+```
+If you want more control and don't want every request to have a token:
+```php
+use Epubli\ApiPlatform\TestBundle\OrmApiPlatformTestCase;
+use Epubli\PermissionBundle\Traits\JsonWebTokenMockTrait;
+
+class JsonWebTokenTest extends OrmApiPlatformTestCase
+{
+    use JsonWebTokenMockTrait;
+
+    public static function setUpBeforeClass(): void
+    {
+        self::setUpJsonWebTokenMockCreator();
+    }
+
+    public function testRetrieveTheResourceList(): void
+    {
+        $this->request(
+            '/api/json_web_tokens',
+            'GET',
+            null,
+            [],
+            [],
+            [
+                'HTTP_AUTHORIZATION' => self::$jsonWebTokenMockCreator->getMockAuthorizationHeaderForThisMicroservice()
+            ]
+        );
+    }
+}
+```
+
+
 
 TODO
 

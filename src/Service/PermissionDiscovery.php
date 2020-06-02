@@ -118,6 +118,23 @@ class PermissionDiscovery
     }
 
     /**
+     * @return string[]
+     * @throws ReflectionException
+     */
+    public function getAllPermissionKeys(): array
+    {
+        $permissions = [];
+
+        foreach ($this->getEntities() as $entity) {
+            foreach ($entity->getEndpoints() as $endpoint) {
+                $permissions[] = $endpoint->getPermissionKey();
+            }
+        }
+
+        return $permissions;
+    }
+
+    /**
      * @return string
      */
     public function getMicroserviceName(): string
