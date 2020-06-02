@@ -15,6 +15,10 @@ Open a command console, enter your project directory and execute:
 ```console
 $ composer require epubli4/permission-bundle
 ```
+Recommended for unit tests:
+```console
+$ composer require l0wskilled/api-platform-test >=0.1.21
+```
 
 ### Applications that don't use Symfony Flex
 
@@ -25,6 +29,9 @@ following command to download the latest stable version of this bundle:
 
 ```console
 $ composer require epubli4/permission-bundle
+```
+Recommended for unit tests:
+```console
 $ composer require l0wskilled/api-platform-test >=0.1.21
 ```
 
