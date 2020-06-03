@@ -80,6 +80,63 @@ class ExampleEntity
 }
 ```
 
+If you have something specified in your @ApiResource then this bundle will generate permissions only for the endpoints which exists.
+In this example only permissions for "get", "post", "delete" will be generated:
+```php
+use ApiPlatform\Core\Annotation\ApiResource;
+use Epubli\PermissionBundle\Annotation\Permission;
+
+/**
+ * @ApiResource(
+ *      collectionOperations={
+ *          'get',
+ *          'post',
+ *      },
+ *      itemOperations={
+ *          'get',
+ *          'delete',
+ *      }
+ * )
+ * @Permission()
+ */
+class ExampleEntity
+{
+
+}
+```
+
+If you don't want to have permissions for specific routes you need to specify the routes you want to have explicitly in @Permission.
+In this example only permissions for "get" will be generated:
+```php
+use ApiPlatform\Core\Annotation\ApiResource;
+use Epubli\PermissionBundle\Annotation\Permission;
+
+/**
+ * @ApiResource(
+ *      collectionOperations={
+ *          'get',
+ *          'post',
+ *      },
+ *      itemOperations={
+ *          'get',
+ *          'delete',
+ *      }
+ * )
+ * @Permission(
+ *      collectionOperations={
+ *          'get',
+ *      },
+ *      itemOperations={
+ *          'get',
+ *      }
+ * )
+ */
+class ExampleEntity
+{
+
+}
+```
+
 ### AuthToken
 
 You can use this like a service. It supports autowiring. This gives you access to the properties of the access/refresh token of the user.
