@@ -207,16 +207,12 @@ class PermissionDiscovery
 
         $routePrefix = $apiPlatformAnnotation->attributes['route_prefix'] ?? null;
 
-        //TODO was ist wenn nichts in API Platform definiert ist? => dann ist alles gesetzt
-
-        //TODO durch alle iterieren auch subresourceOperations
-
         $endpoints = array_merge(
             $endpoints,
             $this->getEndpointsOfOperations(
                 $routePrefix,
                 $className,
-                $apiPlatformAnnotation->itemOperations,
+                $apiPlatformAnnotation->itemOperations ?? ['get', 'put', 'patch', 'delete'],
                 $permissionAnnotation->getItemOperations(),
                 true
             )
@@ -226,7 +222,7 @@ class PermissionDiscovery
             $this->getEndpointsOfOperations(
                 $routePrefix,
                 $className,
-                $apiPlatformAnnotation->collectionOperations,
+                $apiPlatformAnnotation->collectionOperations ?? ['get', 'post'],
                 $permissionAnnotation->getCollectionOperations(),
                 false
             )
