@@ -205,8 +205,7 @@ class PermissionDiscovery
 
         $endpoints = [];
 
-        //TODO check for routePrefix
-        $routePrefix = null;
+        $routePrefix = $apiPlatformAnnotation->attributes['route_prefix'] ?? null;
 
         //TODO was ist wenn nichts in API Platform definiert ist? => dann ist alles gesetzt
 
