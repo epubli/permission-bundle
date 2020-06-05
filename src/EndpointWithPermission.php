@@ -20,7 +20,6 @@ class EndpointWithPermission
     private $permissionKey;
 
     /**
-     * AuthPermissionEndpoint constructor.
      * @param string $path
      * @param string $regex
      * @param string $httpMethod
