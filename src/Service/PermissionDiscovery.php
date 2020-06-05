@@ -143,7 +143,7 @@ class PermissionDiscovery
     }
 
     /**
-     * Returns all the Entities
+     * Returns all entities with permissions
      * @throws ReflectionException
      */
     private function getEntities(): array
@@ -156,7 +156,7 @@ class PermissionDiscovery
     }
 
     /**
-     * Discovers workers
+     * Discovers all entities with permissions
      * @throws ReflectionException
      */
     private function discoverEntities(): void
@@ -193,7 +193,7 @@ class PermissionDiscovery
      * @param Permission $permissionAnnotation
      * @return EndpointWithPermission[]
      */
-    private function getEndpointsOfClass(ReflectionClass $reflectionClass, Permission $permissionAnnotation): array
+    private function getEndpointsOfEntity(ReflectionClass $reflectionClass, Permission $permissionAnnotation): array
     {
         /** @var ApiResource $apiPlatformAnnotation */
         $apiPlatformAnnotation = $this->annotationReader->getClassAnnotation(
@@ -209,7 +209,7 @@ class PermissionDiscovery
 
         $endpoints = array_merge(
             $endpoints,
-            $this->getEndpointsOfOperations(
+            $this->parseOperationsToEndpoints(
                 $routePrefix,
                 $className,
                 $apiPlatformAnnotation->itemOperations ?? ['get', 'put', 'patch', 'delete'],
@@ -219,7 +219,7 @@ class PermissionDiscovery
         );
         $endpoints = array_merge(
             $endpoints,
-            $this->getEndpointsOfOperations(
+            $this->parseOperationsToEndpoints(
                 $routePrefix,
                 $className,
                 $apiPlatformAnnotation->collectionOperations ?? ['get', 'post'],
@@ -239,7 +239,7 @@ class PermissionDiscovery
      * @param bool $isItemOperation
      * @return EndpointWithPermission[]
      */
-    public function getEndpointsOfOperations(
+    public function parseOperationsToEndpoints(
         ?string $routePrefix,
         string $className,
         array $apiPlatformOperations,
