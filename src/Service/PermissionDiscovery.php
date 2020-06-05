@@ -183,7 +183,7 @@ class PermissionDiscovery
             }
 
             $this->entities[] = new EntityWithPermissions(
-                $classPath, $permissionAnnotation, $this->getEndpointsOfClass($reflectionClass, $permissionAnnotation)
+                $classPath, $this->getEndpointsOfEntity($reflectionClass, $permissionAnnotation)
             );
         }
     }
