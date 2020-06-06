@@ -281,11 +281,12 @@ class PermissionDiscovery
                 $data = array();
             }
 
-            if (!isset($data['security'])) {
+            $security = $data['security'] ?? $data['security_post_denormalize'] ?? null;
+            if ($security == null) {
                 continue;
             }
-            if ($data['security'] !== 'is_granted(null, object)'
-                && $data['security'] !== 'is_granted(null, _api_resource_class)') {
+            if ($security !== 'is_granted(null, object)'
+                && $security !== 'is_granted(null, _api_resource_class)') {
                 continue;
             }
 
