@@ -8,6 +8,7 @@ use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ServerException;
+use ReflectionException;
 
 /**
  * Class JsonWebTokenMockCreator
@@ -104,7 +105,7 @@ class JsonWebTokenMockCreator
     /**
      * Returns an authorization header with a token which contains permissions to everything in this microservice
      * @return string
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public function getMockAuthorizationHeaderForThisMicroservice(): ?string
     {

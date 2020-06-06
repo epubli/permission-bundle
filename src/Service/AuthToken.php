@@ -2,6 +2,7 @@
 
 namespace Epubli\PermissionBundle\Service;
 
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
@@ -10,8 +11,6 @@ use Symfony\Component\HttpFoundation\RequestStack;
  */
 class AuthToken
 {
-    public const ATTRIBUTE_KEY = 'epubli_permission_token_payload';
-
     /** @var RequestStack */
     private $requestStack;
 
@@ -49,7 +48,7 @@ class AuthToken
         if ($request === null) {
             return;
         }
-        $payload = $request->attributes->get(self::ATTRIBUTE_KEY);
+        $payload = self::getPayloadFromHeader($request);
         if ($payload === null) {
             return;
         }
@@ -63,6 +62,25 @@ class AuthToken
         $this->permissionKeys = $payload['permissions'] ?? [];
         $this->isRefreshToken = in_array('refresh_token', $payload['roles']);
         $this->isValid = true;
+    }
+
+    /**
+     * @param Request $request
+     * @return array|null
+     */
+    private static function getPayloadFromHeader(Request $request)
+    {
+        $header = $request->headers->get('Authorization');
+        if (empty($header)) {
+            $header = $request->headers->get('authorization');
+        }
+        if (empty($header)) {
+            return null;
+        }
+        $token = substr($header, strlen('Bearer '));
+
+        $encodedPayload = explode('.', $token)[1] ?? '';
+        return json_decode(base64_decode($encodedPayload), true);
     }
 
     /**

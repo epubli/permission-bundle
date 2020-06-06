@@ -64,15 +64,35 @@ epubli_permission:
 
 ### Generally
 
-If you don't have anything specified in your @ApiResource you don't need to specify anything in your @Permission.
-This is the bare minimum and will create permissions for every endpoint.
+You need to specify the `security` key to enable this bundle for this endpoint.
 ```php
 use ApiPlatform\Core\Annotation\ApiResource;
-use Epubli\PermissionBundle\Annotation\Permission;
 
 /**
- * @ApiResource()
- * @Permission()
+ * @ApiResource(
+ *     collectionOperations={
+ *          "get"={
+ *              "security"="is_granted(null, _api_resource_class)",
+ *          },
+ *          "post"={
+ *              "security_post_denormalize"="is_granted(null, object)",
+ *          },
+ *     },
+ *     itemOperations={
+ *          "get"={
+ *              "security"="is_granted(null, object)",
+ *          },
+ *          "delete"={
+ *              "security"="is_granted(null, object)",
+ *          },
+ *          "put"={
+ *              "security"="is_granted(null, object)",
+ *          },
+ *          "patch"={
+ *              "security"="is_granted(null, object)",
+ *          },
+ *     }
+ * )
  */
 class ExampleEntity
 {
@@ -80,60 +100,27 @@ class ExampleEntity
 }
 ```
 
-If you have something specified in your @ApiResource then this bundle will generate permissions only for the endpoints which exists.
-In this example only permissions for "get", "post", "delete" will be generated:
+If you want the bundle to differentiate between users which own an entity of this class or not,
+then you need to implement the `SelfPermissionInterface`.
 ```php
-use ApiPlatform\Core\Annotation\ApiResource;
-use Epubli\PermissionBundle\Annotation\Permission;
+use Epubli\PermissionBundle\Interfaces\SelfPermissionInterface;
 
-/**
- * @ApiResource(
- *      collectionOperations={
- *          'get',
- *          'post',
- *      },
- *      itemOperations={
- *          'get',
- *          'delete',
- *      }
- * )
- * @Permission()
- */
-class ExampleEntity
+class ExampleEntity implements SelfPermissionInterface
 {
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $user_id;
 
-}
-```
+    public function getUserId(): ?int
+    {
+        return $this->user_id;
+    }
 
-If you don't want to have permissions for specific routes you need to specify the routes you want to have explicitly in @Permission.
-In this example only permissions for "get" will be generated:
-```php
-use ApiPlatform\Core\Annotation\ApiResource;
-use Epubli\PermissionBundle\Annotation\Permission;
-
-/**
- * @ApiResource(
- *      collectionOperations={
- *          'get',
- *          'post',
- *      },
- *      itemOperations={
- *          'get',
- *          'delete',
- *      }
- * )
- * @Permission(
- *      collectionOperations={
- *          'get',
- *      },
- *      itemOperations={
- *          'get',
- *      }
- * )
- */
-class ExampleEntity
-{
-
+    public function getUserIdForPermissionBundle(): ?int
+    {
+        return $this->getUserId();
+    }
 }
 ```
 
@@ -224,7 +211,8 @@ $ php bin/console epubli:export-permissions
 
 ## Things which need to be done
 
+- Filter GET-Requests on the collection to only contain items which the user is authorized to see
 - ApiPlatform Subresources
-- Permissions for properties instead of whole entities
+- Permissions for properties instead of whole entities (at least for patch and put)
 - Performance needs to be increased (Caching?)
 - Permissions from the anonymous role need to be applied if no token exists

@@ -2,12 +2,11 @@
 
 namespace Epubli\PermissionBundle\Service;
 
-use ApiPlatform\Core\Action\PlaceholderAction;
 use ApiPlatform\Core\Annotation\ApiResource;
 use Doctrine\Common\Annotations\Reader;
-use Epubli\PermissionBundle\Annotation\Permission;
 use Epubli\PermissionBundle\EndpointWithPermission;
 use Epubli\PermissionBundle\EntityWithPermissions;
+use Epubli\PermissionBundle\Interfaces\SelfPermissionInterface;
 use ReflectionClass;
 use ReflectionException;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
@@ -54,47 +53,84 @@ class PermissionDiscovery
     }
 
     /**
-     * @param object $controller
-     * @param string $httpMethod
-     * @param string $requestPath
-     * @return bool
-     * @throws ReflectionException
-     */
-    public function needsAuthentication($controller, string $httpMethod, string $requestPath): bool
-    {
-        foreach ($this->getEntities() as $entity) {
-            foreach ($entity->getEndpoints() as $endpoint) {
-                if ($httpMethod === $endpoint->getHttpMethod()
-                    && is_a($controller, $endpoint->getControllerClass())
-                    && preg_match($endpoint->getRegex(), $requestPath)) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * @param object $controller
+     * @param object $entity
      * @param string $httpMethod
      * @param string $requestPath
      * @return string|null
-     * @throws ReflectionException
      */
-    public function getPermissionKey($controller, string $httpMethod, string $requestPath): ?string
+    public function getPermissionKey($entity, string $httpMethod, string $requestPath): ?string
     {
-        foreach ($this->getEntities() as $entity) {
-            foreach ($entity->getEndpoints() as $endpoint) {
-                if ($httpMethod === $endpoint->getHttpMethod()
-                    && is_a($controller, $endpoint->getControllerClass())
-                    && preg_match($endpoint->getRegex(), $requestPath)) {
-                    return $endpoint->getPermissionKey();
+        $isItemOperation = preg_match("/[0-9]+$/", $requestPath);
+
+        $reflectionClass = new ReflectionClass($entity);
+        /** @var ApiResource $apiPlatformAnnotation */
+        $apiPlatformAnnotation = $this->annotationReader->getClassAnnotation(
+            $reflectionClass,
+            ApiResource::class
+        );
+
+        $className = self::fromCamelCaseToSnakeCase($reflectionClass->getShortName());
+
+        $relevantPath = $this->getRelevantPath($requestPath, $apiPlatformAnnotation, $isItemOperation);
+
+        if ($isItemOperation) {
+            $apiPlatformOperations = $apiPlatformAnnotation->itemOperations ?? ['get', 'put', 'patch', 'delete'];
+        } else {
+            $apiPlatformOperations = $apiPlatformAnnotation->collectionOperations ?? ['get', 'post'];
+        }
+        foreach ($apiPlatformOperations as $operationName => $data) {
+            if (is_string($data)) {
+                //If there are no further properties defined,
+                //then $data contains the name of the operation
+                $operationName = $data;
+                $data = array();
+            }
+
+            if (strtoupper($operationName) === $httpMethod) {
+                return $this->generatePermissionKey($className, $operationName);
+            }
+
+            $operationHttpMethod = strtoupper($data['method'] ?? $operationName);
+            if ($operationHttpMethod === $httpMethod) {
+                if (isset($data['path'])) {
+                    $operationPath = rtrim($data['path'], '/');
+                } else {
+                    $operationPath = "/{$className}s";
+                }
+
+                if ($operationPath === $relevantPath) {
+                    return $this->generatePermissionKey($className, $operationName);
                 }
             }
         }
-
         return null;
+    }
+
+    /**
+     * @param string $requestPath
+     * @param ApiResource $apiPlatformAnnotation
+     * @param bool $isItemOperation
+     * @return string
+     */
+    private function getRelevantPath(
+        string $requestPath,
+        ApiResource $apiPlatformAnnotation,
+        bool $isItemOperation
+    ): string {
+        $routePrefix = $apiPlatformAnnotation->attributes['route_prefix'] ?? null;
+
+        $path = '/api';
+        if ($routePrefix !== null) {
+            $path .= '/' . trim($routePrefix, '/');
+        }
+
+        $path = substr($requestPath, strlen($path));
+        if ($isItemOperation) {
+            //remove the number and the slash at the end
+            $path = preg_replace("/\/[0-9]+$/", "", $path);
+        }
+
+        return $path;
     }
 
     /**
@@ -109,7 +145,7 @@ class PermissionDiscovery
             foreach ($entity->getEndpoints() as $endpoint) {
                 $permissions[] = [
                     'key' => $endpoint->getPermissionKey(),
-                    'description' => ''
+                    'description' => $endpoint->getDescription()
                 ];
             }
         }
@@ -173,58 +209,51 @@ class PermissionDiscovery
 
             $reflectionClass = new ReflectionClass($classPath);
 
-            /** @var Permission $permissionAnnotation */
-            $permissionAnnotation = $this->annotationReader->getClassAnnotation(
+            /** @var ApiResource $apiPlatformAnnotation */
+            $apiPlatformAnnotation = $this->annotationReader->getClassAnnotation(
                 $reflectionClass,
-                Permission::class
+                ApiResource::class
             );
-            if (!$permissionAnnotation) {
+            if (!$apiPlatformAnnotation) {
                 continue;
             }
 
+            $needsSelfPermission = $reflectionClass->implementsInterface(SelfPermissionInterface::class);
+            $className = self::fromCamelCaseToSnakeCase($reflectionClass->getShortName());
+
             $this->entities[] = new EntityWithPermissions(
-                $classPath, $this->getEndpointsOfEntity($reflectionClass, $permissionAnnotation)
+                $classPath, $this->getEndpointsOfEntity($className, $apiPlatformAnnotation, $needsSelfPermission)
             );
         }
     }
 
     /**
-     * @param ReflectionClass $reflectionClass
-     * @param Permission $permissionAnnotation
+     * @param string $className
+     * @param ApiResource $apiPlatformAnnotation
+     * @param bool $needsSelfPermission
      * @return EndpointWithPermission[]
      */
-    private function getEndpointsOfEntity(ReflectionClass $reflectionClass, Permission $permissionAnnotation): array
-    {
-        /** @var ApiResource $apiPlatformAnnotation */
-        $apiPlatformAnnotation = $this->annotationReader->getClassAnnotation(
-            $reflectionClass,
-            ApiResource::class
-        );
-
-        $className = self::fromCamelCaseToSnakeCase($reflectionClass->getShortName());
-
+    private function getEndpointsOfEntity(
+        string $className,
+        ApiResource $apiPlatformAnnotation,
+        bool $needsSelfPermission
+    ): array {
         $endpoints = [];
-
-        $routePrefix = $apiPlatformAnnotation->attributes['route_prefix'] ?? null;
 
         $endpoints = array_merge(
             $endpoints,
             $this->parseOperationsToEndpoints(
-                $routePrefix,
                 $className,
-                $apiPlatformAnnotation->itemOperations ?? ['get', 'put', 'patch', 'delete'],
-                $permissionAnnotation->getItemOperations(),
-                true
+                $needsSelfPermission,
+                $apiPlatformAnnotation->itemOperations ?? ['get', 'put', 'patch', 'delete']
             )
         );
         $endpoints = array_merge(
             $endpoints,
             $this->parseOperationsToEndpoints(
-                $routePrefix,
                 $className,
-                $apiPlatformAnnotation->collectionOperations ?? ['get', 'post'],
-                $permissionAnnotation->getCollectionOperations(),
-                false
+                $needsSelfPermission,
+                $apiPlatformAnnotation->collectionOperations ?? ['get', 'post']
             )
         );
 
@@ -232,26 +261,17 @@ class PermissionDiscovery
     }
 
     /**
-     * @param string|null $routePrefix
      * @param string $className
+     * @param bool $needsSelfPermission
      * @param array $apiPlatformOperations
-     * @param array|null $permissionOperations
-     * @param bool $isItemOperation
      * @return EndpointWithPermission[]
      */
     public function parseOperationsToEndpoints(
-        ?string $routePrefix,
         string $className,
-        array $apiPlatformOperations,
-        ?array $permissionOperations,
-        bool $isItemOperation
+        bool $needsSelfPermission,
+        array $apiPlatformOperations
     ): array {
         $endpoints = [];
-
-        $permissionOperations = $permissionOperations === null ? null : array_map(
-            'strtoupper',
-            $permissionOperations
-        );
 
         foreach ($apiPlatformOperations as $operationName => $data) {
             if (is_string($data)) {
@@ -261,74 +281,106 @@ class PermissionDiscovery
                 $data = array();
             }
 
-            if ($permissionOperations !== null
-                && !in_array(strtoupper($operationName), $permissionOperations, true)) {
+            if (!isset($data['security'])) {
+                continue;
+            }
+            if ($data['security'] !== 'is_granted(null, object)'
+                && $data['security'] !== 'is_granted(null, _api_resource_class)') {
                 continue;
             }
 
-            $endpoints[] = $this->getEndpoint($routePrefix, $className, $operationName, $data, $isItemOperation);
+            $endpoints[] = $this->getEndpoint(
+                $className,
+                $operationName,
+                false
+            );
+            if ($needsSelfPermission && self::isSelfPermissionPossible($operationName)) {
+                $endpoints[] = $this->getEndpoint(
+                    $className,
+                    $operationName,
+                    true
+                );
+            }
         }
 
         return $endpoints;
     }
 
     /**
-     * @param string|null $routePrefix
      * @param string $className
      * @param string $operationName
-     * @param array $data
-     * @param bool $isItemOperation
+     * @param bool $isSelfPermission
      * @return EndpointWithPermission
      */
     private function getEndpoint(
-        ?string $routePrefix,
         string $className,
         string $operationName,
-        array $data,
-        bool $isItemOperation
+        bool $isSelfPermission
     ): EndpointWithPermission {
-        $path = '/api';
-        if ($routePrefix !== null) {
-            $path .= '/' . trim($routePrefix, '/');
-        }
-        if (isset($data['path'])) {
-            $path .= $data['path'];
-            $path = rtrim($path, '/');
+        $permissionKey = $this->generatePermissionKey($className, $operationName);
+
+        $action = self::transformOperationNameToAction($operationName);
+        $description = "Can '$action' an entity of type '$className'";
+
+        if ($isSelfPermission) {
+            $permissionKey .= EndpointWithPermission::SELF_PERMISSION;
+            $description .= " but only if it belongs to them";
         } else {
-            $path .= "/{$className}s";
-            if ($isItemOperation) {
-                $path .= '/{id}';
-            }
+            $description .= " regardless of ownership";
         }
 
-        $regex = str_replace(array('/', '{id}'), array('\\/', '\\d+'), $path);
-        $regex = "/^$regex$/";
+        return new EndpointWithPermission($permissionKey, $description);
+    }
 
-        $httpMethod = strtoupper($data['method'] ?? $operationName);
-
-        $controllerClass = $data['controller'] ?? PlaceholderAction::class;
-
+    /**
+     * Transforms the operations name from api platform into an action description for the permission key.
+     * @param string $operationName
+     * @return string
+     */
+    private static function transformOperationNameToAction(string $operationName): string
+    {
         switch (strtoupper($operationName)) {
             case 'POST':
-                $action = 'create';
-                break;
+                return 'create';
             case 'GET':
-                $action = 'read';
-                break;
+                return 'read';
             case 'DELETE':
-                $action = 'delete';
-                break;
+                return 'delete';
             case 'PUT':
             case 'PATCH':
-                $action = 'update';
-                break;
+                return 'update';
             default:
-                $action = $operationName;
+                return $operationName;
         }
+    }
 
-        $permissionKey = implode('.', [$this->microserviceName, $className, $action]);
+    /**
+     * @param string $operationName
+     * @return bool
+     */
+    private static function isSelfPermissionPossible(string $operationName): bool
+    {
+        switch (strtoupper($operationName)) {
+            case 'DELETE':
+            case 'POST':
+            case 'PUT':
+            case 'PATCH':
+                return true;
+            case 'GET':
+            default:
+                return false;
+        }
+    }
 
-        return new EndpointWithPermission($path, $regex, $httpMethod, $controllerClass, $permissionKey);
+    /**
+     * @param string $className
+     * @param string $operationName
+     * @return string
+     */
+    private function generatePermissionKey(string $className, string $operationName)
+    {
+        $action = self::transformOperationNameToAction($operationName);
+        return implode('.', [$this->microserviceName, $className, $action]);
     }
 
     /**

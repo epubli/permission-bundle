@@ -20,25 +20,18 @@
                 alias="epubli_permission.service.permission_discovery"/>
 
         <service
-                id="epubli_permission.event_subscriber.auth_token_subscriber"
-                class="Epubli\PermissionBundle\EventSubscriber\AuthTokenSubscriber"/>
-        <service
-                id="Epubli\PermissionBundle\EventSubscriber\AuthTokenSubscriber"
-                alias="epubli_permission.event_subscriber.auth_token_subscriber"/>
-
-        <service
-                id="epubli_permission.event_subscriber.permission_subscriber"
-                class="Epubli\PermissionBundle\EventSubscriber\PermissionSubscriber"/>
-        <service
-                id="Epubli\PermissionBundle\EventSubscriber\PermissionSubscriber"
-                alias="epubli_permission.event_subscriber.permission_subscriber"/>
-
-        <service
                 id="epubli_permission.command.export_permissions_command"
                 class="Epubli\PermissionBundle\Command\ExportPermissionsCommand"/>
         <service
                 id="Epubli\PermissionBundle\Command\ExportPermissionsCommand"
                 alias="epubli_permission.command.export_permissions_command"/>
+
+        <service
+                id="epubli_permission.security.voter.permission_voter"
+                class="Epubli\PermissionBundle\Security\PermissionVoter"/>
+        <service
+                id="Epubli\PermissionBundle\Security\PermissionVoter"
+                alias="epubli_permission.security.voter.permission_voter"/>
 
         <service
                 id="epubli_permission.service.json_web_token_mock_creator"

@@ -8,68 +8,23 @@ namespace Epubli\PermissionBundle;
  */
 class EndpointWithPermission
 {
-    /** @var string */
-    private $path;
-    /** @var string */
-    private $regex;
-    /** @var string */
-    private $httpMethod;
-    /** @var string */
-    private $controllerClass;
+    public const SELF_PERMISSION = '.self';
+
     /** @var string */
     private $permissionKey;
+    /** @var string */
+    private $description;
 
     /**
-     * @param string $path
-     * @param string $regex
-     * @param string $httpMethod
-     * @param string $controllerClass
      * @param string $permissionKey
+     * @param string $description
      */
     public function __construct(
-        string $path,
-        string $regex,
-        string $httpMethod,
-        string $controllerClass,
-        string $permissionKey
+        string $permissionKey,
+        string $description
     ) {
-        $this->path = $path;
-        $this->regex = $regex;
-        $this->httpMethod = $httpMethod;
-        $this->controllerClass = $controllerClass;
         $this->permissionKey = $permissionKey;
-    }
-
-    /**
-     * @return string
-     */
-    public function getPath(): string
-    {
-        return $this->path;
-    }
-
-    /**
-     * @return string
-     */
-    public function getRegex(): string
-    {
-        return $this->regex;
-    }
-
-    /**
-     * @return string
-     */
-    public function getHttpMethod(): string
-    {
-        return $this->httpMethod;
-    }
-
-    /**
-     * @return string
-     */
-    public function getControllerClass(): string
-    {
-        return $this->controllerClass;
+        $this->description = $description;
     }
 
     /**
@@ -78,5 +33,31 @@ class EndpointWithPermission
     public function getPermissionKey(): string
     {
         return $this->permissionKey;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDescription(): string
+    {
+        return $this->description;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isSelfPermission(): bool
+    {
+        return $this->descriptionEndsWith(self::SELF_PERMISSION);
+    }
+
+    /**
+     * Checks if the description ends with a specific string
+     * @param $str
+     * @return bool
+     */
+    private function descriptionEndsWith($str)
+    {
+        return substr($this->description, -strlen($str)) === $str;
     }
 }
