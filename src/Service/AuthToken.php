@@ -40,7 +40,7 @@ class AuthToken
     /**
      * This method is called before any other method is called.
      */
-    private function initialize()
+    private function initialize(): void
     {
         $this->isInitialized = true;
 
@@ -68,7 +68,7 @@ class AuthToken
      * @param Request $request
      * @return array|null
      */
-    private static function getPayloadFromHeader(Request $request)
+    private static function getPayloadFromHeader(Request $request): ?array
     {
         $header = $request->headers->get('Authorization');
         if (empty($header)) {
