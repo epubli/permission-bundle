@@ -41,14 +41,29 @@ class JWTMockCreator
             return $this->headerForAllPermissions;
         }
 
+        $client = new Client(['base_uri' => 'http://user']);
+        $header = $this->getMockAuthorizationHeader(['user.permission.read']);
+        $permissionKeys = $this->getAllPermissionKeys($client, $header, '/api/roles/permissions?page=1');
+
+        $this->headerForAllPermissions = $this->getMockAuthorizationHeader($permissionKeys);
+        return $this->headerForAllPermissions;
+    }
+
+    /**
+     * @param Client $client
+     * @param string $header
+     * @param string $path
+     * @return string[]
+     * @throws Exception
+     */
+    private function getAllPermissionKeys(Client $client, string $header, string $path): array
+    {
         try {
-            $response = (new Client())->get(
-                'http://user/api/roles/permissions',
+            $response = $client->get(
+                $path,
                 [
                     'header' => [
-                        'HTTP_AUTHORIZATION' => $this->getMockAuthorizationHeader(
-                            ['user.permission.read']
-                        )
+                        'HTTP_AUTHORIZATION' => $header
                     ]
                 ]
             );
@@ -56,13 +71,20 @@ class JWTMockCreator
             $json = json_decode($response->getBody(), true);
 
             $permissionKeys = array_column($json['hydra:member'], 'key');
+
+            if (isset($json['hydra:view']['hydra:next'])) {
+                $nextPath = $json['hydra:view']['hydra:next'];
+                $permissionKeys = array_merge(
+                    $permissionKeys,
+                    $this->getAllPermissionKeys($client, $header, $nextPath)
+                );
+            }
+
+            return $permissionKeys;
         } catch (ServerException | ClientException $exp) {
             $statusCode = $exp->getResponse()->getStatusCode();
             throw new Exception('Could not get all permissions. Returned status code: ' . $statusCode);
         }
-
-        $this->headerForAllPermissions = $this->getMockAuthorizationHeader($permissionKeys);
-        return $this->headerForAllPermissions;
     }
 
     /**
