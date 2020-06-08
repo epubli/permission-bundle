@@ -159,11 +159,11 @@ You will need at least version v0.1.21 of https://github.com/epubli/api-platform
 The easiest way is to just include the following into your test cases. That way every request will have the access rights to every endpoint.
 ```php
 use Epubli\ApiPlatform\TestBundle\OrmApiPlatformTestCase;
-use Epubli\PermissionBundle\Traits\JsonWebTokenMockTrait;
+use Epubli\PermissionBundle\Traits\JWTMockTrait;
 
 class JsonWebTokenTest extends OrmApiPlatformTestCase
 {
-    use JsonWebTokenMockTrait;
+    use JWTMockTrait;
 
     public static function setUpBeforeClass(): void
     {
@@ -175,11 +175,11 @@ class JsonWebTokenTest extends OrmApiPlatformTestCase
 If you want more control and don't want every request to have a token:
 ```php
 use Epubli\ApiPlatform\TestBundle\OrmApiPlatformTestCase;
-use Epubli\PermissionBundle\Traits\JsonWebTokenMockTrait;
+use Epubli\PermissionBundle\Traits\JWTMockTrait;
 
 class JsonWebTokenTest extends OrmApiPlatformTestCase
 {
-    use JsonWebTokenMockTrait;
+    use JWTMockTrait;
 
     public static function setUpBeforeClass(): void
     {

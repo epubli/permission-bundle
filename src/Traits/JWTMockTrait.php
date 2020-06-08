@@ -9,7 +9,7 @@ use Epubli\PermissionBundle\Service\JWTMockCreator;
  * This trait needs the class in which it is included to extend from Symfony\Bundle\FrameworkBundle\Test\KernelTestCase
  * @package Epubli\PermissionBundle\Traits
  */
-trait JsonWebTokenMockTrait
+trait JWTMockTrait
 {
     /** @var JWTMockCreator */
     private static $jwtMockCreator;
