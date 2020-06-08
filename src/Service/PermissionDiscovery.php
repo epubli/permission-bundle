@@ -263,7 +263,7 @@ class PermissionDiscovery
      * @param array $apiPlatformOperations
      * @return EndpointWithPermission[]
      */
-    public function parseOperationsToEndpoints(
+    private function parseOperationsToEndpoints(
         string $className,
         bool $needsSelfPermission,
         array $apiPlatformOperations
