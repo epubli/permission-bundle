@@ -209,6 +209,13 @@ you need to execute the following __in the docker container__:
 $ php bin/console epubli:export-permissions
 ```
 
+## Testing
+
+Execute the following:
+```console
+$ ./vendor/bin/simple-phpunit
+```
+
 ## Things which need to be done
 
 - Filter GET-Requests on the collection to only contain items which the user is authorized to see

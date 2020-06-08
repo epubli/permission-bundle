@@ -17,12 +17,21 @@
         "symfony/framework-bundle": "^4.4",
         "guzzlehttp/guzzle": "^6.5"
     },
+    "require-dev": {
+        "l0wskilled/api-platform-test": "^0.1.21",
+        "l0wskilled/api-platform-traits": "^0.1.8",
+        "symfony/phpunit-bridge": "^5.1"
+    },
     "suggest": {
-
     },
     "autoload": {
         "psr-4": {
             "Epubli\\PermissionBundle\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Epubli\\PermissionBundle\\Tests\\": "tests/"
         }
     }
 }

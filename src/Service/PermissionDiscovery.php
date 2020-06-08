@@ -41,15 +41,34 @@ class PermissionDiscovery
     private $microserviceName;
 
     /**
+     * @var string
+     */
+    private $pathToEntities;
+
+    /**
+     * @var string
+     */
+    private $namespace;
+
+    /**
      * @param string $microserviceName
      * @param ParameterBagInterface $parameterBag
      * @param Reader $annotationReader
+     * @param string $pathToEntities
+     * @param string $namespace
      */
-    public function __construct(string $microserviceName, ParameterBagInterface $parameterBag, Reader $annotationReader)
-    {
+    public function __construct(
+        string $microserviceName,
+        ParameterBagInterface $parameterBag,
+        Reader $annotationReader,
+        string $pathToEntities = '/src/Entity',
+        string $namespace = 'App\\Entity\\'
+    ) {
         $this->microserviceName = strtolower($microserviceName);
         $this->annotationReader = $annotationReader;
         $this->rootDir = $parameterBag->get('kernel.project_dir');
+        $this->pathToEntities = $pathToEntities;
+        $this->namespace = $namespace;
     }
 
     /**
@@ -74,7 +93,7 @@ class PermissionDiscovery
 
         $className = self::fromCamelCaseToSnakeCase($reflectionClass->getShortName());
 
-        $relevantPath = $this->getRelevantPath($requestPath, $apiPlatformAnnotation, $isItemOperation);
+        $relevantPath = $this->getRelevantPath($requestPath, $apiPlatformAnnotation);
 
         if ($isItemOperation) {
             $apiPlatformOperations = $apiPlatformAnnotation->itemOperations ?? ['get', 'put', 'patch', 'delete'];
@@ -108,14 +127,10 @@ class PermissionDiscovery
     /**
      * @param string $requestPath
      * @param ApiResource $apiPlatformAnnotation
-     * @param bool $isItemOperation
      * @return string
      */
-    private function getRelevantPath(
-        string $requestPath,
-        ApiResource $apiPlatformAnnotation,
-        bool $isItemOperation
-    ): string {
+    private function getRelevantPath(string $requestPath, ApiResource $apiPlatformAnnotation): string
+    {
         $routePrefix = $apiPlatformAnnotation->attributes['route_prefix'] ?? null;
 
         $path = '/api';
@@ -197,13 +212,13 @@ class PermissionDiscovery
     {
         $this->entities = [];
 
-        $path = $this->rootDir . '/src/Entity';
+        $path = $this->rootDir . $this->pathToEntities;
         $finder = new Finder();
         $finder->files()->in($path);
 
         /** @var SplFileInfo $file */
         foreach ($finder as $file) {
-            $classPath = 'App\\Entity\\' . $file->getBasename('.php');
+            $classPath = $this->namespace . $file->getBasename('.php');
 
             $reflectionClass = new ReflectionClass($classPath);
 
@@ -360,8 +375,8 @@ class PermissionDiscovery
             case 'POST':
             case 'PUT':
             case 'PATCH':
-                return true;
             case 'GET':
+                return true;
             default:
                 return false;
         }
