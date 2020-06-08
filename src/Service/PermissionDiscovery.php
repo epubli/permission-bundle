@@ -57,6 +57,7 @@ class PermissionDiscovery
      * @param string $httpMethod
      * @param string $requestPath
      * @return string|null
+     * @throws ReflectionException
      */
     public function getPermissionKey($entity, string $httpMethod, string $requestPath): ?string
     {
