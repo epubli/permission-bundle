@@ -81,20 +81,20 @@ class PermissionDiscovery
         } else {
             $apiPlatformOperations = $apiPlatformAnnotation->collectionOperations ?? ['get', 'post'];
         }
-        foreach ($apiPlatformOperations as $operationName => $data) {
+        foreach ($apiPlatformOperations as $annotatedOperationName => $data) {
             if (is_string($data)) {
                 //If there are no further properties defined,
                 //then $data contains the name of the operation
-                $operationName = $data;
+                $annotatedOperationName = $data;
                 $data = array();
             }
 
-            if (strtoupper($operationName) === $httpMethod) {
-                return $this->generatePermissionKey($className, $operationName);
+            if (strtoupper($annotatedOperationName) === $httpMethod) {
+                return $this->generatePermissionKey($className, $annotatedOperationName);
             }
 
-            $operationHttpMethod = strtoupper($data['method'] ?? $operationName);
-            if ($operationHttpMethod === $httpMethod) {
+            $annotatedHttpMethod = strtoupper($data['method'] ?? $annotatedOperationName);
+            if ($annotatedHttpMethod === $httpMethod) {
                 if (isset($data['path'])) {
                     $operationPath = rtrim($data['path'], '/');
                 } else {
@@ -102,7 +102,7 @@ class PermissionDiscovery
                 }
 
                 if ($operationPath === $relevantPath) {
-                    return $this->generatePermissionKey($className, $operationName);
+                    return $this->generatePermissionKey($className, $annotatedOperationName);
                 }
             }
         }
