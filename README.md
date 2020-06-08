@@ -100,7 +100,7 @@ class ExampleEntity
 }
 ```
 
-If you want the bundle to differentiate between users which own an entity of this class or not,
+If you want the bundle to differentiate between users who own an entity of this class or not,
 then you need to implement the `SelfPermissionInterface`.
 ```php
 use Epubli\PermissionBundle\Interfaces\SelfPermissionInterface;
