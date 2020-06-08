@@ -238,16 +238,12 @@ class PermissionDiscovery
         ApiResource $apiPlatformAnnotation,
         bool $needsSelfPermission
     ): array {
-        $endpoints = [];
-
-        $endpoints = array_merge(
-            $endpoints,
-            $this->parseOperationsToEndpoints(
-                $className,
-                $needsSelfPermission,
-                $apiPlatformAnnotation->itemOperations ?? ['get', 'put', 'patch', 'delete']
-            )
+        $endpoints = $this->parseOperationsToEndpoints(
+            $className,
+            $needsSelfPermission,
+            $apiPlatformAnnotation->itemOperations ?? ['get', 'put', 'patch', 'delete']
         );
+
         $endpoints = array_merge(
             $endpoints,
             $this->parseOperationsToEndpoints(
