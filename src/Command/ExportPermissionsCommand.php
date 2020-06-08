@@ -65,9 +65,9 @@ class ExportPermissionsCommand extends Command
                         'microservice' => $this->permissionDiscovery->getMicroserviceName(),
                         'permissions' => $permissions,
                     ],
-                    'header' => [
-                        'HTTP_AUTHORIZATION' => $this->jwtMockCreator->getMockAuthorizationHeader(
-                            ['user.role.create_permissions']
+                    'headers' => [
+                        'AUTHORIZATION' => $this->jwtMockCreator->getMockAuthorizationHeader(
+                            ['user.permission.create_permissions']
                         )
                     ]
                 ]
