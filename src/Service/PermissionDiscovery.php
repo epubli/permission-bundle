@@ -279,7 +279,7 @@ class PermissionDiscovery
             }
 
             $security = $data['security'] ?? $data['security_post_denormalize'] ?? null;
-            if ($security == null) {
+            if ($security === null) {
                 continue;
             }
             if ($security !== 'is_granted(null, object)'
