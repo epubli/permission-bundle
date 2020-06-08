@@ -374,7 +374,7 @@ class PermissionDiscovery
      * @param string $operationName
      * @return string
      */
-    private function generatePermissionKey(string $className, string $operationName)
+    private function generatePermissionKey(string $className, string $operationName): string
     {
         $action = self::transformOperationNameToAction($operationName);
         return implode('.', [$this->microserviceName, $className, $action]);
