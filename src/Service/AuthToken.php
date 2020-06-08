@@ -84,7 +84,7 @@ class AuthToken
     }
 
     /**
-     * Retruns true if the token exists and every required field is present
+     * Returns true if the token exists and every required field is present
      * @return bool
      */
     public function isValid(): bool

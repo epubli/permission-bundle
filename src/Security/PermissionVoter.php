@@ -86,6 +86,7 @@ class PermissionVoter extends Voter
      * @param mixed $subject
      * @param TokenInterface $token
      * @return bool
+     * @throws ReflectionException
      */
     protected function voteOnAttribute($attribute, $subject, TokenInterface $token): bool
     {
