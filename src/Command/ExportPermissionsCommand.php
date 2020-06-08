@@ -49,7 +49,6 @@ class ExportPermissionsCommand extends Command
         }
 
         $permissions = $this->permissionDiscovery->getAllPermissionKeysWithDescriptions();
-        $permissions = $this->removeDuplicates($permissions);
 
         if (empty($permissions)) {
             $output->writeln('No permissions found! Nothing to export!');
@@ -90,25 +89,5 @@ class ExportPermissionsCommand extends Command
 
         $output->writeln('Successfully exported.');
         return 0;
-    }
-
-    /**
-     * @param array $permissions
-     * @return array
-     */
-    private function removeDuplicates(array $permissions): array
-    {
-        $permissionKeys = [];
-        $newPermissions = [];
-
-        foreach ($permissions as $permission) {
-            if (in_array($permission['key'], $permissionKeys)) {
-                continue;
-            }
-            $permissionKeys[] = $permission['key'];
-            $newPermissions[] = $permission;
-        }
-
-        return $newPermissions;
     }
 }

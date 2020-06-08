@@ -144,10 +144,13 @@ class PermissionDiscovery
 
         foreach ($this->getEntities() as $entity) {
             foreach ($entity->getEndpoints() as $endpoint) {
-                $permissions[] = [
+                $entry = [
                     'key' => $endpoint->getPermissionKey(),
                     'description' => $endpoint->getDescription()
                 ];
+                if (!in_array($entry, $permissions, true)) {
+                    $permissions[] = $entry;
+                }
             }
         }
 
@@ -164,7 +167,9 @@ class PermissionDiscovery
 
         foreach ($this->getEntities() as $entity) {
             foreach ($entity->getEndpoints() as $endpoint) {
-                $permissions[] = $endpoint->getPermissionKey();
+                if (!in_array($endpoint->getPermissionKey(), $permissions, true)) {
+                    $permissions[] = $endpoint->getPermissionKey();
+                }
             }
         }
 
