@@ -2,7 +2,7 @@
 
 namespace Epubli\PermissionBundle\Traits;
 
-use Epubli\PermissionBundle\Service\JsonWebTokenMockCreator;
+use Epubli\PermissionBundle\Service\JWTMockCreator;
 
 /**
  * Trait JsonWebTokenMockTrait
@@ -11,8 +11,8 @@ use Epubli\PermissionBundle\Service\JsonWebTokenMockCreator;
  */
 trait JsonWebTokenMockTrait
 {
-    /** @var JsonWebTokenMockCreator */
-    private static $jsonWebTokenMockCreator;
+    /** @var JWTMockCreator */
+    private static $jwtMockCreator;
 
     /**
      *  Call this in a test class in the setUpBeforeClass() method.
@@ -24,8 +24,8 @@ trait JsonWebTokenMockTrait
         } else {
             $kernel = self::bootKernel();
         }
-        self::$jsonWebTokenMockCreator = $kernel->getContainer()->get(
-            'epubli_permission.service.json_web_token_mock_creator'
+        self::$jwtMockCreator = $kernel->getContainer()->get(
+            'epubli_permission.service.jwt_mock_creator'
         );
 
         //Shutdown Kernel so it can be called by others later

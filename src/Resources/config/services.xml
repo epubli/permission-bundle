@@ -34,12 +34,12 @@
                 alias="epubli_permission.security.voter.permission_voter"/>
 
         <service
-                id="epubli_permission.service.json_web_token_mock_creator"
-                class="Epubli\PermissionBundle\Service\JsonWebTokenMockCreator"
+                id="epubli_permission.service.jwt_mock_creator"
+                class="Epubli\PermissionBundle\Service\JWTMockCreator"
                 public="true"/>
         <service
-                id="Epubli\PermissionBundle\Service\JsonWebTokenMockCreator"
-                alias="epubli_permission.service.json_web_token_mock_creator"
+                id="Epubli\PermissionBundle\Service\JWTMockCreator"
+                alias="epubli_permission.service.jwt_mock_creator"
                 public="true"/>
     </services>
 </container>

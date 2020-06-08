@@ -14,7 +14,7 @@ use ReflectionException;
  * Class JsonWebTokenMockCreator
  * @package Epubli\PermissionBundle\Service
  */
-class JsonWebTokenMockCreator
+class JWTMockCreator
 {
     /** @var PermissionDiscovery */
     private $permissionDiscovery;

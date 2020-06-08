@@ -3,7 +3,7 @@
 namespace Epubli\PermissionBundle\Command;
 
 use Epubli\PermissionBundle\DependencyInjection\Configuration;
-use Epubli\PermissionBundle\Service\JsonWebTokenMockCreator;
+use Epubli\PermissionBundle\Service\JWTMockCreator;
 use Epubli\PermissionBundle\Service\PermissionDiscovery;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
@@ -23,14 +23,14 @@ class ExportPermissionsCommand extends Command
     /** @var PermissionDiscovery */
     private $permissionDiscovery;
 
-    /** @var JsonWebTokenMockCreator */
-    private $mockJsonWebToken;
+    /** @var JWTMockCreator */
+    private $jwtMockCreator;
 
-    public function __construct(PermissionDiscovery $permissionDiscovery, JsonWebTokenMockCreator $mockJsonWebToken)
+    public function __construct(PermissionDiscovery $permissionDiscovery, JWTMockCreator $jwtMockCreator)
     {
         parent::__construct();
         $this->permissionDiscovery = $permissionDiscovery;
-        $this->mockJsonWebToken = $mockJsonWebToken;
+        $this->jwtMockCreator = $jwtMockCreator;
     }
 
     protected function configure(): void
@@ -67,7 +67,7 @@ class ExportPermissionsCommand extends Command
                         'permissions' => $permissions,
                     ],
                     'header' => [
-                        'HTTP_AUTHORIZATION' => $this->mockJsonWebToken->getMockAuthorizationHeader(
+                        'HTTP_AUTHORIZATION' => $this->jwtMockCreator->getMockAuthorizationHeader(
                             ['user.role.create_permissions']
                         )
                     ]

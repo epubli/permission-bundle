@@ -168,7 +168,7 @@ class JsonWebTokenTest extends OrmApiPlatformTestCase
     public static function setUpBeforeClass(): void
     {
         self::setUpJsonWebTokenMockCreator();
-        self::$headers = ['HTTP_AUTHORIZATION' => self::$jsonWebTokenMockCreator->getMockAuthorizationHeaderForThisMicroservice()];
+        self::$headers = ['HTTP_AUTHORIZATION' => self::$jwtMockCreator->getMockAuthorizationHeaderForThisMicroservice()];
     }
 }
 ```
@@ -195,7 +195,7 @@ class JsonWebTokenTest extends OrmApiPlatformTestCase
             [],
             [],
             [
-                'HTTP_AUTHORIZATION' => self::$jsonWebTokenMockCreator->getMockAuthorizationHeaderForThisMicroservice()
+                'HTTP_AUTHORIZATION' => self::$jwtMockCreator->getMockAuthorizationHeaderForThisMicroservice()
             ]
         );
     }
