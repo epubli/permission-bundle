@@ -61,7 +61,7 @@ class PermissionDiscovery
      */
     public function getPermissionKey($entity, string $httpMethod, string $requestPath): ?string
     {
-        $isItemOperation = preg_match("/[0-9]+$/", $requestPath);
+        $isItemOperation = preg_match('/\d+$/', $requestPath);
 
         $reflectionClass = new ReflectionClass($entity);
         /** @var ApiResource $apiPlatformAnnotation */
@@ -128,7 +128,7 @@ class PermissionDiscovery
         $path = substr($requestPath, strlen($path));
         if ($isItemOperation) {
             //remove the number and the slash at the end
-            $path = preg_replace("/\/[0-9]+$/", "", $path);
+            $path = preg_replace('/\/\d+$/', '', $path);
         }
 
         return $path;
