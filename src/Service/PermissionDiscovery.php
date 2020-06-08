@@ -93,7 +93,7 @@ class PermissionDiscovery
 
         $className = self::fromCamelCaseToSnakeCase($reflectionClass->getShortName());
 
-        $relevantPath = $this->getRelevantPath($requestPath, $apiPlatformAnnotation);
+        $relevantPath = $this->getEntitySpecificPath($requestPath, $apiPlatformAnnotation);
 
         if ($isItemOperation) {
             $apiPlatformOperations = $apiPlatformAnnotation->itemOperations ?? ['get', 'put', 'patch', 'delete'];
@@ -129,7 +129,7 @@ class PermissionDiscovery
      * @param ApiResource $apiPlatformAnnotation
      * @return string
      */
-    private function getRelevantPath(string $requestPath, ApiResource $apiPlatformAnnotation): string
+    private function getEntitySpecificPath(string $requestPath, ApiResource $apiPlatformAnnotation): string
     {
         $routePrefix = $apiPlatformAnnotation->attributes['route_prefix'] ?? null;
 
