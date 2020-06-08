@@ -89,10 +89,6 @@ class PermissionDiscovery
                 $data = array();
             }
 
-            if (strtoupper($annotatedOperationName) === $httpMethod) {
-                return $this->generatePermissionKey($className, $annotatedOperationName);
-            }
-
             $annotatedHttpMethod = strtoupper($data['method'] ?? $annotatedOperationName);
             if ($annotatedHttpMethod === $httpMethod) {
                 if (isset($data['path'])) {
