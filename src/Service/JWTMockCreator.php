@@ -62,8 +62,8 @@ class JWTMockCreator
             $response = $client->get(
                 $path,
                 [
-                    'header' => [
-                        'HTTP_AUTHORIZATION' => $header
+                    'headers' => [
+                        'AUTHORIZATION' => $header
                     ]
                 ]
             );
