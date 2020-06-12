@@ -52,7 +52,7 @@ class TestEntityWithEverything
     /**
      * @Groups({"get"})
      * @var int|null
-     * @ApiPlatform\ApiProperty(writable=false)
+     * @ApiProperty(writable=false)
      */
     private $id;
 
