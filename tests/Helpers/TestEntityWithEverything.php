@@ -33,14 +33,12 @@ use Symfony\Component\Validator\Constraints as Assert;
  *          },
  *          "put"={
  *              "validation_groups"={"all", "put"},
- *              "controller"=WriteUserAction::class,
  *              "normalization_context"={"groups"={"all", "get"}},
  *              "denormalization_context"={"groups"={"all", "put"}, "disable_type_enforcement"=true},
  *              "security"="is_granted(null, object)",
  *          },
  *          "patch"={
  *              "validation_groups"={"all", "patch"},
- *              "controller"=WriteUserAction::class,
  *              "normalization_context"={"groups"={"all", "get"}},
  *              "denormalization_context"={"groups"={"all", "patch"}, "disable_type_enforcement"=true},
  *              "security"="is_granted(null, object)",
