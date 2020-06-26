@@ -41,5 +41,13 @@
                 id="Epubli\PermissionBundle\Service\JWTMockCreator"
                 alias="epubli_permission.service.jwt_mock_creator"
                 public="true"/>
+
+        <service id="epubli_permission.event_listener.self_permission_filter_configurator"
+                 class="Epubli\PermissionBundle\EventListener\SelfPermissionFilterConfigurator"
+                 autoconfigure="false">
+            <tag name="kernel.event_listener" event="kernel.request" priority="5"/>
+        </service>
+        <service id="Epubli\PermissionBundle\EventListener\SelfPermissionFilterConfigurator"
+                 alias="epubli_permission.event_listener.self_permission_filter_configurator"/>
     </services>
 </container>

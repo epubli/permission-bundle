@@ -8,6 +8,7 @@ use Epubli\PermissionBundle\EndpointWithPermission;
 use Epubli\PermissionBundle\Interfaces\SelfPermissionInterface;
 use Epubli\PermissionBundle\Service\AuthToken;
 use Epubli\PermissionBundle\Service\PermissionDiscovery;
+use LogicException;
 use ReflectionClass;
 use ReflectionException;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -67,7 +68,7 @@ class PermissionVoter extends Voter
             return false;
         }
 
-        // If the subject is a string check if class exists to support collectionOperations
+        // If the subject is a string check if class exists to support get on collections
         if (is_string($subject) && class_exists($subject)) {
             $subject = new $subject;
         }
@@ -92,7 +93,14 @@ class PermissionVoter extends Voter
     {
         $request = $this->requestStack->getCurrentRequest();
         if ($request === null) {
-            return false;
+            throw new LogicException('Request should not be null.');
+        }
+
+        $isGetRequestOnCollection = false;
+        // If the subject is a string check if class exists to support get on collections
+        if (is_string($subject) && class_exists($subject)) {
+            $subject = new $subject;
+            $isGetRequestOnCollection = true;
         }
 
         $permissionKey = $this->permissionDiscovery->getPermissionKey(
@@ -118,10 +126,18 @@ class PermissionVoter extends Voter
             $userHasAlternativePermission = $this->authToken->hasPermissionKey(
                 $permissionKey . EndpointWithPermission::SELF_PERMISSION
             );
-            if ($userHasAlternativePermission
-                && $this->authToken->isValid()
-                && $this->authToken->getUserId() === $userId) {
-                return true;
+
+            if ($userHasAlternativePermission && $this->authToken->isValid()) {
+                if ($isGetRequestOnCollection) {
+                    //At this point SelfPermissionFilter::addFilterConstraint(...) has already been run.
+                    //It has filtered the get request so that only entities which belong to the user will be returned.
+                    //No further check is required.
+                    return true;
+                }
+
+                if ($this->authToken->getUserId() === $userId) {
+                    return true;
+                }
             }
         }
 
@@ -131,5 +147,52 @@ class PermissionVoter extends Voter
         }
 
         return false;
+    }
+
+    /**
+     * @param SelfPermissionInterface $entity
+     * @return bool
+     * @throws ReflectionException
+     */
+    public function needsFilter(SelfPermissionInterface $entity): bool
+    {
+        $request = $this->requestStack->getCurrentRequest();
+        if ($request === null) {
+            throw new LogicException('Request should not be null.');
+        }
+
+        if ($request->getMethod() !== 'GET') {
+            return false;
+        }
+
+        $permissionKey = $this->permissionDiscovery->getPermissionKey(
+            $entity,
+            $request->getMethod(),
+            $request->getPathInfo()
+        );
+
+        if ($permissionKey === null) {
+            //This endpoint does not need permissions to be accessed
+            return false;
+        }
+
+        $userHasPermission = $this->authToken->hasPermissionKey($permissionKey);
+        if ($userHasPermission) {
+            return false;
+        }
+
+        $userHasAlternativePermission = $this->authToken->hasPermissionKey(
+            $permissionKey . EndpointWithPermission::SELF_PERMISSION
+        );
+
+        return $userHasAlternativePermission && $this->authToken->isValid();
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getAuthTokenUserId(): ?int
+    {
+        return $this->authToken->getUserId();
     }
 }

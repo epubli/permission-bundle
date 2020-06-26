@@ -59,6 +59,16 @@ Example:
 epubli_permission:
   microservice_name: user
 ```
+Activate the doctrine filter in `config/packages/epubli_permission.yaml`:
+```yaml
+// config/packages/doctrine.yaml
+
+doctrine:
+  orm:
+    filters:
+      epubli_permission_bundle_self_permission_filter:
+        class: Epubli\PermissionBundle\Filter\SelfPermissionFilter
+```
 
 ## Usage
 
@@ -103,6 +113,7 @@ class ExampleEntity
 If you want the bundle to differentiate between users who own an entity of this class or not,
 then you need to implement the `SelfPermissionInterface`.
 ```php
+use Doctrine\ORM\Mapping as ORM;
 use Epubli\PermissionBundle\Interfaces\SelfPermissionInterface;
 
 class ExampleEntity implements SelfPermissionInterface
@@ -120,6 +131,11 @@ class ExampleEntity implements SelfPermissionInterface
     public function getUserIdForPermissionBundle(): ?int
     {
         return $this->getUserId();
+    }
+
+    public function getFieldNameOfUserIdForPermissionBundle(): string
+    {
+        return 'id';
     }
 }
 ```

@@ -99,13 +99,24 @@ class TestEntityWithSelfPermissionInterface implements SelfPermissionInterface
         $this->someString = $someString;
     }
 
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function getUserIdForPermissionBundle(): ?int
     {
         return $this->getId();
     }
 
-    public function getId(): ?int
+    /**
+     * @inheritDoc
+     */
+    public function getFieldNameOfUserIdForPermissionBundle(): string
     {
-        return $this->id;
+        return 'id';
     }
 }
