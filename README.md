@@ -234,7 +234,6 @@ $ ./vendor/bin/simple-phpunit
 
 ## Things which need to be done
 
-- Filter GET-Requests on the collection to only contain items which the user is authorized to see (https://api-platform.com/docs/core/filters/#using-doctrine-orm-filters)
 - ApiPlatform Subresources
 - Permissions for properties instead of whole entities (at least for patch and put)
 - Performance needs to be increased (Caching?)
