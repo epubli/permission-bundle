@@ -59,7 +59,7 @@ Example:
 epubli_permission:
   microservice_name: user
 ```
-Activate the doctrine filter in `config/packages/epubli_permission.yaml`:
+Activate the doctrine filter in `config/packages/doctrine.yaml`:
 ```yaml
 // config/packages/doctrine.yaml
 
