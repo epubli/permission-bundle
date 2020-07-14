@@ -9,9 +9,11 @@ use Epubli\PermissionBundle\EntityWithPermissions;
 use Epubli\PermissionBundle\Interfaces\SelfPermissionInterface;
 use ReflectionClass;
 use ReflectionException;
+use ReflectionProperty;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * Class PermissionDiscovery
@@ -19,6 +21,8 @@ use Symfony\Component\Finder\SplFileInfo;
  */
 class PermissionDiscovery
 {
+    private const UPDATE_METHODS = ['PUT', 'PATCH'];
+
     /**
      * @var Reader
      */
@@ -75,10 +79,11 @@ class PermissionDiscovery
      * @param object $entity
      * @param string $httpMethod
      * @param string $requestPath
-     * @return string|null
+     * @param string|null $requestContent
+     * @return string[]
      * @throws ReflectionException
      */
-    public function getPermissionKey($entity, string $httpMethod, string $requestPath): ?string
+    public function getPermissionKeys($entity, string $httpMethod, string $requestPath, ?string $requestContent): array
     {
         //Looks for a path which ends with a slash followed by a number and removes it
         $requestPath = preg_replace('/\/\d+$/', '', $requestPath, -1, $numberOfReplacements);
@@ -109,19 +114,45 @@ class PermissionDiscovery
             }
 
             $annotatedHttpMethod = strtoupper($data['method'] ?? $annotatedOperationName);
-            if ($annotatedHttpMethod === $httpMethod) {
-                if (isset($data['path'])) {
-                    $operationPath = rtrim($data['path'], '/');
-                } else {
-                    $operationPath = "/{$className}s";
-                }
-
-                if ($operationPath === $relevantPath) {
-                    return $this->generatePermissionKey($className, $annotatedOperationName);
-                }
+            if ($annotatedHttpMethod !== $httpMethod) {
+                continue;
             }
+
+            if (isset($data['path'])) {
+                $operationPath = rtrim($data['path'], '/');
+            } else {
+                $operationPath = "/{$className}s";
+            }
+
+            if ($operationPath !== $relevantPath) {
+                continue;
+            }
+
+            if (!self::isUpdateHttpMethod($annotatedHttpMethod)) {
+                return [$this->generatePermissionKey($className, $annotatedOperationName)];
+            }
+
+            $propertyNames = $this->getRelevantPropertyNames($reflectionClass, $data);
+            $json = json_decode($requestContent, true);
+            if (is_array($json)) {
+                $propertyNames = array_filter(
+                    $propertyNames,
+                    static function (string $propertyName) use ($json) {
+                        return array_key_exists($propertyName, $json);
+                    }
+                );
+            } else {
+                $propertyNames = [];
+            }
+
+            return array_map(
+                function (string $propertyName) use ($className, $annotatedOperationName) {
+                    return $this->generatePermissionKey($className, $annotatedOperationName, $propertyName);
+                },
+                $propertyNames
+            );
         }
-        return null;
+        return [];
     }
 
     /**
@@ -235,23 +266,27 @@ class PermissionDiscovery
             $className = self::fromCamelCaseToSnakeCase($reflectionClass->getShortName());
 
             $this->entities[] = new EntityWithPermissions(
-                $classPath, $this->getEndpointsOfEntity($className, $apiPlatformAnnotation, $needsSelfPermission)
+                $classPath,
+                $this->getEndpointsOfEntity($reflectionClass, $className, $apiPlatformAnnotation, $needsSelfPermission)
             );
         }
     }
 
     /**
+     * @param ReflectionClass $reflectionClass
      * @param string $className
      * @param ApiResource $apiPlatformAnnotation
      * @param bool $needsSelfPermission
      * @return EndpointWithPermission[]
      */
     private function getEndpointsOfEntity(
+        ReflectionClass $reflectionClass,
         string $className,
         ApiResource $apiPlatformAnnotation,
         bool $needsSelfPermission
     ): array {
         $endpoints = $this->parseOperationsToEndpoints(
+            $reflectionClass,
             $className,
             $needsSelfPermission,
             $apiPlatformAnnotation->itemOperations ?? ['get', 'put', 'patch', 'delete']
@@ -260,6 +295,7 @@ class PermissionDiscovery
         $endpoints = array_merge(
             $endpoints,
             $this->parseOperationsToEndpoints(
+                $reflectionClass,
                 $className,
                 $needsSelfPermission,
                 $apiPlatformAnnotation->collectionOperations ?? ['get', 'post']
@@ -270,12 +306,14 @@ class PermissionDiscovery
     }
 
     /**
+     * @param ReflectionClass $reflectionClass
      * @param string $className
      * @param bool $needsSelfPermission
      * @param array $apiPlatformOperations
      * @return EndpointWithPermission[]
      */
     private function parseOperationsToEndpoints(
+        ReflectionClass $reflectionClass,
         string $className,
         bool $needsSelfPermission,
         array $apiPlatformOperations
@@ -299,17 +337,29 @@ class PermissionDiscovery
                 continue;
             }
 
-            $endpoints[] = $this->getEndpoint(
-                $className,
-                $operationName,
-                false
-            );
-            if ($needsSelfPermission && self::isSelfPermissionPossible($operationName)) {
+            $propertyNames = [];
+            if (self::isUpdateHttpMethod(strtoupper($data['method'] ?? $operationName))) {
+                $propertyNames = $this->getRelevantPropertyNames($reflectionClass, $data);
+            } else {
+                //Add a dummy item, so permissions for endpoints, which aren't updates, will be generated
+                $propertyNames[] = null;
+            }
+
+            foreach ($propertyNames as $propertyName) {
                 $endpoints[] = $this->getEndpoint(
                     $className,
                     $operationName,
-                    true
+                    false,
+                    $propertyName
                 );
+                if ($needsSelfPermission && self::isSelfPermissionPossible($operationName)) {
+                    $endpoints[] = $this->getEndpoint(
+                        $className,
+                        $operationName,
+                        true,
+                        $propertyName
+                    );
+                }
             }
         }
 
@@ -320,17 +370,23 @@ class PermissionDiscovery
      * @param string $className
      * @param string $operationName
      * @param bool $isSelfPermission
+     * @param string|null $propertyName
      * @return EndpointWithPermission
      */
     private function getEndpoint(
         string $className,
         string $operationName,
-        bool $isSelfPermission
+        bool $isSelfPermission,
+        ?string $propertyName = null
     ): EndpointWithPermission {
-        $permissionKey = $this->generatePermissionKey($className, $operationName);
+        $permissionKey = $this->generatePermissionKey($className, $operationName, $propertyName);
 
         $action = self::transformOperationNameToAction($operationName);
-        $description = "Can '$action' an entity of type '$className'";
+        $description = "Can '$action'";
+        if ($propertyName !== null) {
+            $description .= " the property '$propertyName' on";
+        }
+        $description .= " an entity of type '$className'";
 
         if ($isSelfPermission) {
             $permissionKey .= EndpointWithPermission::SELF_PERMISSION;
@@ -340,6 +396,43 @@ class PermissionDiscovery
         }
 
         return new EndpointWithPermission($permissionKey, $description);
+    }
+
+    /**
+     * Returns all property names for this class which belong to the validation groups defined in the API-Platfrom-Resource.
+     * If no validation groups are defined then all properties of this class are returned
+     * @param ReflectionClass $reflectionClass
+     * @param array $apiPlatformData
+     * @return string[]
+     */
+    private function getRelevantPropertyNames(ReflectionClass $reflectionClass, array $apiPlatformData): array
+    {
+        $validationGroups = $apiPlatformData['validation_groups'] ?? null;
+
+        if ($validationGroups === null) {
+            //If no group could be found than all properties need to have permissions
+            return array_map(
+                static function (ReflectionProperty $reflectionProperty) {
+                    return $reflectionProperty->getName();
+                },
+                $reflectionClass->getProperties()
+            );
+        }
+        //Otherwise only add permissions for properties which belong to these validation groups
+
+        $propertyNames = [];
+        foreach ($reflectionClass->getProperties() as $reflectionProperty) {
+            /** @var Groups $groupsAnnotation */
+            $groupsAnnotation = $this->annotationReader->getPropertyAnnotation(
+                $reflectionProperty,
+                Groups::class
+            );
+            if (!empty(array_intersect($groupsAnnotation->getGroups(), $validationGroups))) {
+                $propertyNames[] = $reflectionProperty->getName();
+            }
+        }
+
+        return $propertyNames;
     }
 
     /**
@@ -385,12 +478,29 @@ class PermissionDiscovery
     /**
      * @param string $className
      * @param string $operationName
+     * @param string|null $propertyName
      * @return string
      */
-    private function generatePermissionKey(string $className, string $operationName): string
-    {
+    private function generatePermissionKey(
+        string $className,
+        string $operationName,
+        ?string $propertyName = null
+    ): string {
         $action = self::transformOperationNameToAction($operationName);
-        return implode('.', [$this->microserviceName, $className, $action]);
+        $components = [$this->microserviceName, $className, $action];
+        if ($propertyName !== null) {
+            $components[] = $propertyName;
+        }
+        return implode('.', $components);
+    }
+
+    /**
+     * @param string $httpMethod
+     * @return bool
+     */
+    private static function isUpdateHttpMethod(string $httpMethod)
+    {
+        return in_array(strtoupper($httpMethod), self::UPDATE_METHODS, true);
     }
 
     /**

@@ -103,18 +103,19 @@ class PermissionVoter extends Voter
             $isGetRequestOnCollection = true;
         }
 
-        $permissionKey = $this->permissionDiscovery->getPermissionKey(
+        $permissionKeys = $this->permissionDiscovery->getPermissionKeys(
             $subject,
             $request->getMethod(),
-            $request->getPathInfo()
+            $request->getPathInfo(),
+            (string)$request->getContent()
         );
 
-        if ($permissionKey === null) {
+        if (empty($permissionKeys)) {
             //This endpoint does not need permissions to be accessed
             return true;
         }
 
-        $userHasPermission = $this->authToken->hasPermissionKey($permissionKey);
+        $userHasPermission = $this->authToken->hasPermissionKeys($permissionKeys);
         if ($userHasPermission) {
             return true;
         }
@@ -123,8 +124,13 @@ class PermissionVoter extends Voter
             /** @var SelfPermissionInterface $subject */
             $userId = $subject->getUserIdForPermissionBundle();
 
-            $userHasAlternativePermission = $this->authToken->hasPermissionKey(
-                $permissionKey . EndpointWithPermission::SELF_PERMISSION
+            $userHasAlternativePermission = $this->authToken->hasPermissionKeys(
+                array_map(
+                    static function ($item) {
+                        return $item . EndpointWithPermission::SELF_PERMISSION;
+                    },
+                    $permissionKeys
+                )
             );
 
             if ($userHasAlternativePermission && $this->authToken->isValid()) {
@@ -143,7 +149,8 @@ class PermissionVoter extends Voter
 
         //Return either Forbidden or Unauthenticated
         if ($this->authToken->isValid()) {
-            throw new AccessDeniedHttpException("Missing permission key: $permissionKey");
+            $missingKeys = $this->authToken->getMissingPermissionKeys($permissionKeys);
+            throw new AccessDeniedHttpException('Missing permission keys: ' . implode(', ', $missingKeys));
         }
 
         return false;
@@ -167,24 +174,30 @@ class PermissionVoter extends Voter
             return false;
         }
 
-        $permissionKey = $this->permissionDiscovery->getPermissionKey(
+        $permissionKeys = $this->permissionDiscovery->getPermissionKeys(
             $entity,
             $request->getMethod(),
-            $request->getPathInfo()
+            $request->getPathInfo(),
+            (string)$request->getContent()
         );
 
-        if ($permissionKey === null) {
+        if (empty($permissionKeys)) {
             //This endpoint does not need permissions to be accessed
             return false;
         }
 
-        $userHasPermission = $this->authToken->hasPermissionKey($permissionKey);
+        $userHasPermission = $this->authToken->hasPermissionKeys($permissionKeys);
         if ($userHasPermission) {
             return false;
         }
 
-        $userHasAlternativePermission = $this->authToken->hasPermissionKey(
-            $permissionKey . EndpointWithPermission::SELF_PERMISSION
+        $userHasAlternativePermission = $this->authToken->hasPermissionKeys(
+            array_map(
+                static function ($item) {
+                    return $item . EndpointWithPermission::SELF_PERMISSION;
+                },
+                $permissionKeys
+            )
         );
 
         return $userHasAlternativePermission && $this->authToken->isValid();

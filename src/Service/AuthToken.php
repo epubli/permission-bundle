@@ -154,4 +154,25 @@ class AuthToken
         }
         return in_array($permissionKey, $this->permissionKeys, true);
     }
+
+    /**
+     * @param string[] $permissionKeys
+     * @return bool
+     */
+    public function hasPermissionKeys(array $permissionKeys): bool
+    {
+        return empty($this->getMissingPermissionKeys($permissionKeys));
+    }
+
+    /**
+     * @param string[] $permissionKeys
+     * @return string[]
+     */
+    public function getMissingPermissionKeys(array $permissionKeys): array
+    {
+        if (!$this->isInitialized) {
+            $this->initialize();
+        }
+        return array_diff($permissionKeys, $this->permissionKeys);
+    }
 }

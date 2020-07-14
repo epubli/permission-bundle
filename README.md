@@ -235,6 +235,4 @@ $ ./vendor/bin/simple-phpunit
 ## Things which need to be done
 
 - ApiPlatform Subresources
-- Permissions for properties instead of whole entities (at least for patch and put)
-- Performance needs to be increased (Caching?)
 - Permissions from the anonymous role need to be applied if no token exists

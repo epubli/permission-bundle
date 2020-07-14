@@ -75,6 +75,23 @@ class TestEntityWithSelfPermissionInterface implements SelfPermissionInterface
     private $someString;
 
     /**
+     * @Groups({"all"})
+     * @ApiProperty(
+     *      attributes={
+     *          "openapi_context"={
+     *              "type"="string",
+     *              "example"="test"
+     *          }
+     *      }
+     * )
+     * @Assert\Type(type="string", groups={"all"})
+     * @Assert\Length(max=255, groups={"all"})
+     * @Assert\NotBlank(groups={"get", "post", "put"})
+     * @var string
+     */
+    private $someOtherString;
+
+    /**
      * TestEntityWithSelfPermissionInterface constructor.
      * @param int|null $id
      */
@@ -97,6 +114,22 @@ class TestEntityWithSelfPermissionInterface implements SelfPermissionInterface
     public function setSomeString(string $someString): void
     {
         $this->someString = $someString;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSomeOtherString(): string
+    {
+        return $this->someOtherString;
+    }
+
+    /**
+     * @param string $someString
+     */
+    public function setSomeOtherString(string $someOtherString): void
+    {
+        $this->someOtherString = $someOtherString;
     }
 
     public function getId(): ?int
