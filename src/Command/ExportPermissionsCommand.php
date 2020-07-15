@@ -75,7 +75,7 @@ class ExportPermissionsCommand extends Command
 
             $statusCode = $response->getStatusCode();
             if ($statusCode !== 204) {
-                $output->writeln('Expected status code 204 exported. Received instead: ' . $statusCode);
+                $output->writeln('Expected status code 204. Received instead: ' . $statusCode);
                 return 1;
             }
         } catch (ServerException | ClientException $exp) {
