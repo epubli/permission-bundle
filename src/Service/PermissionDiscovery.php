@@ -498,7 +498,7 @@ class PermissionDiscovery
      * @param string $httpMethod
      * @return bool
      */
-    private static function isUpdateHttpMethod(string $httpMethod)
+    private static function isUpdateHttpMethod(string $httpMethod): bool
     {
         return in_array(strtoupper($httpMethod), self::UPDATE_METHODS, true);
     }
