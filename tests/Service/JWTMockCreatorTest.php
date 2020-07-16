@@ -14,7 +14,10 @@ class JWTMockCreatorTest extends TestCase
     {
         $permissionKey = 'permission.perm';
 
-        $jwtMockCreator = new JWTMockCreator(PermissionDiscoveryTest::createPermissionDiscovery());
+        $jwtMockCreator = new JWTMockCreator(
+            PermissionDiscoveryTest::createPermissionDiscovery(),
+            CustomPermissionDiscoveryTest::createCustomPermissionDiscovery()
+        );
         $header = $jwtMockCreator->getMockAuthorizationHeader([$permissionKey]);
 
         $this->assertNotNull($header);
@@ -36,7 +39,10 @@ class JWTMockCreatorTest extends TestCase
 
     public function testGetMockAuthorizationHeaderForThisMicroservice(): void
     {
-        $jwtMockCreator = new JWTMockCreator(PermissionDiscoveryTest::createPermissionDiscovery());
+        $jwtMockCreator = new JWTMockCreator(
+            PermissionDiscoveryTest::createPermissionDiscovery(),
+            CustomPermissionDiscoveryTest::createCustomPermissionDiscovery()
+        );
         $header = $jwtMockCreator->getMockAuthorizationHeaderForThisMicroservice();
 
         $this->assertNotNull($header);

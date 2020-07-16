@@ -26,5 +26,8 @@ class EpubliPermissionExtension extends Extension
 
         $definition = $container->getDefinition('epubli_permission.service.permission_discovery');
         $definition->setArgument(0, $config['microservice_name']);
+
+        $definition = $container->getDefinition('epubli_permission.service.custom_permission_discovery');
+        $definition->setArgument(0, $config['microservice_name']);
     }
 }

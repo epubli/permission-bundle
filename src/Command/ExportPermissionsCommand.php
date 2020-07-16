@@ -3,6 +3,7 @@
 namespace Epubli\PermissionBundle\Command;
 
 use Epubli\PermissionBundle\DependencyInjection\Configuration;
+use Epubli\PermissionBundle\Service\CustomPermissionDiscovery;
 use Epubli\PermissionBundle\Service\JWTMockCreator;
 use Epubli\PermissionBundle\Service\PermissionDiscovery;
 use GuzzleHttp\Client;
@@ -23,13 +24,26 @@ class ExportPermissionsCommand extends Command
     /** @var PermissionDiscovery */
     private $permissionDiscovery;
 
+    /** @var CustomPermissionDiscovery */
+    private $customPermissionDiscovery;
+
     /** @var JWTMockCreator */
     private $jwtMockCreator;
 
-    public function __construct(PermissionDiscovery $permissionDiscovery, JWTMockCreator $jwtMockCreator)
-    {
+    /**
+     * ExportPermissionsCommand constructor.
+     * @param PermissionDiscovery $permissionDiscovery
+     * @param CustomPermissionDiscovery $customPermissionDiscovery
+     * @param JWTMockCreator $jwtMockCreator
+     */
+    public function __construct(
+        PermissionDiscovery $permissionDiscovery,
+        CustomPermissionDiscovery $customPermissionDiscovery,
+        JWTMockCreator $jwtMockCreator
+    ) {
         parent::__construct();
         $this->permissionDiscovery = $permissionDiscovery;
+        $this->customPermissionDiscovery = $customPermissionDiscovery;
         $this->jwtMockCreator = $jwtMockCreator;
     }
 
@@ -43,12 +57,35 @@ class ExportPermissionsCommand extends Command
     {
         if ($this->permissionDiscovery->getMicroserviceName() === Configuration::DEFAULT_MICROSERVICE_NAME) {
             $output->writeln(
-                'Please make sure to set the name of your microservice in config/packages/epubli_permission.yaml!'
+                'ERROR\n'
+                . 'Please make sure to set the name of your microservice in config/packages/epubli_permission.yaml!'
             );
             return 1;
         }
 
-        $permissions = $this->permissionDiscovery->getAllPermissionKeysWithDescriptions();
+        $entityPermissions = $this->permissionDiscovery->getAllPermissionKeysWithDescriptions();
+        $customPermissions = $this->customPermissionDiscovery->getAllPermissionKeysWithDescriptions();
+
+        $intersection = array_intersect_key($entityPermissions, $customPermissions);
+        if (!empty($intersection)) {
+            $output->writeln(
+                'ERROR\n'
+                . 'Please make sure to not have any custom permissions with the same key '
+                . 'as the ones which are automatically generated! The following permissions are already in use:\n'
+                . implode(
+                    '\n',
+                    array_map(
+                        static function (string $permission) {
+                            return $permission['key'];
+                        },
+                        $intersection
+                    )
+                )
+            );
+            return 1;
+        }
+
+        $permissions = array_merge($entityPermissions, $customPermissions);
 
         if (empty($permissions)) {
             $output->writeln('No permissions found! Nothing to export!');
@@ -75,7 +112,10 @@ class ExportPermissionsCommand extends Command
 
             $statusCode = $response->getStatusCode();
             if ($statusCode !== 204) {
-                $output->writeln('Expected status code 204. Received instead: ' . $statusCode);
+                $output->writeln(
+                    'ERROR\n'
+                    . 'Expected status code 204. Received instead: ' . $statusCode
+                );
                 return 1;
             }
         } catch (ServerException | ClientException $exp) {

@@ -8,6 +8,7 @@ use Epubli\PermissionBundle\Service\AuthToken;
 use Epubli\PermissionBundle\Service\JWTMockCreator;
 use Epubli\PermissionBundle\Tests\Helpers\EmptyMockToken;
 use Epubli\PermissionBundle\Tests\Helpers\TestEntityWithSelfPermissionInterface;
+use Epubli\PermissionBundle\Tests\Service\CustomPermissionDiscoveryTest;
 use Epubli\PermissionBundle\Tests\Service\PermissionDiscoveryTest;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
@@ -183,9 +184,11 @@ class PermissionVoterTest extends TestCase
         string $requestMethod,
         array $requestJson = [],
         bool $includeAuthToken = true
-    ): PermissionVoter {
+    ): PermissionVoter
+    {
         $permissionDiscovery = PermissionDiscoveryTest::createPermissionDiscovery();
-        $jwtMockCreator = new JWTMockCreator($permissionDiscovery);
+        $customPermissionDiscovery = CustomPermissionDiscoveryTest::createCustomPermissionDiscovery();
+        $jwtMockCreator = new JWTMockCreator($permissionDiscovery, $customPermissionDiscovery);
 
         $serverOptions =
             [

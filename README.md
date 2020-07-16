@@ -166,6 +166,54 @@ class TestAction extends AbstractController
 }
 ```
 
+### Custom permissions
+
+For custom permissions to work you need to add an annotation to the method you are using it in.
+
+Example:
+```php
+namespace App\Controller;
+
+use Epubli\PermissionBundle\Annotation\Permission;
+use Epubli\PermissionBundle\Service\AuthToken;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
+
+class TestController extends AbstractController
+{
+    /**
+     * @Permission(
+     *     key="customPermission1",
+     *     description="This is a description"
+     * )
+     * @Permission(
+     *     key="customPermission2",
+     *     description="This is a description"
+     * )
+     */
+    public function postTest(AuthToken $authToken)
+    {
+        if (!$authToken->isValid()){
+            throw new UnauthorizedHttpException('Bearer', 'Access-Token is invalid.');
+        }
+
+        if (!$authToken->hasPermissionKey('test.customPermission1')){
+            throw new AccessDeniedHttpException('Missing permission key: test.customPermission1');
+        }
+
+        //User is now authenticated and authorized for customPermission1
+
+        if (!$authToken->hasPermissionKey('test.customPermission2')){
+            throw new AccessDeniedHttpException('Missing permission key:  test.customPermission2');
+        }
+
+        //User is now authenticated and authorized for customPermission2
+    }
+}
+```
+The name of your microservice will be prepended automatically to the permission key.
+
 ### Tests
 
 To test your application with this bundle you need some way to send JsonWebTokens to it, otherwise testing the endpoints would be impossible, your requests would be denied.

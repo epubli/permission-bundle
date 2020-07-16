@@ -20,6 +20,13 @@
                 alias="epubli_permission.service.permission_discovery"/>
 
         <service
+                id="epubli_permission.service.custom_permission_discovery"
+                class="Epubli\PermissionBundle\Service\CustomPermissionDiscovery"/>
+        <service
+                id="Epubli\PermissionBundle\Service\CustomPermissionDiscovery"
+                alias="epubli_permission.service.custom_permission_discovery"/>
+
+        <service
                 id="epubli_permission.command.export_permissions_command"
                 class="Epubli\PermissionBundle\Command\ExportPermissionsCommand"/>
         <service

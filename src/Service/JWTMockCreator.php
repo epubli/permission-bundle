@@ -19,15 +19,26 @@ class JWTMockCreator
     /** @var PermissionDiscovery */
     private $permissionDiscovery;
 
+    /** @var CustomPermissionDiscovery */
+    private $customPermissionDiscovery;
+
     /** @var string|null */
     private $headerForAllPermissions;
 
     /** @var string|null */
     private $headerForThisMicroservice;
 
-    public function __construct(PermissionDiscovery $permissionDiscovery)
-    {
+    /**
+     * JWTMockCreator constructor.
+     * @param PermissionDiscovery $permissionDiscovery
+     * @param CustomPermissionDiscovery $customPermissionDiscovery
+     */
+    public function __construct(
+        PermissionDiscovery $permissionDiscovery,
+        CustomPermissionDiscovery $customPermissionDiscovery
+    ) {
         $this->permissionDiscovery = $permissionDiscovery;
+        $this->customPermissionDiscovery = $customPermissionDiscovery;
     }
 
     /**
@@ -136,6 +147,7 @@ class JWTMockCreator
         }
 
         $permissionKeys = $this->permissionDiscovery->getAllPermissionKeys();
+        $permissionKeys = array_merge($permissionKeys, $this->customPermissionDiscovery->getAllPermissionKeys());
 
         $this->headerForThisMicroservice = $this->getMockAuthorizationHeader($permissionKeys);
         return $this->headerForThisMicroservice;
