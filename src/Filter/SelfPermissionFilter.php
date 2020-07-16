@@ -28,7 +28,8 @@ final class SelfPermissionFilter extends SQLFilter
 
     /**
      * This will be called before PermissionVoter::voteOnAttribute(...)
-     * This method should only add filters on GET requests for collections for users which only have access
+     * This method should only add filters on GET requests for entities for which the user has restricted access.
+     * (e.g. The user can only see entities which belong to them.)
      * @param ClassMetadata $targetEntity
      * @param string $targetTableAlias
      * @return string
