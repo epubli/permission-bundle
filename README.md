@@ -135,7 +135,7 @@ class ExampleEntity implements SelfPermissionInterface
 
     public function getFieldNameOfUserIdForPermissionBundle(): string
     {
-        return 'id';
+        return 'user_id';
     }
 }
 ```
