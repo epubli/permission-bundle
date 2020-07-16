@@ -14,6 +14,21 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 class PermissionDiscoveryTest extends TestCase
 {
     /**
+     * @return PermissionDiscovery
+     */
+    public static function createPermissionDiscovery(): PermissionDiscovery
+    {
+        $kernelProjectDir = substr(__DIR__, 0, strlen(__DIR__) - strlen('/tests/Service'));
+        return new PermissionDiscovery(
+            'test',
+            new ParameterBag(['kernel.project_dir' => $kernelProjectDir]),
+            new AnnotationReader(),
+            '/tests/Helpers',
+            'Epubli\\PermissionBundle\\Tests\\Helpers\\'
+        );
+    }
+
+    /**
      * @dataProvider provider
      * @param object $entity
      * @param string $httpMethod
@@ -39,21 +54,6 @@ class PermissionDiscoveryTest extends TestCase
                 $requestPath,
                 $requestContent
             )
-        );
-    }
-
-    /**
-     * @return PermissionDiscovery
-     */
-    public static function createPermissionDiscovery(): PermissionDiscovery
-    {
-        $kernelProjectDir = substr(__DIR__, 0, strlen(__DIR__) - strlen('/tests/Service'));
-        return new PermissionDiscovery(
-            'test',
-            new ParameterBag(['kernel.project_dir' => $kernelProjectDir]),
-            new AnnotationReader(),
-            '/tests/Helpers',
-            'Epubli\\PermissionBundle\\Tests\\Helpers\\'
         );
     }
 
