@@ -11,6 +11,7 @@ use ReflectionClass;
 use ReflectionException;
 use ReflectionProperty;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+use Symfony\Component\Finder\Exception\DirectoryNotFoundException;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -245,7 +246,11 @@ class PermissionDiscovery
 
         $path = $this->rootDir . $this->pathToEntities;
         $finder = new Finder();
-        $finder->files()->in($path);
+        try {
+            $finder->files()->in($path);
+        } catch (DirectoryNotFoundException $ex) {
+            return;
+        }
 
         /** @var SplFileInfo $file */
         foreach ($finder as $file) {

@@ -7,6 +7,7 @@ use Epubli\PermissionBundle\Annotation\Permission;
 use ReflectionClass;
 use ReflectionException;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+use Symfony\Component\Finder\Exception\DirectoryNotFoundException;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
 
@@ -138,7 +139,11 @@ class CustomPermissionDiscovery
     private function fillPermissions(array &$permissions, string $path, string $namespace): void
     {
         $finder = new Finder();
-        $finder->files()->in($path);
+        try {
+            $finder->files()->in($path);
+        } catch (DirectoryNotFoundException $ex) {
+            return;
+        }
 
         /** @var SplFileInfo $file */
         foreach ($finder as $file) {
