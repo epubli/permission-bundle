@@ -128,11 +128,17 @@ class ExampleEntity implements SelfPermissionInterface
         return $this->user_id;
     }
 
+    /**
+     * @inheritDoc
+     */
     public function getUserIdForPermissionBundle(): ?int
     {
         return $this->getUserId();
     }
 
+    /**
+     * @inheritDoc
+     */
     public function getFieldNameOfUserIdForPermissionBundle(): string
     {
         return 'user_id';
