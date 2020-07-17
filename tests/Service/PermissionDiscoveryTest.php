@@ -13,6 +13,73 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 
 class PermissionDiscoveryTest extends TestCase
 {
+    public const PERMISSION_KEYS_WITH_DESCRIPTIONS = [
+        [
+            'key' => 'test.test_entity_with_self_permission_interface.read',
+            'description' => 'Can \'read\' an entity of type \'test_entity_with_self_permission_interface\' regardless of ownership'
+        ],
+        [
+            'key' => 'test.test_entity_with_self_permission_interface.read.self',
+            'description' => 'Can \'read\' an entity of type \'test_entity_with_self_permission_interface\' but only if it belongs to them'
+        ],
+        [
+            'key' => 'test.test_entity_with_self_permission_interface.delete',
+            'description' => 'Can \'delete\' an entity of type \'test_entity_with_self_permission_interface\' regardless of ownership'
+        ],
+        [
+            'key' => 'test.test_entity_with_self_permission_interface.delete.self',
+            'description' => 'Can \'delete\' an entity of type \'test_entity_with_self_permission_interface\' but only if it belongs to them'
+        ],
+        [
+            'key' => 'test.test_entity_with_self_permission_interface.update.someString',
+            'description' => 'Can \'update\' the property \'someString\' on an entity of type \'test_entity_with_self_permission_interface\' regardless of ownership'
+        ],
+        [
+            'key' => 'test.test_entity_with_self_permission_interface.update.someString.self',
+            'description' => 'Can \'update\' the property \'someString\' on an entity of type \'test_entity_with_self_permission_interface\' but only if it belongs to them'
+        ],
+        [
+            'key' => 'test.test_entity_with_self_permission_interface.update.someOtherString',
+            'description' => 'Can \'update\' the property \'someOtherString\' on an entity of type \'test_entity_with_self_permission_interface\' regardless of ownership'
+        ],
+        [
+            'key' => 'test.test_entity_with_self_permission_interface.update.someOtherString.self',
+            'description' => 'Can \'update\' the property \'someOtherString\' on an entity of type \'test_entity_with_self_permission_interface\' but only if it belongs to them'
+        ],
+        [
+            'key' => 'test.test_entity_with_self_permission_interface.create',
+            'description' => 'Can \'create\' an entity of type \'test_entity_with_self_permission_interface\' regardless of ownership'
+        ],
+        [
+            'key' => 'test.test_entity_with_self_permission_interface.create.self',
+            'description' => 'Can \'create\' an entity of type \'test_entity_with_self_permission_interface\' but only if it belongs to them'
+        ],
+        [
+            'key' => 'test.test_entity_with_specific_security.read',
+            'description' => 'Can \'read\' an entity of type \'test_entity_with_specific_security\' regardless of ownership'
+        ],
+        [
+            'key' => 'test.test_entity_with_specific_security.special_route',
+            'description' => 'Can \'special_route\' an entity of type \'test_entity_with_specific_security\' regardless of ownership'
+        ],
+        [
+            'key' => 'test.test_entity_with_everything.read',
+            'description' => 'Can \'read\' an entity of type \'test_entity_with_everything\' regardless of ownership'
+        ],
+        [
+            'key' => 'test.test_entity_with_everything.delete',
+            'description' => 'Can \'delete\' an entity of type \'test_entity_with_everything\' regardless of ownership'
+        ],
+        [
+            'key' => 'test.test_entity_with_everything.update.someString',
+            'description' => 'Can \'update\' the property \'someString\' on an entity of type \'test_entity_with_everything\' regardless of ownership'
+        ],
+        [
+            'key' => 'test.test_entity_with_everything.create',
+            'description' => 'Can \'create\' an entity of type \'test_entity_with_everything\' regardless of ownership'
+        ]
+    ];
+
     /**
      * @return PermissionDiscovery
      */
@@ -136,94 +203,12 @@ class PermissionDiscoveryTest extends TestCase
         $permissionDiscovery = self::createPermissionDiscovery();
 
         $this->assertEquals('test', $permissionDiscovery->getMicroserviceName());
-        $permissionKeys = [
-            'test.test_entity_with_self_permission_interface.read',
-            'test.test_entity_with_self_permission_interface.read.self',
-            'test.test_entity_with_self_permission_interface.delete',
-            'test.test_entity_with_self_permission_interface.delete.self',
-            'test.test_entity_with_self_permission_interface.update.someString',
-            'test.test_entity_with_self_permission_interface.update.someString.self',
-            'test.test_entity_with_self_permission_interface.update.someOtherString',
-            'test.test_entity_with_self_permission_interface.update.someOtherString.self',
-            'test.test_entity_with_self_permission_interface.create',
-            'test.test_entity_with_self_permission_interface.create.self',
-            'test.test_entity_with_specific_security.read',
-            'test.test_entity_with_specific_security.special_route',
-            'test.test_entity_with_everything.read',
-            'test.test_entity_with_everything.delete',
-            'test.test_entity_with_everything.update.someString',
-            'test.test_entity_with_everything.create'
-        ];
+
+        $permissionKeys = array_column(self::PERMISSION_KEYS_WITH_DESCRIPTIONS, 'key');
         $this->assertEqualsCanonicalizing($permissionKeys, $permissionDiscovery->getAllPermissionKeys());
 
-        $permissionKeysWithDescriptions = [
-            [
-                'key' => 'test.test_entity_with_self_permission_interface.read',
-                'description' => 'Can \'read\' an entity of type \'test_entity_with_self_permission_interface\' regardless of ownership'
-            ],
-            [
-                'key' => 'test.test_entity_with_self_permission_interface.read.self',
-                'description' => 'Can \'read\' an entity of type \'test_entity_with_self_permission_interface\' but only if it belongs to them'
-            ],
-            [
-                'key' => 'test.test_entity_with_self_permission_interface.delete',
-                'description' => 'Can \'delete\' an entity of type \'test_entity_with_self_permission_interface\' regardless of ownership'
-            ],
-            [
-                'key' => 'test.test_entity_with_self_permission_interface.delete.self',
-                'description' => 'Can \'delete\' an entity of type \'test_entity_with_self_permission_interface\' but only if it belongs to them'
-            ],
-            [
-                'key' => 'test.test_entity_with_self_permission_interface.update.someString',
-                'description' => 'Can \'update\' the property \'someString\' on an entity of type \'test_entity_with_self_permission_interface\' regardless of ownership'
-            ],
-            [
-                'key' => 'test.test_entity_with_self_permission_interface.update.someString.self',
-                'description' => 'Can \'update\' the property \'someString\' on an entity of type \'test_entity_with_self_permission_interface\' but only if it belongs to them'
-            ],
-            [
-                'key' => 'test.test_entity_with_self_permission_interface.update.someOtherString',
-                'description' => 'Can \'update\' the property \'someOtherString\' on an entity of type \'test_entity_with_self_permission_interface\' regardless of ownership'
-            ],
-            [
-                'key' => 'test.test_entity_with_self_permission_interface.update.someOtherString.self',
-                'description' => 'Can \'update\' the property \'someOtherString\' on an entity of type \'test_entity_with_self_permission_interface\' but only if it belongs to them'
-            ],
-            [
-                'key' => 'test.test_entity_with_self_permission_interface.create',
-                'description' => 'Can \'create\' an entity of type \'test_entity_with_self_permission_interface\' regardless of ownership'
-            ],
-            [
-                'key' => 'test.test_entity_with_self_permission_interface.create.self',
-                'description' => 'Can \'create\' an entity of type \'test_entity_with_self_permission_interface\' but only if it belongs to them'
-            ],
-            [
-                'key' => 'test.test_entity_with_specific_security.read',
-                'description' => 'Can \'read\' an entity of type \'test_entity_with_specific_security\' regardless of ownership'
-            ],
-            [
-                'key' => 'test.test_entity_with_specific_security.special_route',
-                'description' => 'Can \'special_route\' an entity of type \'test_entity_with_specific_security\' regardless of ownership'
-            ],
-            [
-                'key' => 'test.test_entity_with_everything.read',
-                'description' => 'Can \'read\' an entity of type \'test_entity_with_everything\' regardless of ownership'
-            ],
-            [
-                'key' => 'test.test_entity_with_everything.delete',
-                'description' => 'Can \'delete\' an entity of type \'test_entity_with_everything\' regardless of ownership'
-            ],
-            [
-                'key' => 'test.test_entity_with_everything.update.someString',
-                'description' => 'Can \'update\' the property \'someString\' on an entity of type \'test_entity_with_everything\' regardless of ownership'
-            ],
-            [
-                'key' => 'test.test_entity_with_everything.create',
-                'description' => 'Can \'create\' an entity of type \'test_entity_with_everything\' regardless of ownership'
-            ]
-        ];
         $this->assertEqualsCanonicalizing(
-            $permissionKeysWithDescriptions,
+            self::PERMISSION_KEYS_WITH_DESCRIPTIONS,
             $permissionDiscovery->getAllPermissionKeysWithDescriptions()
         );
     }
