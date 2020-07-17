@@ -176,12 +176,7 @@ class CustomPermissionDiscovery
      */
     public function getAllPermissionKeys(): array
     {
-        return array_map(
-            static function (array $permission) {
-                return $permission['key'];
-            },
-            $this->getPermissions()
-        );
+        return array_column($this->getPermissions(), 'key');
     }
 
     /**

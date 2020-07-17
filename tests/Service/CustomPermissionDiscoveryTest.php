@@ -53,12 +53,7 @@ class CustomPermissionDiscoveryTest extends TestCase
         $customPermissionDiscovery = self::createCustomPermissionDiscovery();
 
         $this->assertEqualsCanonicalizing(
-            array_map(
-                static function ($permission) {
-                    return $permission['key'];
-                },
-                self::PERMISSIONS
-            ),
+            array_column(self::PERMISSIONS, 'key'),
             $customPermissionDiscovery->getAllPermissionKeys()
         );
     }
