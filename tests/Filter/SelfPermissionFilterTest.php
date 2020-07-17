@@ -15,23 +15,6 @@ use ReflectionException;
 
 class SelfPermissionFilterTest extends TestCase
 {
-    public function testSelfPermissionFilterOnGetSingleEntity(): void
-    {
-        $voter = PermissionVoterTest::createPermissionVoter(
-            [
-                'test.test_entity_with_self_permission_interface.read.self',
-            ],
-            '/api/test_entity_with_self_permission_interfaces/1',
-            'GET'
-        );
-
-        $testEntity = new TestEntityWithSelfPermissionInterface();
-
-        $filterStr = self::getSelfPermissionFilter($voter, $testEntity);
-
-        $this->assertEquals('t.id = -1', $filterStr);
-    }
-
     /**
      * @param PermissionVoter $permissionVoter
      * @param $entity
@@ -47,6 +30,23 @@ class SelfPermissionFilterTest extends TestCase
         $cm->reflClass = new ReflectionClass(get_class($entity));
 
         return $selfPermissionFilter->addFilterConstraint($cm, 't');
+    }
+
+    public function testSelfPermissionFilterOnGetSingleEntity(): void
+    {
+        $voter = PermissionVoterTest::createPermissionVoter(
+            [
+                'test.test_entity_with_self_permission_interface.read.self',
+            ],
+            '/api/test_entity_with_self_permission_interfaces/1',
+            'GET'
+        );
+
+        $testEntity = new TestEntityWithSelfPermissionInterface();
+
+        $filterStr = self::getSelfPermissionFilter($voter, $testEntity);
+
+        $this->assertEquals('t.id = -1', $filterStr);
     }
 
     public function testSelfPermissionFilterOnGetCollection(): void
