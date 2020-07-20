@@ -26,12 +26,19 @@
                 id="Epubli\PermissionBundle\Service\CustomPermissionDiscovery"
                 alias="epubli_permission.service.custom_permission_discovery"/>
 
+        <service id="epubli_permission.guzzle.http"
+                 class="GuzzleHttp\Client"/>
+
         <service
                 id="epubli_permission.service.permission_exporter"
-                class="Epubli\PermissionBundle\Service\PermissionExporter"/>
+                class="Epubli\PermissionBundle\Service\PermissionExporter"
+                public="true">
+            <argument type="service" id="epubli_permission.guzzle.http"/>
+        </service>
         <service
                 id="Epubli\PermissionBundle\Service\PermissionExporter"
-                alias="epubli_permission.service.permission_exporter"/>
+                alias="epubli_permission.service.permission_exporter"
+                public="true"/>
 
         <service
                 id="epubli_permission.command.export_permissions_command"
