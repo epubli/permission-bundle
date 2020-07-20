@@ -45,7 +45,7 @@ class ExportPermissionsCommand extends Command
             $output->writeln('ERROR\n' . $e->getMessage());
             return 1;
         } catch (ReflectionException $e) {
-            throw;
+            throw $e;
         }
 
         if ($countOfExportedPermissions > 0) {
