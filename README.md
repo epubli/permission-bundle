@@ -147,6 +147,27 @@ class ExampleEntity implements SelfPermissionInterface
     }
 }
 ```
+Or use the `SelfPermissionTrait` for the default implementation of the `SelfPermissionInterface`:
+```php
+use Doctrine\ORM\Mapping as ORM;
+use Epubli\PermissionBundle\Interfaces\SelfPermissionInterface;
+use Epubli\PermissionBundle\Traits\SelfPermissionTrait;
+
+class ExampleEntity implements SelfPermissionInterface
+{
+    use SelfPermissionTrait;
+
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $user_id;
+
+    public function getUserId(): ?int
+    {
+        return $this->user_id;
+    }
+}
+```
 
 ### AuthToken
 
