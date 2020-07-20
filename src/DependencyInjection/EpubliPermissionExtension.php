@@ -2,6 +2,7 @@
 
 namespace Epubli\PermissionBundle\DependencyInjection;
 
+use GuzzleHttp\Client;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
@@ -29,5 +30,9 @@ class EpubliPermissionExtension extends Extension
 
         $definition = $container->getDefinition('epubli_permission.service.custom_permission_discovery');
         $definition->setArgument(0, $config['microservice_name']);
+
+        $definition = $container->getDefinition('epubli_permission.service.permission_exporter');
+        $definition->setArgument(0, new Client(['base_uri' => $config['base_uri']]));
+        $definition->setArgument(1, $config['path']);
     }
 }

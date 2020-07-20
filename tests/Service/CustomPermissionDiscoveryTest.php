@@ -9,7 +9,7 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 
 class CustomPermissionDiscoveryTest extends TestCase
 {
-    private const PERMISSIONS = [
+    public const PERMISSIONS = [
         [
             'key' => 'test.customPermissionForMethod1',
             'description' => 'This is a description',
@@ -32,17 +32,18 @@ class CustomPermissionDiscoveryTest extends TestCase
     }
 
     /**
+     * @param string $pathToClasses
      * @return CustomPermissionDiscovery
      */
-    public static function createCustomPermissionDiscovery(): CustomPermissionDiscovery
+    public static function createCustomPermissionDiscovery($pathToClasses = '/tests/Helpers'): CustomPermissionDiscovery
     {
         $kernelProjectDir = substr(__DIR__, 0, strlen(__DIR__) - strlen('/tests/Service'));
         return new CustomPermissionDiscovery(
             'test',
             new ParameterBag(['kernel.project_dir' => $kernelProjectDir]),
             new AnnotationReader(),
-            '/tests/Helpers',
-            '/tests/Helpers',
+            $pathToClasses,
+            $pathToClasses,
             'Epubli\\PermissionBundle\\Tests\\Helpers\\',
             'Epubli\\PermissionBundle\\Tests\\Helpers\\'
         );

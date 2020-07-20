@@ -20,6 +20,8 @@ class Configuration implements ConfigurationInterface
         $rootNode
             ->children()
             ->variableNode('microservice_name')->defaultValue(self::DEFAULT_MICROSERVICE_NAME)->end()
+            ->variableNode('base_uri')->defaultValue('http://user')->end()
+            ->variableNode('path')->defaultValue('/api/roles/permissions/import')->end()
             ->end();
 
         return $treeBuilder;

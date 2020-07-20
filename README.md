@@ -57,7 +57,9 @@ Example:
 // config/packages/epubli_permission.yaml
 
 epubli_permission:
-  microservice_name: user
+  microservice_name: REPLACE_ME_WITH_THE_NAME_OF_YOUR_MICROSERVICE
+  base_uri: http://user
+  path: /api/roles/permissions/import
 ```
 Activate the doctrine filter in `config/packages/doctrine.yaml`:
 ```yaml

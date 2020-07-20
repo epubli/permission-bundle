@@ -81,16 +81,20 @@ class PermissionDiscoveryTest extends TestCase
     ];
 
     /**
+     * @param string $pathToEntites
+     * @param string $microserviceName
      * @return PermissionDiscovery
      */
-    public static function createPermissionDiscovery(): PermissionDiscovery
-    {
+    public static function createPermissionDiscovery(
+        $pathToEntites = '/tests/Helpers',
+        $microserviceName = 'test'
+    ): PermissionDiscovery {
         $kernelProjectDir = substr(__DIR__, 0, strlen(__DIR__) - strlen('/tests/Service'));
         return new PermissionDiscovery(
-            'test',
+            $microserviceName,
             new ParameterBag(['kernel.project_dir' => $kernelProjectDir]),
             new AnnotationReader(),
-            '/tests/Helpers',
+            $pathToEntites,
             'Epubli\\PermissionBundle\\Tests\\Helpers\\'
         );
     }
