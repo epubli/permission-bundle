@@ -4,6 +4,7 @@ namespace Epubli\PermissionBundle\Tests\Service;
 
 use Doctrine\Common\Annotations\AnnotationReader;
 use Epubli\PermissionBundle\Service\PermissionDiscovery;
+use Epubli\PermissionBundle\Tests\Helpers\TestEntityWithDifferentShortName;
 use Epubli\PermissionBundle\Tests\Helpers\TestEntityWithEverything;
 use Epubli\PermissionBundle\Tests\Helpers\TestEntityWithSpecificSecurity;
 use Generator;
@@ -77,6 +78,14 @@ class PermissionDiscoveryTest extends TestCase
         [
             'key' => 'test.test_entity_with_everything.create',
             'description' => 'Can \'create\' an entity of type \'test_entity_with_everything\' regardless of ownership'
+        ],
+        [
+            'key' => 'test.test_entity_with_different_short_name.create',
+            'description' => 'Can \'create\' an entity of type \'test_entity_with_different_short_name\' regardless of ownership'
+        ],
+        [
+            'key' => 'test.test_entity_with_different_short_name.read',
+            'description' => 'Can \'read\' an entity of type \'test_entity_with_different_short_name\' regardless of ownership'
         ]
     ];
 
@@ -198,6 +207,20 @@ class PermissionDiscoveryTest extends TestCase
             'POST',
             '/api/test_entity_with_specific_securitys/special_route',
             ['test.test_entity_with_specific_security.special_route'],
+            null,
+        ];
+        yield [
+            new TestEntityWithDifferentShortName(),
+            'POST',
+            '/api/completelydifferent',
+            ['test.test_entity_with_different_short_name.create'],
+            null,
+        ];
+        yield [
+            new TestEntityWithDifferentShortName(),
+            'GET',
+            '/api/veryshortname',
+            ['test.test_entity_with_different_short_name.read'],
             null,
         ];
     }

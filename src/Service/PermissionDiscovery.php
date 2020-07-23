@@ -120,12 +120,15 @@ class PermissionDiscovery
             }
 
             if (isset($data['path'])) {
-                $operationPath = rtrim($data['path'], '/');
+                $validOperationPaths[] = rtrim($data['path'], '/');
+            } elseif ($apiPlatformAnnotation->shortName !== null) {
+                $validOperationPaths[] = "/{$apiPlatformAnnotation->shortName}";
             } else {
-                $operationPath = "/{$className}s";
+                $validOperationPaths[] = "/{$className}s";
+                $validOperationPaths[] = "/{$className}es";
             }
 
-            if ($operationPath !== $relevantPath) {
+            if (!in_array($relevantPath, $validOperationPaths, true)) {
                 continue;
             }
 
