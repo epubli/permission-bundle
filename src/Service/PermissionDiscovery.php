@@ -435,9 +435,11 @@ class PermissionDiscovery
                 $reflectionProperty,
                 Groups::class
             );
-            if (!empty(array_intersect($groupsAnnotation->getGroups(), $validationGroups))) {
-                $propertyNames[] = $reflectionProperty->getName();
+            if ($groupsAnnotation === null
+                || empty(array_intersect($groupsAnnotation->getGroups(), $validationGroups))) {
+                continue;
             }
+            $propertyNames[] = $reflectionProperty->getName();
         }
 
         return $propertyNames;
