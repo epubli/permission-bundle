@@ -2,10 +2,10 @@
 
 namespace Epubli\PermissionBundle\Tests\Filter;
 
+use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Epubli\PermissionBundle\Filter\SelfPermissionFilter;
 use Epubli\PermissionBundle\Security\PermissionVoter;
-use Epubli\PermissionBundle\Tests\Helpers\MockEntityManager;
 use Epubli\PermissionBundle\Tests\Helpers\TestEntityWithEverything;
 use Epubli\PermissionBundle\Tests\Helpers\TestEntityWithSelfPermissionInterface;
 use Epubli\PermissionBundle\Tests\Security\PermissionVoterTest;
@@ -21,9 +21,9 @@ class SelfPermissionFilterTest extends TestCase
      * @return string
      * @throws ReflectionException
      */
-    public static function getSelfPermissionFilter(PermissionVoter $permissionVoter, $entity): string
+    private function getSelfPermissionFilter(PermissionVoter $permissionVoter, $entity): string
     {
-        $selfPermissionFilter = new SelfPermissionFilter(new MockEntityManager());
+        $selfPermissionFilter = new SelfPermissionFilter($this->createMock(EntityManager::class));
         $selfPermissionFilter->setPermissionVoter($permissionVoter);
 
         $cm = new ClassMetadata('');
@@ -44,7 +44,7 @@ class SelfPermissionFilterTest extends TestCase
 
         $testEntity = new TestEntityWithSelfPermissionInterface();
 
-        $filterStr = self::getSelfPermissionFilter($voter, $testEntity);
+        $filterStr = $this->getSelfPermissionFilter($voter, $testEntity);
 
         $this->assertEquals('t.id = -1', $filterStr);
     }
@@ -61,7 +61,7 @@ class SelfPermissionFilterTest extends TestCase
 
         $testEntity = new TestEntityWithSelfPermissionInterface();
 
-        $filterStr = self::getSelfPermissionFilter($voter, $testEntity);
+        $filterStr = $this->getSelfPermissionFilter($voter, $testEntity);
 
         $this->assertEquals('t.id = -1', $filterStr);
     }
@@ -80,7 +80,7 @@ class SelfPermissionFilterTest extends TestCase
 
         $testEntity = new TestEntityWithSelfPermissionInterface();
 
-        $filterStr = self::getSelfPermissionFilter($voter, $testEntity);
+        $filterStr = $this->getSelfPermissionFilter($voter, $testEntity);
 
         $this->assertEquals('', $filterStr);
     }
@@ -97,7 +97,7 @@ class SelfPermissionFilterTest extends TestCase
 
         $testEntity = new TestEntityWithSelfPermissionInterface();
 
-        $filterStr = self::getSelfPermissionFilter($voter, $testEntity);
+        $filterStr = $this->getSelfPermissionFilter($voter, $testEntity);
 
         $this->assertEquals('', $filterStr);
     }
@@ -114,7 +114,7 @@ class SelfPermissionFilterTest extends TestCase
 
         $testEntity = new TestEntityWithEverything();
 
-        $filterStr = self::getSelfPermissionFilter($voter, $testEntity);
+        $filterStr = $this->getSelfPermissionFilter($voter, $testEntity);
 
         $this->assertEquals('', $filterStr);
     }
@@ -129,7 +129,7 @@ class SelfPermissionFilterTest extends TestCase
 
         $testEntity = new TestEntityWithSelfPermissionInterface();
 
-        $filterStr = self::getSelfPermissionFilter($voter, $testEntity);
+        $filterStr = $this->getSelfPermissionFilter($voter, $testEntity);
 
         $this->assertEquals('', $filterStr);
     }
@@ -146,7 +146,7 @@ class SelfPermissionFilterTest extends TestCase
 
         $testEntity = new TestEntityWithSelfPermissionInterface();
 
-        $filterStr = self::getSelfPermissionFilter($voter, $testEntity);
+        $filterStr = $this->getSelfPermissionFilter($voter, $testEntity);
 
         $this->assertEquals('', $filterStr);
     }
@@ -163,7 +163,7 @@ class SelfPermissionFilterTest extends TestCase
 
         $testEntity = new TestEntityWithSelfPermissionInterface();
 
-        $filterStr = self::getSelfPermissionFilter($voter, $testEntity);
+        $filterStr = $this->getSelfPermissionFilter($voter, $testEntity);
 
         $this->assertEquals('', $filterStr);
     }
@@ -181,7 +181,7 @@ class SelfPermissionFilterTest extends TestCase
 
         $testEntity = new TestEntityWithSelfPermissionInterface();
 
-        $filterStr = self::getSelfPermissionFilter($voter, $testEntity);
+        $filterStr = $this->getSelfPermissionFilter($voter, $testEntity);
 
         $this->assertEquals('', $filterStr);
     }
@@ -199,7 +199,7 @@ class SelfPermissionFilterTest extends TestCase
 
         $testEntity = new TestEntityWithSelfPermissionInterface();
 
-        $filterStr = self::getSelfPermissionFilter($voter, $testEntity);
+        $filterStr = $this->getSelfPermissionFilter($voter, $testEntity);
 
         $this->assertEquals('', $filterStr);
     }
