@@ -42,22 +42,4 @@ class EndpointWithPermission
     {
         return $this->description;
     }
-
-    /**
-     * @return bool
-     */
-    public function isSelfPermission(): bool
-    {
-        return $this->descriptionEndsWith(self::SELF_PERMISSION);
-    }
-
-    /**
-     * Checks if the description ends with a specific string
-     * @param $str
-     * @return bool
-     */
-    private function descriptionEndsWith($str)
-    {
-        return substr($this->description, -strlen($str)) === $str;
-    }
 }
