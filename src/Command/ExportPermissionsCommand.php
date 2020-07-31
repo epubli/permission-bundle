@@ -2,7 +2,7 @@
 
 namespace Epubli\PermissionBundle\Command;
 
-use Epubli\PermissionBundle\PermissionExportException;
+use Epubli\PermissionBundle\Exception\PermissionExportException;
 use Epubli\PermissionBundle\Service\PermissionExporter;
 use ReflectionException;
 use Symfony\Component\Console\Command\Command;

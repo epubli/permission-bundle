@@ -1,6 +1,6 @@
 <?php
 
-namespace Epubli\PermissionBundle;
+namespace Epubli\PermissionBundle\Exception;
 
 use RuntimeException;
 

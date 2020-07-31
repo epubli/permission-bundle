@@ -3,7 +3,7 @@
 namespace Epubli\PermissionBundle\Service;
 
 use Epubli\PermissionBundle\DependencyInjection\Configuration;
-use Epubli\PermissionBundle\PermissionExportException;
+use Epubli\PermissionBundle\Exception\PermissionExportException;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ServerException;

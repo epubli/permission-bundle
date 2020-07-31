@@ -3,7 +3,7 @@
 namespace Epubli\PermissionBundle\Tests\Service;
 
 use Epubli\PermissionBundle\DependencyInjection\Configuration;
-use Epubli\PermissionBundle\PermissionExportException;
+use Epubli\PermissionBundle\Exception\PermissionExportException;
 use Epubli\PermissionBundle\Service\AuthToken;
 use Epubli\PermissionBundle\Service\JWTMockCreator;
 use Epubli\PermissionBundle\Service\PermissionExporter;
