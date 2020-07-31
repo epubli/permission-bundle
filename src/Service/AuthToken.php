@@ -2,6 +2,7 @@
 
 namespace Epubli\PermissionBundle\Service;
 
+use Epubli\PermissionBundle\EndpointWithPermission;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 
@@ -157,11 +158,26 @@ class AuthToken
 
     /**
      * @param string[] $permissionKeys
+     * @param bool $testForAlternatives
+     * If set to true then permissions will be converted to their alternatives.
+     * E.g. user.user.create --> user.user.create.self
      * @return bool
      */
-    public function hasPermissionKeys(array $permissionKeys): bool
+    public function hasPermissionKeys(array $permissionKeys, bool $testForAlternatives = false): bool
     {
-        return empty($this->getMissingPermissionKeys($permissionKeys));
+        $missingPermissionKeys = $this->getMissingPermissionKeys($permissionKeys);
+        if ($testForAlternatives) {
+            return $this->hasPermissionKeys(
+                array_map(
+                    static function ($item) {
+                        return $item . EndpointWithPermission::SELF_PERMISSION;
+                    },
+                    $missingPermissionKeys
+                )
+            );
+        }
+
+        return empty($missingPermissionKeys);
     }
 
     /**

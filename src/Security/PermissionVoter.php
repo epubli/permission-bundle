@@ -4,7 +4,6 @@ namespace Epubli\PermissionBundle\Security;
 
 use ApiPlatform\Core\Annotation\ApiResource;
 use Doctrine\Common\Annotations\Reader;
-use Epubli\PermissionBundle\EndpointWithPermission;
 use Epubli\PermissionBundle\Interfaces\SelfPermissionInterface;
 use Epubli\PermissionBundle\Service\AuthToken;
 use Epubli\PermissionBundle\Service\PermissionDiscovery;
@@ -124,14 +123,7 @@ class PermissionVoter extends Voter
             /** @var SelfPermissionInterface $subject */
             $userId = $subject->getUserIdForPermissionBundle();
 
-            $userHasAlternativePermission = $this->authToken->hasPermissionKeys(
-                array_map(
-                    static function ($item) {
-                        return $item . EndpointWithPermission::SELF_PERMISSION;
-                    },
-                    $permissionKeys
-                )
-            );
+            $userHasAlternativePermission = $this->authToken->hasPermissionKeys($permissionKeys, true);
 
             if ($userHasAlternativePermission && $this->authToken->isValid()) {
                 if ($isGetRequestOnCollection) {
@@ -147,12 +139,13 @@ class PermissionVoter extends Voter
             }
         }
 
-        //Return either Forbidden or Unauthenticated
         if ($this->authToken->isValid()) {
+            //User is authenticated but forbidden
             $missingKeys = $this->authToken->getMissingPermissionKeys($permissionKeys);
             throw new AccessDeniedHttpException('Missing permission keys: ' . implode(', ', $missingKeys));
         }
 
+        //User is Unauthenticated
         return false;
     }
 
@@ -171,9 +164,11 @@ class PermissionVoter extends Voter
         }
 
         if ($request->getMethod() !== 'GET') {
+            //If it is not a GET request then no filter is required
             return false;
         }
 
+        //This will always be empty or filled with just one entry
         $permissionKeys = $this->permissionDiscovery->getPermissionKeys(
             $entity,
             $request->getMethod(),
@@ -188,19 +183,18 @@ class PermissionVoter extends Voter
 
         $userHasPermission = $this->authToken->hasPermissionKeys($permissionKeys);
         if ($userHasPermission) {
+            //User has permission to see everything
             return false;
         }
 
-        $userHasAlternativePermission = $this->authToken->hasPermissionKeys(
-            array_map(
-                static function ($item) {
-                    return $item . EndpointWithPermission::SELF_PERMISSION;
-                },
-                $permissionKeys
-            )
-        );
+        $userHasAlternativePermission = $this->authToken->hasPermissionKeys($permissionKeys, true);
+        if ($userHasAlternativePermission) {
+            //User has permission to see his own entities so he needs a filter
+            return true;
+        }
 
-        return $userHasAlternativePermission && $this->authToken->isValid();
+        //User has no permissions so do not apply a filter because "voteOnAttribute" will throw an exception to deny access
+        return false;
     }
 
     /**

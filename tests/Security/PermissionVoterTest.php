@@ -143,6 +143,29 @@ class PermissionVoterTest extends TestCase
         );
     }
 
+    public function testAccessGrantedOnUpdateWithMultipleChangesButDifferentPermissionTypes(): void
+    {
+        $voter = self::createPermissionVoter(
+            [
+                'test.test_entity_with_self_permission_interface.update.someString',
+                'test.test_entity_with_self_permission_interface.update.someOtherString.self',
+            ],
+            '/api/test_entity_with_self_permission_interfaces/1',
+            'PATCH',
+            [
+                'someString' => 'hallo',
+                'someOtherString' => 'hallo'
+            ]
+        );
+
+        $entity = new TestEntityWithSelfPermissionInterface(-1);
+
+        $this->assertEquals(
+            PermissionVoter::ACCESS_GRANTED,
+            $voter->vote($this->createMock(TokenInterface::class), $entity, [null])
+        );
+    }
+
     public function testAccessDeniedExceptionOnDelete(): void
     {
         $voter = self::createPermissionVoter(
