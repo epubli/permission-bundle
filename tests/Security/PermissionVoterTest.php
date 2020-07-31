@@ -6,7 +6,6 @@ use Doctrine\Common\Annotations\AnnotationReader;
 use Epubli\PermissionBundle\Security\PermissionVoter;
 use Epubli\PermissionBundle\Service\AuthToken;
 use Epubli\PermissionBundle\Service\JWTMockCreator;
-use Epubli\PermissionBundle\Tests\Helpers\EmptyMockToken;
 use Epubli\PermissionBundle\Tests\Helpers\TestEntityWithSelfPermissionInterface;
 use Epubli\PermissionBundle\Tests\Service\CustomPermissionDiscoveryTest;
 use Epubli\PermissionBundle\Tests\Service\PermissionDiscoveryTest;
@@ -14,6 +13,7 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 
 class PermissionVoterTest extends TestCase
 {
@@ -77,7 +77,10 @@ class PermissionVoterTest extends TestCase
 
         $entity = new TestEntityWithSelfPermissionInterface(-1);
 
-        $this->assertEquals(PermissionVoter::ACCESS_GRANTED, $voter->vote(new EmptyMockToken(), $entity, [null]));
+        $this->assertEquals(
+            PermissionVoter::ACCESS_GRANTED,
+            $voter->vote($this->createMock(TokenInterface::class), $entity, [null])
+        );
     }
 
     public function testAccessGrantedOnUpdate(): void
@@ -95,7 +98,10 @@ class PermissionVoterTest extends TestCase
 
         $entity = new TestEntityWithSelfPermissionInterface(-1);
 
-        $this->assertEquals(PermissionVoter::ACCESS_GRANTED, $voter->vote(new EmptyMockToken(), $entity, [null]));
+        $this->assertEquals(
+            PermissionVoter::ACCESS_GRANTED,
+            $voter->vote($this->createMock(TokenInterface::class), $entity, [null])
+        );
     }
 
     public function testAccessGrantedOnUpdateWithoutChanges(): void
@@ -108,7 +114,10 @@ class PermissionVoterTest extends TestCase
 
         $entity = new TestEntityWithSelfPermissionInterface(-1);
 
-        $this->assertEquals(PermissionVoter::ACCESS_GRANTED, $voter->vote(new EmptyMockToken(), $entity, [null]));
+        $this->assertEquals(
+            PermissionVoter::ACCESS_GRANTED,
+            $voter->vote($this->createMock(TokenInterface::class), $entity, [null])
+        );
     }
 
     public function testAccessGrantedOnUpdateWithMultipleChanges(): void
@@ -128,7 +137,10 @@ class PermissionVoterTest extends TestCase
 
         $entity = new TestEntityWithSelfPermissionInterface(-1);
 
-        $this->assertEquals(PermissionVoter::ACCESS_GRANTED, $voter->vote(new EmptyMockToken(), $entity, [null]));
+        $this->assertEquals(
+            PermissionVoter::ACCESS_GRANTED,
+            $voter->vote($this->createMock(TokenInterface::class), $entity, [null])
+        );
     }
 
     public function testAccessDeniedExceptionOnDelete(): void
@@ -144,7 +156,10 @@ class PermissionVoterTest extends TestCase
         $entity = new TestEntityWithSelfPermissionInterface(3);
 
         $this->expectException(AccessDeniedHttpException::class);
-        $this->assertEquals(PermissionVoter::ACCESS_DENIED, $voter->vote(new EmptyMockToken(), $entity, [null]));
+        $this->assertEquals(
+            PermissionVoter::ACCESS_DENIED,
+            $voter->vote($this->createMock(TokenInterface::class), $entity, [null])
+        );
     }
 
     public function testAccessDeniedExceptionOnUpdate(): void
@@ -163,7 +178,10 @@ class PermissionVoterTest extends TestCase
         $entity = new TestEntityWithSelfPermissionInterface(3);
 
         $this->expectException(AccessDeniedHttpException::class);
-        $this->assertEquals(PermissionVoter::ACCESS_DENIED, $voter->vote(new EmptyMockToken(), $entity, [null]));
+        $this->assertEquals(
+            PermissionVoter::ACCESS_DENIED,
+            $voter->vote($this->createMock(TokenInterface::class), $entity, [null])
+        );
     }
 
     public function testAccessDeniedExceptionOnUpdateWithIncompletePermissions(): void
@@ -183,7 +201,10 @@ class PermissionVoterTest extends TestCase
         $entity = new TestEntityWithSelfPermissionInterface(-1);
 
         $this->expectException(AccessDeniedHttpException::class);
-        $this->assertEquals(PermissionVoter::ACCESS_DENIED, $voter->vote(new EmptyMockToken(), $entity, [null]));
+        $this->assertEquals(
+            PermissionVoter::ACCESS_DENIED,
+            $voter->vote($this->createMock(TokenInterface::class), $entity, [null])
+        );
     }
 
     public function testAccessDeniedOnDelete(): void
@@ -198,7 +219,10 @@ class PermissionVoterTest extends TestCase
 
         $entity = new TestEntityWithSelfPermissionInterface(3);
 
-        $this->assertEquals(PermissionVoter::ACCESS_DENIED, $voter->vote(new EmptyMockToken(), $entity, [null]));
+        $this->assertEquals(
+            PermissionVoter::ACCESS_DENIED,
+            $voter->vote($this->createMock(TokenInterface::class), $entity, [null])
+        );
     }
 
     public function testAccessDeniedOnUpdate(): void
@@ -215,6 +239,9 @@ class PermissionVoterTest extends TestCase
 
         $entity = new TestEntityWithSelfPermissionInterface(3);
 
-        $this->assertEquals(PermissionVoter::ACCESS_DENIED, $voter->vote(new EmptyMockToken(), $entity, [null]));
+        $this->assertEquals(
+            PermissionVoter::ACCESS_DENIED,
+            $voter->vote($this->createMock(TokenInterface::class), $entity, [null])
+        );
     }
 }
