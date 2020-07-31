@@ -274,7 +274,6 @@ class PermissionDiscovery
             $className = self::fromCamelCaseToSnakeCase($reflectionClass->getShortName());
 
             $this->entities[] = new EntityWithPermissions(
-                $classPath,
                 $this->getEndpointsOfEntity($reflectionClass, $className, $apiPlatformAnnotation, $needsSelfPermission)
             );
         }

@@ -8,27 +8,15 @@ namespace Epubli\PermissionBundle;
  */
 class EntityWithPermissions
 {
-    /** @var string */
-    private $classPath;
     /** @var EndpointWithPermission[] */
     private $endpoints;
 
     /**
-     * @param string $classPath
      * @param EndpointWithPermission[] $endpoints
      */
-    public function __construct(string $classPath, array $endpoints)
+    public function __construct(array $endpoints)
     {
-        $this->classPath = $classPath;
         $this->endpoints = $endpoints;
-    }
-
-    /**
-     * @return string
-     */
-    public function getClassPath(): string
-    {
-        return $this->classPath;
     }
 
     /**
