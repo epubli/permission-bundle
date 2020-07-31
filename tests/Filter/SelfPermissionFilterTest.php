@@ -168,7 +168,6 @@ class SelfPermissionFilterTest extends TestCase
         $this->assertEquals('', $filterStr);
     }
 
-
     public function testSelfPermissionFilterOnDelete(): void
     {
         $voter = PermissionVoterTest::createPermissionVoter(
@@ -186,7 +185,6 @@ class SelfPermissionFilterTest extends TestCase
         $this->assertEquals('', $filterStr);
     }
 
-
     public function testSelfPermissionFilterOnPost(): void
     {
         $voter = PermissionVoterTest::createPermissionVoter(
@@ -198,6 +196,23 @@ class SelfPermissionFilterTest extends TestCase
         );
 
         $testEntity = new TestEntityWithSelfPermissionInterface();
+
+        $filterStr = $this->getSelfPermissionFilter($voter, $testEntity);
+
+        $this->assertEquals('', $filterStr);
+    }
+
+    public function testSelfPermissionFilterOnWrongEntity(): void
+    {
+        $voter = PermissionVoterTest::createPermissionVoter(
+            [
+                'test.test_entity_with_self_permission_interface.read.self',
+            ],
+            '/api/test_entity_with_self_permission_interfaces/1',
+            'GET'
+        );
+
+        $testEntity = new TestEntityWithEverything();
 
         $filterStr = $this->getSelfPermissionFilter($voter, $testEntity);
 
