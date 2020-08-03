@@ -376,6 +376,15 @@ Execute the following:
 $ ./vendor/bin/simple-phpunit
 ```
 
+## Problems
+When requesting multiple entities through a GET-Request `hydra:totalItems` can be incorrect when using the `SelfPermissionInterface`.
+
+Because the paginator gets called before any filters are applied to the query the count of items/entities will be wrong.
+`hydra:totalItems` does not equal the number of items/entities returned.
+
+The solution in this thread did not work:
+https://github.com/api-platform/core/issues/1185
+
 ## Things which need to be done
 
 - ApiPlatform Subresources
