@@ -2,6 +2,7 @@
 
 namespace Epubli\PermissionBundle\Filter;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query\Filter\SQLFilter;
 use Epubli\PermissionBundle\Interfaces\SelfPermissionInterface;
@@ -18,12 +19,23 @@ final class SelfPermissionFilter extends SQLFilter
     /** @var PermissionVoter */
     private $permissionVoter;
 
+    /** @var EntityManagerInterface */
+    private $entityManager;
+
     /**
      * @param PermissionVoter $permissionVoter
      */
     public function setPermissionVoter(PermissionVoter $permissionVoter): void
     {
         $this->permissionVoter = $permissionVoter;
+    }
+
+    /**
+     * @param EntityManagerInterface $entityManager
+     */
+    public function setEntityManager(EntityManagerInterface $entityManager): void
+    {
+        $this->entityManager = $entityManager;
     }
 
     /**
@@ -48,16 +60,26 @@ final class SelfPermissionFilter extends SQLFilter
             return '';
         }
 
-        $fieldName = $entity->getFieldNameOfUserIdForPermissionBundle();
-        if ($fieldName === null || empty($fieldName)) {
-            throw new RuntimeException(
-                'Make sure that getFieldNameOfUserIdForPermissionBundle '
-                . 'returns a non empty string for class ' . get_class($entity)
-            );
-        }
-
         $userId = $this->permissionVoter->getAuthTokenUserId() ?? -1;
 
-        return sprintf('%s.%s = %s', $targetTableAlias, $fieldName, $userId);
+        if ($entity->hasUserIdProperty()) {
+            $fieldName = $entity->getFieldNameOfUserIdForPermissionBundle();
+            if ($fieldName === null || empty($fieldName)) {
+                throw new RuntimeException(
+                    'Make sure that getFieldNameOfUserIdForPermissionBundle '
+                    . 'returns a non empty string for class ' . get_class($entity)
+                );
+            }
+
+            return sprintf('%s.%s = %s', $targetTableAlias, $fieldName, $userId);
+        }
+
+        //Disable filters otherwise a select in the method getPrimaryIdsWhichBelongToUser(...) would result in an endless loop
+        $this->entityManager->getFilters()->disable('epubli_permission_bundle_self_permission_filter');
+        $ids = $entity->getPrimaryIdsWhichBelongToUser($this->entityManager, $userId);
+        if (empty($ids)) {
+            return sprintf('%s.id is null', $targetTableAlias);
+        }
+        return sprintf('%s.id IN (%s)', $targetTableAlias, implode(',', $ids));
     }
 }

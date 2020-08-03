@@ -27,6 +27,27 @@ class JWTMockCreatorTest extends TestCase
 
         $this->assertTrue($authToken->isValid());
         $this->assertTrue($authToken->hasPermissionKey($permissionKey));
+        $this->assertEquals(-1, $authToken->getUserId());
+    }
+
+    public function testGetMockAuthorizationHeaderWithSpecificUserId(): void
+    {
+        $permissionKey = 'permission.perm';
+
+        $jwtMockCreator = new JWTMockCreator(
+            PermissionDiscoveryTest::createPermissionDiscovery(),
+            CustomPermissionDiscoveryTest::createCustomPermissionDiscovery()
+        );
+        $header = $jwtMockCreator->getMockAuthorizationHeader([$permissionKey], 52);
+
+        $this->assertNotNull($header);
+        $this->assertNotEmpty($header);
+
+        $authToken = $this->createAuthToken($header);
+
+        $this->assertTrue($authToken->isValid());
+        $this->assertTrue($authToken->hasPermissionKey($permissionKey));
+        $this->assertEquals(52, $authToken->getUserId());
     }
 
     private function createAuthToken(string $header): AuthToken

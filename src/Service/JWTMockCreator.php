@@ -101,23 +101,25 @@ class JWTMockCreator
     /**
      * Returns an authorization header with a token which contains only the specified permission keys
      * @param string[] $permissionKeys
+     * @param int $userId
      * @return string
      */
-    public function getMockAuthorizationHeader(array $permissionKeys): string
+    public function getMockAuthorizationHeader(array $permissionKeys, int $userId = -1): string
     {
-        return 'Bearer ' . $this->getMockAccessToken($permissionKeys);
+        return 'Bearer ' . $this->getMockAccessToken($permissionKeys, $userId);
     }
 
     /**
      * @param string[] $permissionKeys
+     * @param int $userId
      * @return string
      */
-    private function getMockAccessToken(array $permissionKeys): string
+    private function getMockAccessToken(array $permissionKeys, int $userId = -1): string
     {
         $mockAccessTokenPayload = [
             'iss' => 'https://epubli.de',
             'sub' => '-1',
-            'user_id' => -1,
+            'user_id' => $userId,
             'jti' => '-1',
             'exp' => (new DateTime())->add(new DateInterval('PT60M'))->getTimestamp(),
             'roles' => ['access_token'],

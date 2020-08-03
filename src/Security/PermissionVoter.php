@@ -120,9 +120,6 @@ class PermissionVoter extends Voter
         }
 
         if ($subject instanceof SelfPermissionInterface) {
-            /** @var SelfPermissionInterface $subject */
-            $userId = $subject->getUserIdForPermissionBundle();
-
             $userHasAlternativePermission = $this->authToken->hasPermissionKeys($permissionKeys, true);
 
             if ($userHasAlternativePermission && $this->authToken->isValid()) {
@@ -133,6 +130,7 @@ class PermissionVoter extends Voter
                     return true;
                 }
 
+                $userId = $subject->getUserIdForPermissionBundle();
                 if ($this->authToken->getUserId() === $userId) {
                     return true;
                 }

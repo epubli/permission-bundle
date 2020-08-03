@@ -116,6 +116,7 @@ If you want the bundle to differentiate between users who own an entity of this 
 then you need to implement the `SelfPermissionInterface`.
 ```php
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\EntityManagerInterface;
 use Epubli\PermissionBundle\Interfaces\SelfPermissionInterface;
 
 class ExampleEntity implements SelfPermissionInterface
@@ -145,6 +146,22 @@ class ExampleEntity implements SelfPermissionInterface
     {
         return 'user_id';
     }
+
+    /**
+     * @inheritDoc
+     */
+    public function hasUserIdProperty(): bool
+    {
+        return true;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getPrimaryIdsWhichBelongToUser(EntityManagerInterface $entityManager, int $userId): array
+    {
+        return [];
+    }
 }
 ```
 Or use the `SelfPermissionTrait` for the default implementation of the `SelfPermissionInterface`:
@@ -165,6 +182,56 @@ class ExampleEntity implements SelfPermissionInterface
     public function getUserId(): ?int
     {
         return $this->user_id;
+    }
+}
+```
+If you have an entity without an userId but with a relationship to another entity with an userId, you need to implement the methods of `SelfPermissionInterface` yourself.
+```php
+use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Query;
+use Epubli\PermissionBundle\Interfaces\SelfPermissionInterface;
+
+class ExampleEntity implements SelfPermissionInterface
+{
+    /**
+     * @ORM\OneToOne(targetEntity=OtherEntity::class, inversedBy="exampleEntity", cascade={"persist", "remove"})
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $otherEntity;
+
+    public function getOtherEntity(): ?OtherEntity
+    {
+        return $this->otherEntity;
+    }
+
+    public function getPrimaryIdsWhichBelongToUser(EntityManagerInterface $entityManager, int $userId): array
+    {
+        /** @var Query $query */
+        $query = $entityManager->getRepository(__CLASS__)
+            ->createQueryBuilder('c')
+            ->select('c.id')
+            ->join('c.otherEntity', 'u')
+            ->where('u.userId = :userId')
+            ->setParameter('userId', $userId)
+            ->getQuery();
+
+        return array_column($query->getArrayResult(), 'id');
+    }
+
+    public function getUserIdForPermissionBundle(): ?int
+    {
+        return $this->getOtherEntity()->getUserId();
+    }
+
+    public function getFieldNameOfUserIdForPermissionBundle(): string
+    {
+        return '';
+    }
+
+    public function hasUserIdProperty(): bool
+    {
+        return false;
     }
 }
 ```

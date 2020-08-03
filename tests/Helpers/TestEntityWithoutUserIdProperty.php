@@ -49,7 +49,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * )
  * @package Epubli\PermissionBundle\Tests\Helpers
  */
-class TestEntityWithSelfPermissionInterface implements SelfPermissionInterface
+class TestEntityWithoutUserIdProperty implements SelfPermissionInterface
 {
     /**
      * @Groups({"get"})
@@ -143,7 +143,7 @@ class TestEntityWithSelfPermissionInterface implements SelfPermissionInterface
      */
     public function getUserIdForPermissionBundle(): ?int
     {
-        return $this->getId();
+        return 5;
     }
 
     /**
@@ -151,7 +151,7 @@ class TestEntityWithSelfPermissionInterface implements SelfPermissionInterface
      */
     public function getFieldNameOfUserIdForPermissionBundle(): string
     {
-        return 'id';
+        return '';
     }
 
     /**
@@ -159,7 +159,7 @@ class TestEntityWithSelfPermissionInterface implements SelfPermissionInterface
      */
     public function getPrimaryIdsWhichBelongToUser(EntityManagerInterface $entityManager, int $userId): array
     {
-        return [];
+        return [2, 3];
     }
 
     /**
@@ -167,6 +167,6 @@ class TestEntityWithSelfPermissionInterface implements SelfPermissionInterface
      */
     public function hasUserIdProperty(): bool
     {
-        return true;
+        return false;
     }
 }

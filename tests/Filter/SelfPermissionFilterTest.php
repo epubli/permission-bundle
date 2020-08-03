@@ -3,10 +3,13 @@
 namespace Epubli\PermissionBundle\Tests\Filter;
 
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Query\FilterCollection;
 use Epubli\PermissionBundle\Filter\SelfPermissionFilter;
 use Epubli\PermissionBundle\Security\PermissionVoter;
 use Epubli\PermissionBundle\Tests\Helpers\TestEntityWithEverything;
+use Epubli\PermissionBundle\Tests\Helpers\TestEntityWithoutUserIdProperty;
 use Epubli\PermissionBundle\Tests\Helpers\TestEntityWithSelfPermissionInterface;
 use Epubli\PermissionBundle\Tests\Security\PermissionVoterTest;
 use PHPUnit\Framework\TestCase;
@@ -25,6 +28,12 @@ class SelfPermissionFilterTest extends TestCase
     {
         $selfPermissionFilter = new SelfPermissionFilter($this->createMock(EntityManager::class));
         $selfPermissionFilter->setPermissionVoter($permissionVoter);
+        $selfPermissionFilter->setEntityManager(
+            $this->createConfiguredMock(
+                EntityManagerInterface::class,
+                ['getFilters' => $this->createMock(FilterCollection::class)]
+            )
+        );
 
         $cm = new ClassMetadata('');
         $cm->reflClass = new ReflectionClass(get_class($entity));
@@ -217,5 +226,39 @@ class SelfPermissionFilterTest extends TestCase
         $filterStr = $this->getSelfPermissionFilter($voter, $testEntity);
 
         $this->assertEquals('', $filterStr);
+    }
+
+    public function testSelfPermissionFilterOnGetSingleEntityWithoutUserIdProperty(): void
+    {
+        $voter = PermissionVoterTest::createPermissionVoter(
+            [
+                'test.test_entity_without_user_id_property.read.self',
+            ],
+            '/api/test_entity_without_user_id_propertys/1',
+            'GET'
+        );
+
+        $testEntity = new TestEntityWithoutUserIdProperty();
+
+        $filterStr = $this->getSelfPermissionFilter($voter, $testEntity);
+
+        $this->assertEquals('t.id IN (2,3)', $filterStr);
+    }
+
+    public function testSelfPermissionFilterOnGetCollectionWithoutUserIdProperty(): void
+    {
+        $voter = PermissionVoterTest::createPermissionVoter(
+            [
+                'test.test_entity_without_user_id_property.read.self',
+            ],
+            '/api/test_entity_without_user_id_propertys',
+            'GET'
+        );
+
+        $testEntity = new TestEntityWithoutUserIdProperty();
+
+        $filterStr = $this->getSelfPermissionFilter($voter, $testEntity);
+
+        $this->assertEquals('t.id IN (2,3)', $filterStr);
     }
 }

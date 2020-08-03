@@ -27,5 +27,6 @@ final class SelfPermissionFilterConfigurator
         $filter = $this->entityManager->getFilters()->enable('epubli_permission_bundle_self_permission_filter');
 
         $filter->setPermissionVoter($this->permissionVoter);
+        $filter->setEntityManager($this->entityManager);
     }
 }
