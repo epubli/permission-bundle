@@ -234,7 +234,7 @@ class SelfPermissionFilterTest extends TestCase
             [
                 'test.test_entity_without_user_id_property.read.self',
             ],
-            '/api/test_entity_without_user_id_propertys/1',
+            '/api/test_entity_without_user_id_properties/1',
             'GET'
         );
 
@@ -251,7 +251,7 @@ class SelfPermissionFilterTest extends TestCase
             [
                 'test.test_entity_without_user_id_property.read.self',
             ],
-            '/api/test_entity_without_user_id_propertys',
+            '/api/test_entity_without_user_id_properties',
             'GET'
         );
 

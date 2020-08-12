@@ -3,6 +3,7 @@
 namespace Epubli\PermissionBundle\Service;
 
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Operation\UnderscorePathSegmentNameGenerator;
 use Doctrine\Common\Annotations\Reader;
 use Epubli\PermissionBundle\EndpointWithPermission;
 use Epubli\PermissionBundle\EntityWithPermissions;
@@ -97,7 +98,8 @@ class PermissionDiscovery
             ApiResource::class
         );
 
-        $className = self::fromCamelCaseToSnakeCase($reflectionClass->getShortName());
+        $underscorePathSegmentNameGenerator = new UnderscorePathSegmentNameGenerator();
+        $className = $underscorePathSegmentNameGenerator->getSegmentName($reflectionClass->getShortName(), false);
 
         $relevantPath = self::getEntitySpecificPath($requestPath, $apiPlatformAnnotation);
 
@@ -120,15 +122,17 @@ class PermissionDiscovery
             }
 
             if (isset($data['path'])) {
-                $validOperationPaths[] = rtrim($data['path'], '/');
+                $validOperationPath = rtrim($data['path'], '/');
             } elseif ($apiPlatformAnnotation->shortName !== null) {
-                $validOperationPaths[] = "/{$apiPlatformAnnotation->shortName}";
+                $validOperationPath = "/{$apiPlatformAnnotation->shortName}";
             } else {
-                $validOperationPaths[] = "/{$className}s";
-                $validOperationPaths[] = "/{$className}es";
+                $validOperationPath = '/' . $underscorePathSegmentNameGenerator->getSegmentName(
+                        $reflectionClass->getShortName(),
+                        true
+                    );
             }
 
-            if (!in_array($relevantPath, $validOperationPaths, true)) {
+            if ($relevantPath !== $validOperationPath) {
                 continue;
             }
 
@@ -271,7 +275,8 @@ class PermissionDiscovery
             }
 
             $needsSelfPermission = $reflectionClass->implementsInterface(SelfPermissionInterface::class);
-            $className = self::fromCamelCaseToSnakeCase($reflectionClass->getShortName());
+            $underscorePathSegmentNameGenerator = new UnderscorePathSegmentNameGenerator();
+            $className = $underscorePathSegmentNameGenerator->getSegmentName($reflectionClass->getShortName(), false);
 
             $this->entities[] = new EntityWithPermissions(
                 $this->getEndpointsOfEntity($reflectionClass, $className, $apiPlatformAnnotation, $needsSelfPermission)
@@ -510,19 +515,5 @@ class PermissionDiscovery
     private static function isUpdateHttpMethod(string $httpMethod): bool
     {
         return in_array(strtoupper($httpMethod), self::UPDATE_METHODS, true);
-    }
-
-    /**
-     * @param $input
-     * @return string
-     */
-    private static function fromCamelCaseToSnakeCase($input): string
-    {
-        preg_match_all('!([A-Z][A-Z0-9]*(?=$|[A-Z][a-z0-9])|[A-Za-z][a-z0-9]+)!', $input, $matches);
-        $ret = $matches[0];
-        foreach ($ret as &$match) {
-            $match = $match == strtoupper($match) ? strtolower($match) : lcfirst($match);
-        }
-        return implode('_', $ret);
     }
 }

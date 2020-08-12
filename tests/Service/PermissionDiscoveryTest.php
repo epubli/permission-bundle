@@ -238,7 +238,7 @@ class PermissionDiscoveryTest extends TestCase
         yield [
             new TestEntityWithSpecificSecurity(),
             'GET',
-            '/api/test_entity_with_specific_securitys',
+            '/api/test_entity_with_specific_securities',
             ['test.test_entity_with_specific_security.read'],
             null,
         ];
