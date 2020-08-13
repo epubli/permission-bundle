@@ -4,7 +4,7 @@ namespace Epubli\PermissionBundle\Tests\Security;
 
 use Doctrine\Common\Annotations\AnnotationReader;
 use Epubli\PermissionBundle\Security\PermissionVoter;
-use Epubli\PermissionBundle\Service\AuthToken;
+use Epubli\PermissionBundle\Service\AccessToken;
 use Epubli\PermissionBundle\Service\JWTMockCreator;
 use Epubli\PermissionBundle\Tests\Helpers\TestEntityWithSelfPermissionInterface;
 use Epubli\PermissionBundle\Tests\Service\CustomPermissionDiscoveryTest;
@@ -22,7 +22,7 @@ class PermissionVoterTest extends TestCase
      * @param string $requestUri
      * @param string $requestMethod
      * @param array $requestJson
-     * @param bool $includeAuthToken
+     * @param bool $includeAccessToken
      * @return PermissionVoter
      */
     public static function createPermissionVoter(
@@ -30,7 +30,7 @@ class PermissionVoterTest extends TestCase
         string $requestUri,
         string $requestMethod,
         array $requestJson = [],
-        bool $includeAuthToken = true
+        bool $includeAccessToken = true
     ): PermissionVoter {
         $permissionDiscovery = PermissionDiscoveryTest::createPermissionDiscovery();
         $customPermissionDiscovery = CustomPermissionDiscoveryTest::createCustomPermissionDiscovery();
@@ -41,7 +41,7 @@ class PermissionVoterTest extends TestCase
                 'REQUEST_URI' => $requestUri,
                 'REQUEST_METHOD' => $requestMethod
             ];
-        if ($includeAuthToken) {
+        if ($includeAccessToken) {
             $serverOptions['HTTP_AUTHORIZATION'] = $jwtMockCreator->getMockAuthorizationHeader($permissionKeys);
         }
 
@@ -59,7 +59,7 @@ class PermissionVoterTest extends TestCase
 
         return new PermissionVoter(
             new AnnotationReader(),
-            new AuthToken($requestStack),
+            new AccessToken($requestStack),
             $requestStack,
             $permissionDiscovery
         );

@@ -5,7 +5,7 @@ namespace Epubli\PermissionBundle\Security;
 use ApiPlatform\Core\Annotation\ApiResource;
 use Doctrine\Common\Annotations\Reader;
 use Epubli\PermissionBundle\Interfaces\SelfPermissionInterface;
-use Epubli\PermissionBundle\Service\AuthToken;
+use Epubli\PermissionBundle\Service\AccessToken;
 use Epubli\PermissionBundle\Service\PermissionDiscovery;
 use LogicException;
 use ReflectionClass;
@@ -23,9 +23,9 @@ class PermissionVoter extends Voter
     private $annotationReader;
 
     /**
-     * @var AuthToken
+     * @var AccessToken
      */
-    private $authToken;
+    private $accessToken;
 
     /**
      * @var RequestStack
@@ -39,18 +39,18 @@ class PermissionVoter extends Voter
 
     /**
      * @param Reader $annotationReader
-     * @param AuthToken $authToken
+     * @param AccessToken $accessToken
      * @param RequestStack $requestStack
      * @param PermissionDiscovery $permissionDiscovery
      */
     public function __construct(
         Reader $annotationReader,
-        AuthToken $authToken,
+        AccessToken $accessToken,
         RequestStack $requestStack,
         PermissionDiscovery $permissionDiscovery
     ) {
         $this->annotationReader = $annotationReader;
-        $this->authToken = $authToken;
+        $this->accessToken = $accessToken;
         $this->requestStack = $requestStack;
         $this->permissionDiscovery = $permissionDiscovery;
     }
@@ -114,15 +114,15 @@ class PermissionVoter extends Voter
             return true;
         }
 
-        $userHasPermission = $this->authToken->hasPermissionKeys($permissionKeys);
+        $userHasPermission = $this->accessToken->hasPermissionKeys($permissionKeys);
         if ($userHasPermission) {
             return true;
         }
 
         if ($subject instanceof SelfPermissionInterface) {
-            $userHasAlternativePermission = $this->authToken->hasPermissionKeys($permissionKeys, true);
+            $userHasAlternativePermission = $this->accessToken->hasPermissionKeys($permissionKeys, true);
 
-            if ($userHasAlternativePermission && $this->authToken->exists()) {
+            if ($userHasAlternativePermission && $this->accessToken->exists()) {
                 if ($isGetRequestOnCollection) {
                     //At this point SelfPermissionFilter::addFilterConstraint(...) has already been run.
                     //It has filtered the get request so that only entities which belong to the user will be returned.
@@ -131,15 +131,15 @@ class PermissionVoter extends Voter
                 }
 
                 $userId = $subject->getUserIdForPermissionBundle();
-                if ($this->authToken->getUserId() === $userId) {
+                if ($this->accessToken->getUserId() === $userId) {
                     return true;
                 }
             }
         }
 
-        if ($this->authToken->exists()) {
+        if ($this->accessToken->exists()) {
             //User is authenticated but forbidden
-            $missingKeys = $this->authToken->getMissingPermissionKeys($permissionKeys);
+            $missingKeys = $this->accessToken->getMissingPermissionKeys($permissionKeys);
             throw new AccessDeniedHttpException('Missing permission keys: ' . implode(', ', $missingKeys));
         }
 
@@ -179,13 +179,13 @@ class PermissionVoter extends Voter
             return false;
         }
 
-        $userHasPermission = $this->authToken->hasPermissionKeys($permissionKeys);
+        $userHasPermission = $this->accessToken->hasPermissionKeys($permissionKeys);
         if ($userHasPermission) {
             //User has permission to see everything
             return false;
         }
 
-        $userHasAlternativePermission = $this->authToken->hasPermissionKeys($permissionKeys, true);
+        $userHasAlternativePermission = $this->accessToken->hasPermissionKeys($permissionKeys, true);
         if ($userHasAlternativePermission) {
             //User has permission to see his own entities so he needs a filter
             return true;
@@ -198,8 +198,8 @@ class PermissionVoter extends Voter
     /**
      * @return int|null
      */
-    public function getAuthTokenUserId(): ?int
+    public function getAccessTokenUserId(): ?int
     {
-        return $this->authToken->getUserId();
+        return $this->accessToken->getUserId();
     }
 }

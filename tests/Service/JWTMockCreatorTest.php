@@ -2,7 +2,7 @@
 
 namespace Epubli\PermissionBundle\Tests\Service;
 
-use Epubli\PermissionBundle\Service\AuthToken;
+use Epubli\PermissionBundle\Service\AccessToken;
 use Epubli\PermissionBundle\Service\JWTMockCreator;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
@@ -23,11 +23,11 @@ class JWTMockCreatorTest extends TestCase
         $this->assertNotNull($header);
         $this->assertNotEmpty($header);
 
-        $authToken = $this->createAuthToken($header);
+        $accessToken = $this->createAccessToken($header);
 
-        $this->assertTrue($authToken->exists());
-        $this->assertTrue($authToken->hasPermissionKey($permissionKey));
-        $this->assertEquals(-1, $authToken->getUserId());
+        $this->assertTrue($accessToken->exists());
+        $this->assertTrue($accessToken->hasPermissionKey($permissionKey));
+        $this->assertEquals(-1, $accessToken->getUserId());
     }
 
     public function testGetMockAuthorizationHeaderWithSpecificUserId(): void
@@ -43,19 +43,19 @@ class JWTMockCreatorTest extends TestCase
         $this->assertNotNull($header);
         $this->assertNotEmpty($header);
 
-        $authToken = $this->createAuthToken($header);
+        $accessToken = $this->createAccessToken($header);
 
-        $this->assertTrue($authToken->exists());
-        $this->assertTrue($authToken->hasPermissionKey($permissionKey));
-        $this->assertEquals(52, $authToken->getUserId());
+        $this->assertTrue($accessToken->exists());
+        $this->assertTrue($accessToken->hasPermissionKey($permissionKey));
+        $this->assertEquals(52, $accessToken->getUserId());
     }
 
-    private function createAuthToken(string $header): AuthToken
+    private function createAccessToken(string $header): AccessToken
     {
         $requestStack = new RequestStack();
         $request = new Request([], [], [], [], [], ['HTTP_AUTHORIZATION' => $header]);
         $requestStack->push($request);
-        return new AuthToken($requestStack);
+        return new AccessToken($requestStack);
     }
 
     public function testGetMockAuthorizationHeaderForThisMicroservice(): void
@@ -69,11 +69,11 @@ class JWTMockCreatorTest extends TestCase
         $this->assertNotNull($header);
         $this->assertNotEmpty($header);
 
-        $authToken = $this->createAuthToken($header);
+        $accessToken = $this->createAccessToken($header);
 
-        $this->assertTrue($authToken->exists());
-        $this->assertTrue($authToken->hasPermissionKey('test.test_entity_with_everything.create'));
-        $this->assertTrue($authToken->hasPermissionKey('test.test_entity_with_everything.read'));
-        $this->assertTrue($authToken->hasPermissionKey('test.test_entity_with_everything.delete'));
+        $this->assertTrue($accessToken->exists());
+        $this->assertTrue($accessToken->hasPermissionKey('test.test_entity_with_everything.create'));
+        $this->assertTrue($accessToken->hasPermissionKey('test.test_entity_with_everything.read'));
+        $this->assertTrue($accessToken->hasPermissionKey('test.test_entity_with_everything.delete'));
     }
 }

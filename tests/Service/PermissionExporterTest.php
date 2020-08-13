@@ -4,7 +4,7 @@ namespace Epubli\PermissionBundle\Tests\Service;
 
 use Epubli\PermissionBundle\DependencyInjection\Configuration;
 use Epubli\PermissionBundle\Exception\PermissionExportException;
-use Epubli\PermissionBundle\Service\AuthToken;
+use Epubli\PermissionBundle\Service\AccessToken;
 use Epubli\PermissionBundle\Service\JWTMockCreator;
 use Epubli\PermissionBundle\Service\PermissionExporter;
 use GuzzleHttp\Client;
@@ -105,10 +105,10 @@ class PermissionExporterTest extends TestCase
             [], [], [], [], [], ['HTTP_AUTHORIZATION' => $tokenStr]
         );
         $requestStack->push($request);
-        $authToken = new AuthToken($requestStack);
+        $accessToken = new AccessToken($requestStack);
 
-        $this->assertTrue($authToken->exists());
-        $this->assertTrue($authToken->hasPermissionKey('user.permission.create_permissions'));
+        $this->assertTrue($accessToken->exists());
+        $this->assertTrue($accessToken->hasPermissionKey('user.permission.create_permissions'));
     }
 
     public function testPermissionExporterOnInvalidStatusCode(): void

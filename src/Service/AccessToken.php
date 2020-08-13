@@ -7,10 +7,10 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
- * Class AuthToken
+ * Class AccessToken
  * @package Epubli\PermissionBundle\Service
  */
-class AuthToken
+class AccessToken
 {
     /** @var RequestStack */
     private $requestStack;

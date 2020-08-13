@@ -60,7 +60,7 @@ final class SelfPermissionFilter extends SQLFilter
             return '';
         }
 
-        $userId = $this->permissionVoter->getAuthTokenUserId() ?? -1;
+        $userId = $this->permissionVoter->getAccessTokenUserId() ?? -1;
 
         if ($entity->hasUserIdProperty()) {
             $fieldName = $entity->getFieldNameOfUserIdForPermissionBundle();

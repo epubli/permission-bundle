@@ -75,7 +75,7 @@ class SelfPermissionFilterTest extends TestCase
         $this->assertEquals('t.id = -1', $filterStr);
     }
 
-    public function testSelfPermissionFilterWithNoAuthToken(): void
+    public function testSelfPermissionFilterWithNoAccessToken(): void
     {
         $voter = PermissionVoterTest::createPermissionVoter(
             [

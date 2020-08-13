@@ -236,24 +236,24 @@ class ExampleEntity implements SelfPermissionInterface
 }
 ```
 
-### AuthToken
+### AccessToken
 
 You can use this like a service. It supports autowiring. This gives you access to the properties of the access token of the user.
 
 ```php
 namespace App\Controller;
 
-use Epubli\PermissionBundle\Service\AuthToken;
+use Epubli\PermissionBundle\Service\AccessToken;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class TestAction extends AbstractController
 {
-    public function __invoke(AuthToken $authToken)
+    public function __invoke(AccessToken $accessToken)
     {
-        var_dump('Is the token present and valid: ' . $authToken->exists());
-        var_dump('This is the unique json token identifier: ' . $authToken->getJTI());
-        var_dump('The id of the user: ' . $authToken->getUserId());
-        var_dump('Checking for permissions: ' . $authToken->hasPermissionKey('user.user.delete'));
+        var_dump('Is the token present and valid: ' . $accessToken->exists());
+        var_dump('This is the unique json token identifier: ' . $accessToken->getJTI());
+        var_dump('The id of the user: ' . $accessToken->getUserId());
+        var_dump('Checking for permissions: ' . $accessToken->hasPermissionKey('user.user.delete'));
     }
 }
 ```
@@ -267,7 +267,7 @@ Example:
 namespace App\Controller;
 
 use Epubli\PermissionBundle\Annotation\Permission;
-use Epubli\PermissionBundle\Service\AuthToken;
+use Epubli\PermissionBundle\Service\AccessToken;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
@@ -284,19 +284,19 @@ class TestController extends AbstractController
      *     description="This is a description"
      * )
      */
-    public function postTest(AuthToken $authToken)
+    public function postTest(AccessToken $accessToken)
     {
-        if (!$authToken->exists()){
+        if (!$accessToken->exists()){
             throw new UnauthorizedHttpException('Bearer', 'Access-Token is invalid.');
         }
 
-        if (!$authToken->hasPermissionKey('test.customPermission1')){
+        if (!$accessToken->hasPermissionKey('test.customPermission1')){
             throw new AccessDeniedHttpException('Missing permission key: test.customPermission1');
         }
 
         //User is now authenticated and authorized for customPermission1
 
-        if (!$authToken->hasPermissionKey('test.customPermission2')){
+        if (!$accessToken->hasPermissionKey('test.customPermission2')){
             throw new AccessDeniedHttpException('Missing permission key:  test.customPermission2');
         }
 

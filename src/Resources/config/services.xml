@@ -6,11 +6,11 @@
     <services>
         <defaults autowire="true" autoconfigure="true" public="false"/>
         <service
-                id="epubli_permission.service.auth_token"
-                class="Epubli\PermissionBundle\Service\AuthToken"/>
+                id="epubli_permission.service.access_token"
+                class="Epubli\PermissionBundle\Service\AccessToken"/>
         <service
-                id="Epubli\PermissionBundle\Service\AuthToken"
-                alias="epubli_permission.service.auth_token"/>
+                id="Epubli\PermissionBundle\Service\AccessToken"
+                alias="epubli_permission.service.access_token"/>
 
         <service
                 id="epubli_permission.service.permission_discovery"
