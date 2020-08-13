@@ -17,7 +17,9 @@ class AccessTokenTest extends TestCase
             . '3Rva2VuIl0sInN1YiI6ImV4bWFwbGtlMUBleGFtcGxlLmNvbSIsInVzZXJfaWQiOjgxfQ.Wr_-EIM-2pc5hTLqjA'
             . 'NpaQzh6nM6qzWRe8qqDh5dhq0';
 
-        $accessToken = new AccessToken($this->createRequestStack($accessToken));
+        $accessToken = new AccessToken(
+            $this->createRequestStack([AccessToken::ACCESS_TOKEN_COOKIE_NAME => $accessToken])
+        );
 
         $this->assertTrue($accessToken->exists(), 'AccessToken does not exist');
         $this->assertEquals('57e42448-ba5e-3af8-be01-b1c86379d517', $accessToken->getJTI());
@@ -28,13 +30,13 @@ class AccessTokenTest extends TestCase
     }
 
     /**
-     * @param $token
+     * @param array $cookies
      * @return RequestStack
      */
-    private function createRequestStack($token): RequestStack
+    private function createRequestStack(array $cookies): RequestStack
     {
         $requestStack = new RequestStack();
-        $request = new Request([], [], [], [], [], ['HTTP_AUTHORIZATION' => 'Bearer ' . $token]);
+        $request = new Request([], [], [], $cookies, [], []);
         $requestStack->push($request);
         return $requestStack;
     }
@@ -46,7 +48,9 @@ class AccessTokenTest extends TestCase
             . 'sicmVmcmVzaF90b2tlbiJdLCJzdWIiOiJleG1hcGxrZTFAZXhhbXBsZS5jb20iLCJ1c2VyX2lkIjo4MX0._Yfe8tj'
             . 'sxulMaNv7G4EIXyCnCT4TJPnXozCmNshAISI';
 
-        $accessToken = new AccessToken($this->createRequestStack($refreshToken));
+        $accessToken = new AccessToken(
+            $this->createRequestStack([AccessToken::ACCESS_TOKEN_COOKIE_NAME => $refreshToken])
+        );
 
         $this->assertTrue($accessToken->exists(), 'RereshToken does not exist');
         $this->assertEquals('57e42448-ba5e-3af8-be01-b1c86379d517', $accessToken->getJTI());
@@ -60,7 +64,7 @@ class AccessTokenTest extends TestCase
     {
         $token = 'fsfesf.fesfsef.sefesfesyJleHAiOjE1';
 
-        $accessToken = new AccessToken($this->createRequestStack($token));
+        $accessToken = new AccessToken($this->createRequestStack([AccessToken::ACCESS_TOKEN_COOKIE_NAME => $token]));
 
         $this->assertFalse($accessToken->exists());
         $this->assertNull($accessToken->getJTI());
@@ -74,7 +78,7 @@ class AccessTokenTest extends TestCase
     {
         $token = '';
 
-        $accessToken = new AccessToken($this->createRequestStack($token));
+        $accessToken = new AccessToken($this->createRequestStack([AccessToken::ACCESS_TOKEN_COOKIE_NAME => $token]));
 
         $this->assertFalse($accessToken->exists());
         $this->assertNull($accessToken->getJTI());

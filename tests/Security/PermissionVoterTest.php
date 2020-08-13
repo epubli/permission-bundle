@@ -41,8 +41,11 @@ class PermissionVoterTest extends TestCase
                 'REQUEST_URI' => $requestUri,
                 'REQUEST_METHOD' => $requestMethod
             ];
+
         if ($includeAccessToken) {
-            $serverOptions['HTTP_AUTHORIZATION'] = $jwtMockCreator->getMockAuthorizationHeader($permissionKeys);
+            $cookies = [AccessToken::ACCESS_TOKEN_COOKIE_NAME => $jwtMockCreator->createJsonWebToken($permissionKeys)];
+        } else {
+            $cookies = [];
         }
 
         $requestStack = new RequestStack();
@@ -50,7 +53,7 @@ class PermissionVoterTest extends TestCase
             [],
             [],
             [],
-            [],
+            $cookies,
             [],
             $serverOptions,
             json_encode($requestJson)

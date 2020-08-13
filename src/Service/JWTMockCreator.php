@@ -6,9 +6,12 @@ use DateInterval;
 use DateTime;
 use Exception;
 use GuzzleHttp\Client;
+use GuzzleHttp\Cookie\CookieJar;
+use GuzzleHttp\Cookie\SetCookie;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ServerException;
 use ReflectionException;
+use Symfony\Component\HttpFoundation\Cookie;
 
 /**
  * Class JsonWebTokenMockCreator
@@ -23,10 +26,10 @@ class JWTMockCreator
     private $customPermissionDiscovery;
 
     /** @var string|null */
-    private $headerForAllPermissions;
+    private $jwtForAllPermissions;
 
     /** @var string|null */
-    private $headerForThisMicroservice;
+    private $jwtForThisMicroservice;
 
     /**
      * JWTMockCreator constructor.
@@ -42,41 +45,88 @@ class JWTMockCreator
     }
 
     /**
-     * Returns an authorization header with a token which contains permissions for everything
+     * For unit tests
+     * @param string $jsonWebToken
+     * @return \Symfony\Component\BrowserKit\Cookie
+     */
+    public function createBrowserKitCookie(string $jsonWebToken): \Symfony\Component\BrowserKit\Cookie
+    {
+        return new \Symfony\Component\BrowserKit\Cookie(AccessToken::ACCESS_TOKEN_COOKIE_NAME, $jsonWebToken);
+    }
+
+    /**
+     * For the constructor of the request class
+     * @param string $jsonWebToken
+     * @return Cookie
+     */
+    public function createHTTPCookie(string $jsonWebToken): Cookie
+    {
+        return Cookie::create(AccessToken::ACCESS_TOKEN_COOKIE_NAME, $jsonWebToken);
+    }
+
+    /**
+     * For the constructor of the request class
+     * @param string $jsonWebToken
+     * @return array
+     */
+    public function createCookieArray(string $jsonWebToken): array
+    {
+        return [
+            AccessToken::ACCESS_TOKEN_COOKIE_NAME => $jsonWebToken
+        ];
+    }
+
+    /**
+     * For guzzle
+     * @param string $jsonWebToken
+     * @return CookieJar
+     */
+    public function createCookieJar(string $jsonWebToken): CookieJar
+    {
+        $cookieJar = new CookieJar();
+        $cookieJar->setCookie(
+            new SetCookie(
+                [
+                    'Name' => AccessToken::ACCESS_TOKEN_COOKIE_NAME,
+                    'Value' => $jsonWebToken
+                ]
+            )
+        );
+        return $cookieJar;
+    }
+
+    /**
+     * Returns a json web token which contains permissions for everything
      * @return string
      * @throws Exception
      */
-    public function getMockAuthorizationHeaderForAllPermissions(): ?string
+    public function createJsonWebTokenForAllPermissions(): ?string
     {
-        if ($this->headerForAllPermissions !== null) {
-            return $this->headerForAllPermissions;
+        if ($this->jwtForAllPermissions !== null) {
+            return $this->jwtForAllPermissions;
         }
 
         $client = new Client(['base_uri' => 'http://user']);
-        $header = $this->getMockAuthorizationHeader(['user.permission.read']);
-        $permissionKeys = $this->getAllPermissionKeys($client, $header, '/api/roles/permissions?page=1');
+        $jwt = $this->createJsonWebToken(['user.permission.read']);
+        $permissionKeys = $this->getAllPermissionKeys($client, $jwt, '/api/roles/permissions?page=1');
 
-        $this->headerForAllPermissions = $this->getMockAuthorizationHeader($permissionKeys);
-        return $this->headerForAllPermissions;
+        $this->jwtForAllPermissions = $this->createJsonWebToken($permissionKeys);
+        return $this->jwtForAllPermissions;
     }
 
     /**
      * @param Client $client
-     * @param string $header
+     * @param string $jsonWebToken
      * @param string $path
      * @return string[]
      * @throws Exception
      */
-    private function getAllPermissionKeys(Client $client, string $header, string $path): array
+    private function getAllPermissionKeys(Client $client, string $jsonWebToken, string $path): array
     {
         try {
             $response = $client->get(
                 $path,
-                [
-                    'headers' => [
-                        'AUTHORIZATION' => $header
-                    ]
-                ]
+                ['cookies' => $this->createCookieJar($jsonWebToken)]
             );
 
             $json = json_decode($response->getBody(), true);
@@ -87,7 +137,7 @@ class JWTMockCreator
                 $nextPath = $json['hydra:view']['hydra:next'];
                 $permissionKeys = array_merge(
                     $permissionKeys,
-                    $this->getAllPermissionKeys($client, $header, $nextPath)
+                    $this->getAllPermissionKeys($client, $jsonWebToken, $nextPath)
                 );
             }
 
@@ -99,22 +149,12 @@ class JWTMockCreator
     }
 
     /**
-     * Returns an authorization header with a token which contains only the specified permission keys
+     * Returns a json web token which contains only the specified permission keys
      * @param string[] $permissionKeys
      * @param int $userId
      * @return string
      */
-    public function getMockAuthorizationHeader(array $permissionKeys, int $userId = -1): string
-    {
-        return 'Bearer ' . $this->getMockAccessToken($permissionKeys, $userId);
-    }
-
-    /**
-     * @param string[] $permissionKeys
-     * @param int $userId
-     * @return string
-     */
-    private function getMockAccessToken(array $permissionKeys, int $userId = -1): string
+    public function createJsonWebToken(array $permissionKeys, int $userId = -1): string
     {
         $mockAccessTokenPayload = [
             'iss' => 'https://epubli.de',
@@ -138,20 +178,20 @@ class JWTMockCreator
     }
 
     /**
-     * Returns an authorization header with a token which contains permissions to everything in this microservice
+     * Returns a json web token which contains permissions to everything in this microservice
      * @return string
      * @throws ReflectionException
      */
-    public function getMockAuthorizationHeaderForThisMicroservice(): ?string
+    public function createJsonWebTokenForThisMicroservice(): ?string
     {
-        if ($this->headerForThisMicroservice !== null) {
-            return $this->headerForThisMicroservice;
+        if ($this->jwtForThisMicroservice !== null) {
+            return $this->jwtForThisMicroservice;
         }
 
         $permissionKeys = $this->permissionDiscovery->getAllPermissionKeys();
         $permissionKeys = array_merge($permissionKeys, $this->customPermissionDiscovery->getAllPermissionKeys());
 
-        $this->headerForThisMicroservice = $this->getMockAuthorizationHeader($permissionKeys);
-        return $this->headerForThisMicroservice;
+        $this->jwtForThisMicroservice = $this->createJsonWebToken($permissionKeys);
+        return $this->jwtForThisMicroservice;
     }
 }

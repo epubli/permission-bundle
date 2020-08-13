@@ -4,7 +4,6 @@ namespace Epubli\PermissionBundle\Tests\Service;
 
 use Epubli\PermissionBundle\DependencyInjection\Configuration;
 use Epubli\PermissionBundle\Exception\PermissionExportException;
-use Epubli\PermissionBundle\Service\AccessToken;
 use Epubli\PermissionBundle\Service\JWTMockCreator;
 use Epubli\PermissionBundle\Service\PermissionExporter;
 use GuzzleHttp\Client;
@@ -16,7 +15,6 @@ use GuzzleHttp\Middleware;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\HttpFoundation\RequestStack;
 
 class PermissionExporterTest extends TestCase
 {
@@ -51,8 +49,6 @@ class PermissionExporterTest extends TestCase
             ),
             $json['permissions']
         );
-
-        $this->checkAuthorizationHeader($request->getHeaders()['AUTHORIZATION'][0]);
     }
 
     /**
@@ -76,7 +72,6 @@ class PermissionExporterTest extends TestCase
 
         $client = new Client(['handler' => $handlerStack]);
 
-
         $permissionDiscovery = $permissionDiscovery ?? PermissionDiscoveryTest::createPermissionDiscovery();
         $customPermissionDiscovery = $customPermissionDiscovery ?? CustomPermissionDiscoveryTest::createCustomPermissionDiscovery(
             );
@@ -93,22 +88,6 @@ class PermissionExporterTest extends TestCase
             $customPermissionDiscovery,
             $jwtMockCreator
         );
-    }
-
-    /**
-     * @param string $tokenStr
-     */
-    private function checkAuthorizationHeader(string $tokenStr): void
-    {
-        $requestStack = new RequestStack();
-        $request = new \Symfony\Component\HttpFoundation\Request(
-            [], [], [], [], [], ['HTTP_AUTHORIZATION' => $tokenStr]
-        );
-        $requestStack->push($request);
-        $accessToken = new AccessToken($requestStack);
-
-        $this->assertTrue($accessToken->exists());
-        $this->assertTrue($accessToken->hasPermissionKey('user.permission.create_permissions'));
     }
 
     public function testPermissionExporterOnInvalidStatusCode(): void

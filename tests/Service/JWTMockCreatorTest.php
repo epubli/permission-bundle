@@ -18,12 +18,12 @@ class JWTMockCreatorTest extends TestCase
             PermissionDiscoveryTest::createPermissionDiscovery(),
             CustomPermissionDiscoveryTest::createCustomPermissionDiscovery()
         );
-        $header = $jwtMockCreator->getMockAuthorizationHeader([$permissionKey]);
+        $jwt = $jwtMockCreator->createJsonWebToken([$permissionKey]);
 
-        $this->assertNotNull($header);
-        $this->assertNotEmpty($header);
+        $this->assertNotNull($jwt);
+        $this->assertNotEmpty($jwt);
 
-        $accessToken = $this->createAccessToken($header);
+        $accessToken = $this->createAccessToken($jwtMockCreator->createCookieArray($jwt));
 
         $this->assertTrue($accessToken->exists());
         $this->assertTrue($accessToken->hasPermissionKey($permissionKey));
@@ -38,22 +38,26 @@ class JWTMockCreatorTest extends TestCase
             PermissionDiscoveryTest::createPermissionDiscovery(),
             CustomPermissionDiscoveryTest::createCustomPermissionDiscovery()
         );
-        $header = $jwtMockCreator->getMockAuthorizationHeader([$permissionKey], 52);
+        $jwt = $jwtMockCreator->createJsonWebToken([$permissionKey], 52);
 
-        $this->assertNotNull($header);
-        $this->assertNotEmpty($header);
+        $this->assertNotNull($jwt);
+        $this->assertNotEmpty($jwt);
 
-        $accessToken = $this->createAccessToken($header);
+        $accessToken = $this->createAccessToken($jwtMockCreator->createCookieArray($jwt));
 
         $this->assertTrue($accessToken->exists());
         $this->assertTrue($accessToken->hasPermissionKey($permissionKey));
         $this->assertEquals(52, $accessToken->getUserId());
     }
 
-    private function createAccessToken(string $header): AccessToken
+    /**
+     * @param array $cookies
+     * @return AccessToken
+     */
+    private function createAccessToken(array $cookies): AccessToken
     {
         $requestStack = new RequestStack();
-        $request = new Request([], [], [], [], [], ['HTTP_AUTHORIZATION' => $header]);
+        $request = new Request([], [], [], $cookies, [], []);
         $requestStack->push($request);
         return new AccessToken($requestStack);
     }
@@ -64,12 +68,12 @@ class JWTMockCreatorTest extends TestCase
             PermissionDiscoveryTest::createPermissionDiscovery(),
             CustomPermissionDiscoveryTest::createCustomPermissionDiscovery()
         );
-        $header = $jwtMockCreator->getMockAuthorizationHeaderForThisMicroservice();
+        $jwt = $jwtMockCreator->createJsonWebTokenForThisMicroservice();
 
-        $this->assertNotNull($header);
-        $this->assertNotEmpty($header);
+        $this->assertNotNull($jwt);
+        $this->assertNotEmpty($jwt);
 
-        $accessToken = $this->createAccessToken($header);
+        $accessToken = $this->createAccessToken($jwtMockCreator->createCookieArray($jwt));
 
         $this->assertTrue($accessToken->exists());
         $this->assertTrue($accessToken->hasPermissionKey('test.test_entity_with_everything.create'));

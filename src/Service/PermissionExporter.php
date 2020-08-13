@@ -111,11 +111,11 @@ class PermissionExporter
                         'microservice' => $this->permissionDiscovery->getMicroserviceName(),
                         'permissions' => $permissions,
                     ],
-                    'headers' => [
-                        'AUTHORIZATION' => $this->jwtMockCreator->getMockAuthorizationHeader(
+                    'cookies' => $this->jwtMockCreator->createCookieJar(
+                        $this->jwtMockCreator->createJsonWebToken(
                             ['user.permission.create_permissions']
                         )
-                    ]
+                    )
                 ]
             );
 

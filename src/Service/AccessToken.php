@@ -12,6 +12,9 @@ use Symfony\Component\HttpFoundation\RequestStack;
  */
 class AccessToken
 {
+    /** @var string */
+    public const ACCESS_TOKEN_COOKIE_NAME = 'access_token';
+
     /** @var RequestStack */
     private $requestStack;
 
@@ -30,6 +33,10 @@ class AccessToken
     /** @var bool */
     private $exists = false;
 
+    /**
+     * AccessToken constructor.
+     * @param RequestStack $requestStack
+     */
     public function __construct(RequestStack $requestStack)
     {
         $this->requestStack = $requestStack;
@@ -46,7 +53,7 @@ class AccessToken
         if ($request === null) {
             return;
         }
-        $payload = self::getPayloadFromHeader($request);
+        $payload = self::getPayloadFromCookie($request);
         if ($payload === null) {
             return;
         }
@@ -65,18 +72,15 @@ class AccessToken
      * @param Request $request
      * @return array|null
      */
-    private static function getPayloadFromHeader(Request $request): ?array
+    private static function getPayloadFromCookie(Request $request): ?array
     {
-        $header = $request->headers->get('Authorization');
-        if (empty($header)) {
-            $header = $request->headers->get('authorization');
-        }
-        if (empty($header)) {
+        $accessToken = $request->cookies->get(self::ACCESS_TOKEN_COOKIE_NAME);
+
+        if ($accessToken === null) {
             return null;
         }
-        $token = substr($header, strlen('Bearer '));
 
-        $encodedPayload = explode('.', $token)[1] ?? '';
+        $encodedPayload = explode('.', $accessToken)[1] ?? '';
         return json_decode(base64_decode($encodedPayload), true);
     }
 
