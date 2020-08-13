@@ -107,8 +107,7 @@ class PermissionExporterTest extends TestCase
         $requestStack->push($request);
         $authToken = new AuthToken($requestStack);
 
-        $this->assertTrue($authToken->isValid());
-        $this->assertTrue($authToken->isAccessToken());
+        $this->assertTrue($authToken->exists());
         $this->assertTrue($authToken->hasPermissionKey('user.permission.create_permissions'));
     }
 

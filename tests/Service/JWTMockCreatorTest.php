@@ -25,7 +25,7 @@ class JWTMockCreatorTest extends TestCase
 
         $authToken = $this->createAuthToken($header);
 
-        $this->assertTrue($authToken->isValid());
+        $this->assertTrue($authToken->exists());
         $this->assertTrue($authToken->hasPermissionKey($permissionKey));
         $this->assertEquals(-1, $authToken->getUserId());
     }
@@ -45,7 +45,7 @@ class JWTMockCreatorTest extends TestCase
 
         $authToken = $this->createAuthToken($header);
 
-        $this->assertTrue($authToken->isValid());
+        $this->assertTrue($authToken->exists());
         $this->assertTrue($authToken->hasPermissionKey($permissionKey));
         $this->assertEquals(52, $authToken->getUserId());
     }
@@ -71,7 +71,7 @@ class JWTMockCreatorTest extends TestCase
 
         $authToken = $this->createAuthToken($header);
 
-        $this->assertTrue($authToken->isValid());
+        $this->assertTrue($authToken->exists());
         $this->assertTrue($authToken->hasPermissionKey('test.test_entity_with_everything.create'));
         $this->assertTrue($authToken->hasPermissionKey('test.test_entity_with_everything.read'));
         $this->assertTrue($authToken->hasPermissionKey('test.test_entity_with_everything.delete'));

@@ -122,7 +122,7 @@ class PermissionVoter extends Voter
         if ($subject instanceof SelfPermissionInterface) {
             $userHasAlternativePermission = $this->authToken->hasPermissionKeys($permissionKeys, true);
 
-            if ($userHasAlternativePermission && $this->authToken->isValid()) {
+            if ($userHasAlternativePermission && $this->authToken->exists()) {
                 if ($isGetRequestOnCollection) {
                     //At this point SelfPermissionFilter::addFilterConstraint(...) has already been run.
                     //It has filtered the get request so that only entities which belong to the user will be returned.
@@ -137,7 +137,7 @@ class PermissionVoter extends Voter
             }
         }
 
-        if ($this->authToken->isValid()) {
+        if ($this->authToken->exists()) {
             //User is authenticated but forbidden
             $missingKeys = $this->authToken->getMissingPermissionKeys($permissionKeys);
             throw new AccessDeniedHttpException('Missing permission keys: ' . implode(', ', $missingKeys));

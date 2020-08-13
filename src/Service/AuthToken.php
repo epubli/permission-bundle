@@ -28,10 +28,7 @@ class AuthToken
     private $permissionKeys = [];
 
     /** @var bool */
-    private $isValid = false;
-
-    /** @var bool */
-    private $isRefreshToken = false;
+    private $exists = false;
 
     public function __construct(RequestStack $requestStack)
     {
@@ -54,15 +51,14 @@ class AuthToken
             return;
         }
 
-        if (!isset($payload['jti'], $payload['roles'], $payload['user_id'])) {
+        if (!isset($payload['jti'], $payload['user_id'])) {
             return;
         }
 
         $this->jti = $payload['jti'];
         $this->userId = $payload['user_id'];
         $this->permissionKeys = $payload['permissions'] ?? [];
-        $this->isRefreshToken = in_array('refresh_token', $payload['roles']);
-        $this->isValid = true;
+        $this->exists = true;
     }
 
     /**
@@ -85,43 +81,19 @@ class AuthToken
     }
 
     /**
-     * Returns true if the token exists and every required field is present
+     * Returns whether or not the access token exists
      * @return bool
      */
-    public function isValid(): bool
+    public function exists(): bool
     {
         if (!$this->isInitialized) {
             $this->initialize();
         }
-        return $this->isValid;
+        return $this->exists;
     }
 
     /**
-     * If this token is valid AND a refresh token then this will return true.
-     * @return bool
-     */
-    public function isRefreshToken(): bool
-    {
-        if (!$this->isInitialized) {
-            $this->initialize();
-        }
-        return $this->isValid && $this->isRefreshToken;
-    }
-
-    /**
-     * If this token is valid AND an access token then this will return true.
-     * @return bool
-     */
-    public function isAccessToken(): bool
-    {
-        if (!$this->isInitialized) {
-            $this->initialize();
-        }
-        return $this->isValid && !$this->isRefreshToken;
-    }
-
-    /**
-     * If this token is valid then this wont't be null.
+     * If the token exists then this won't be null.
      * @return string|null
      */
     public function getJTI(): ?string
@@ -133,7 +105,7 @@ class AuthToken
     }
 
     /**
-     * If this token is valid then this wont't be null.
+     * If the token exists then this won't be null.
      * @return int|null
      */
     public function getUserId(): ?int

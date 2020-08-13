@@ -19,10 +19,8 @@ class AuthTokenTest extends TestCase
 
         $authToken = new AuthToken($this->createRequestStack($accessToken));
 
-        $this->assertTrue($authToken->isValid(), 'AccessToken is not valid');
+        $this->assertTrue($authToken->exists(), 'AccessToken does not exist');
         $this->assertEquals('57e42448-ba5e-3af8-be01-b1c86379d517', $authToken->getJTI());
-        $this->assertFalse($authToken->isRefreshToken());
-        $this->assertTrue($authToken->isAccessToken());
         $this->assertEquals(81, $authToken->getUserId());
         $this->assertTrue($authToken->hasPermissionKey('user.user.read'));
         $this->assertTrue($authToken->hasPermissionKey('user.user.update.self'));
@@ -50,10 +48,8 @@ class AuthTokenTest extends TestCase
 
         $authToken = new AuthToken($this->createRequestStack($refreshToken));
 
-        $this->assertTrue($authToken->isValid(), 'RereshToken is not valid');
+        $this->assertTrue($authToken->exists(), 'RereshToken does not exist');
         $this->assertEquals('57e42448-ba5e-3af8-be01-b1c86379d517', $authToken->getJTI());
-        $this->assertFalse($authToken->isAccessToken());
-        $this->assertTrue($authToken->isRefreshToken());
         $this->assertEquals(81, $authToken->getUserId());
         $this->assertFalse($authToken->hasPermissionKey('user.user.read'));
         $this->assertFalse($authToken->hasPermissionKey('user.user.update.self'));
@@ -66,10 +62,8 @@ class AuthTokenTest extends TestCase
 
         $authToken = new AuthToken($this->createRequestStack($token));
 
-        $this->assertFalse($authToken->isValid());
+        $this->assertFalse($authToken->exists());
         $this->assertNull($authToken->getJTI());
-        $this->assertFalse($authToken->isAccessToken());
-        $this->assertFalse($authToken->isRefreshToken());
         $this->assertNull($authToken->getUserId());
         $this->assertFalse($authToken->hasPermissionKey('user.user.read'));
         $this->assertFalse($authToken->hasPermissionKey('user.user.update.self'));
@@ -82,10 +76,8 @@ class AuthTokenTest extends TestCase
 
         $authToken = new AuthToken($this->createRequestStack($token));
 
-        $this->assertFalse($authToken->isValid());
+        $this->assertFalse($authToken->exists());
         $this->assertNull($authToken->getJTI());
-        $this->assertFalse($authToken->isAccessToken());
-        $this->assertFalse($authToken->isRefreshToken());
         $this->assertNull($authToken->getUserId());
         $this->assertFalse($authToken->hasPermissionKey('user.user.read'));
         $this->assertFalse($authToken->hasPermissionKey('user.user.update.self'));

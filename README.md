@@ -238,9 +238,7 @@ class ExampleEntity implements SelfPermissionInterface
 
 ### AuthToken
 
-You can use this like a service. It supports autowiring. This gives you access to the properties of the access/refresh token of the user.
-
-You should call `$authToken->isValid()` before any other method on this object to make sure that the token exists and is valid.
+You can use this like a service. It supports autowiring. This gives you access to the properties of the access token of the user.
 
 ```php
 namespace App\Controller;
@@ -252,9 +250,7 @@ class TestAction extends AbstractController
 {
     public function __invoke(AuthToken $authToken)
     {
-        var_dump('Is the token present and valid: ' . $authToken->isValid());
-        var_dump('Is it an access token: ' . $authToken->isAccessToken());
-        var_dump('or an refresh token: ' . $authToken->isRefreshToken());
+        var_dump('Is the token present and valid: ' . $authToken->exists());
         var_dump('This is the unique json token identifier: ' . $authToken->getJTI());
         var_dump('The id of the user: ' . $authToken->getUserId());
         var_dump('Checking for permissions: ' . $authToken->hasPermissionKey('user.user.delete'));
@@ -290,7 +286,7 @@ class TestController extends AbstractController
      */
     public function postTest(AuthToken $authToken)
     {
-        if (!$authToken->isValid()){
+        if (!$authToken->exists()){
             throw new UnauthorizedHttpException('Bearer', 'Access-Token is invalid.');
         }
 
