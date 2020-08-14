@@ -7,7 +7,6 @@ use DateTime;
 use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
-use GuzzleHttp\Cookie\SetCookie;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ServerException;
 use ReflectionException;
@@ -67,20 +66,19 @@ class JWTMockCreator
     /**
      * For guzzle
      * @param string $jsonWebToken
+     * @param string $url
      * @return CookieJar
      */
-    public function createCookieJar(string $jsonWebToken): CookieJar
+    public function createCookieJar(string $jsonWebToken, string $url): CookieJar
     {
-        $cookieJar = new CookieJar();
-        $cookieJar->setCookie(
-            new SetCookie(
-                [
-                    'Name' => AccessToken::ACCESS_TOKEN_COOKIE_NAME,
-                    'Value' => $jsonWebToken
-                ]
-            )
+        $domain = parse_url($url, PHP_URL_HOST);
+
+        return CookieJar::fromArray(
+            [
+                AccessToken::ACCESS_TOKEN_COOKIE_NAME => $jsonWebToken
+            ],
+            $domain
         );
-        return $cookieJar;
     }
 
     /**
@@ -114,7 +112,7 @@ class JWTMockCreator
         try {
             $response = $client->get(
                 $path,
-                ['cookies' => $this->createCookieJar($jsonWebToken)]
+                ['cookies' => $this->createCookieJar($jsonWebToken, $client->getConfig('base_uri') . $path)]
             );
 
             $json = json_decode($response->getBody(), true);

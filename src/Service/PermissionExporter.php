@@ -114,7 +114,8 @@ class PermissionExporter
                     'cookies' => $this->jwtMockCreator->createCookieJar(
                         $this->jwtMockCreator->createJsonWebToken(
                             ['user.permission.create_permissions']
-                        )
+                        ),
+                        $this->client->getConfig('base_uri') ?? $this->path
                     )
                 ]
             );
