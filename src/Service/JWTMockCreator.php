@@ -65,18 +65,6 @@ class JWTMockCreator
     }
 
     /**
-     * For the constructor of the request class
-     * @param string $jsonWebToken
-     * @return array
-     */
-    public function createCookieArray(string $jsonWebToken): array
-    {
-        return [
-            AccessToken::ACCESS_TOKEN_COOKIE_NAME => $jsonWebToken
-        ];
-    }
-
-    /**
      * For guzzle
      * @param string $jsonWebToken
      * @return CookieJar

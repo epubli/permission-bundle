@@ -23,7 +23,7 @@ class JWTMockCreatorTest extends TestCase
         $this->assertNotNull($jwt);
         $this->assertNotEmpty($jwt);
 
-        $accessToken = $this->createAccessToken($jwtMockCreator->createCookieArray($jwt));
+        $accessToken = $this->createAccessToken($jwt);
 
         $this->assertTrue($accessToken->exists());
         $this->assertTrue($accessToken->hasPermissionKey($permissionKey));
@@ -43,7 +43,7 @@ class JWTMockCreatorTest extends TestCase
         $this->assertNotNull($jwt);
         $this->assertNotEmpty($jwt);
 
-        $accessToken = $this->createAccessToken($jwtMockCreator->createCookieArray($jwt));
+        $accessToken = $this->createAccessToken($jwt);
 
         $this->assertTrue($accessToken->exists());
         $this->assertTrue($accessToken->hasPermissionKey($permissionKey));
@@ -51,13 +51,13 @@ class JWTMockCreatorTest extends TestCase
     }
 
     /**
-     * @param array $cookies
+     * @param string $jwt
      * @return AccessToken
      */
-    private function createAccessToken(array $cookies): AccessToken
+    private function createAccessToken(string $jwt): AccessToken
     {
         $requestStack = new RequestStack();
-        $request = new Request([], [], [], $cookies, [], []);
+        $request = new Request([], [], [], [AccessToken::ACCESS_TOKEN_COOKIE_NAME => $jwt], [], []);
         $requestStack->push($request);
         return new AccessToken($requestStack);
     }
@@ -73,7 +73,7 @@ class JWTMockCreatorTest extends TestCase
         $this->assertNotNull($jwt);
         $this->assertNotEmpty($jwt);
 
-        $accessToken = $this->createAccessToken($jwtMockCreator->createCookieArray($jwt));
+        $accessToken = $this->createAccessToken($jwt);
 
         $this->assertTrue($accessToken->exists());
         $this->assertTrue($accessToken->hasPermissionKey('test.test_entity_with_everything.create'));
