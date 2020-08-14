@@ -3,6 +3,7 @@
 namespace Epubli\PermissionBundle\Traits;
 
 use Epubli\PermissionBundle\Service\JWTMockCreator;
+use Symfony\Component\BrowserKit\Cookie;
 
 /**
  * Trait JsonWebTokenMockTrait
@@ -13,6 +14,9 @@ trait JWTMockTrait
 {
     /** @var JWTMockCreator */
     private static $jwtMockCreator;
+
+    /** @var Cookie */
+    private static $cachedCookie;
 
     /**
      *  Call this in a test class in the setUpBeforeClass() method.
@@ -31,5 +35,9 @@ trait JWTMockTrait
         //Shutdown Kernel so it can be called by others later
         //Symfony\Bundle\FrameworkBundle\Test\KernelTestCase::ensureKernelShutdown()
         self::ensureKernelShutdown();
+
+        self::$cachedCookie = self::$jwtMockCreator->createBrowserKitCookie(
+            self::$jwtMockCreator->createJsonWebTokenForThisMicroservice()
+        );
     }
 }

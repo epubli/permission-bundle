@@ -324,7 +324,12 @@ class JsonWebTokenTest extends OrmApiPlatformTestCase
     public static function setUpBeforeClass(): void
     {
         self::setUpJsonWebTokenMockCreator();
-        self::$headers = ['HTTP_AUTHORIZATION' => self::$jwtMockCreator->getMockAuthorizationHeaderForThisMicroservice()];
+    }
+
+    public function setUp(): void
+    {
+        parent::setUp();
+        self::$kernelBrowser->getCookieJar()->set(self::$cachedCookie);
     }
 }
 ```
@@ -344,15 +349,10 @@ class JsonWebTokenTest extends OrmApiPlatformTestCase
 
     public function testRetrieveTheResourceList(): void
     {
+        self::$kernelBrowser->getCookieJar()->set(self::$cachedCookie);
         $this->request(
             '/api/json_web_tokens',
-            'GET',
-            null,
-            [],
-            [],
-            [
-                'HTTP_AUTHORIZATION' => self::$jwtMockCreator->getMockAuthorizationHeaderForThisMicroservice()
-            ]
+            'GET'
         );
     }
 }
