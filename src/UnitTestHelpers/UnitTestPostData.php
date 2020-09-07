@@ -12,10 +12,6 @@ class UnitTestPostData
     private $userId;
     /** @var string */
     private $payload;
-    /** @var string */
-    private $jsonKey;
-    /** @var string */
-    private $newValue;
 
     /**
      * UnitTestPostData constructor.
@@ -24,17 +20,13 @@ class UnitTestPostData
      * @param int $userId needs to be valid for this $resourceURI.
      * Value is ignored if self::$unitTestConfig->implementsSelfPermissionInterface() is false
      * @param string $payload
-     * @param string $jsonKey
-     * @param string $newValue
      */
-    public function __construct(string $resourceURI, string $permissionKey, int $userId, string $payload, string $jsonKey, string $newValue)
+    public function __construct(string $resourceURI, string $permissionKey, int $userId, string $payload)
     {
         $this->resourceURI = $resourceURI;
         $this->permissionKey = $permissionKey;
         $this->userId = $userId;
         $this->payload = $payload;
-        $this->jsonKey = $jsonKey;
-        $this->newValue = $newValue;
     }
 
     /**
@@ -67,21 +59,5 @@ class UnitTestPostData
     public function getPayload(): string
     {
         return $this->payload;
-    }
-
-    /**
-     * @return string
-     */
-    public function getJsonKey(): string
-    {
-        return $this->jsonKey;
-    }
-
-    /**
-     * @return string
-     */
-    public function getNewValue(): string
-    {
-        return $this->newValue;
     }
 }

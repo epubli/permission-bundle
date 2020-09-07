@@ -456,9 +456,7 @@ class CompanyDataTest extends OrmApiPlatformTestCase
                     'valueAddedTaxNumber' => $companyData->getValueAddedTaxNumber(),
                     'userProfile' => '/api/user_profiles/' . $companyData->getUserProfile()->getId(),
                 ]
-            ),
-            'companyName',
-            'new Company Name'
+            )
         );
     }
 
