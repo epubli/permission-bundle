@@ -358,7 +358,171 @@ class JsonWebTokenTest extends OrmApiPlatformTestCase
 }
 ```
 
-### Export Command
+The trait `UnitTestTrait` exists to help you write unit tests for the common use cases.
+This trait has a config (`self::$unitTestConfig`) in which you describe your entity.
+This trait executes/generates unit tests for you.
+It requires you to implement methods which return the data used in the unit tests.
+Here is an example on how to use it for an entity which supports any operation:
+```php
+    
+use Epubli\ApiPlatform\TestBundle\OrmApiPlatformTestCase;
+use Epubli\PermissionBundle\Traits\JWTMockTrait;
+use Epubli\PermissionBundle\Traits\UnitTestTrait;
+use Epubli\PermissionBundle\UnitTestHelpers\UnitTestConfig;
+use Epubli\PermissionBundle\UnitTestHelpers\UnitTestDeleteData;
+use Epubli\PermissionBundle\UnitTestHelpers\UnitTestGetCollectionData;
+use Epubli\PermissionBundle\UnitTestHelpers\UnitTestGetItemData;
+use Epubli\PermissionBundle\UnitTestHelpers\UnitTestPostData;
+use Epubli\PermissionBundle\UnitTestHelpers\UnitTestUpdateData;
+
+class CompanyDataTest extends OrmApiPlatformTestCase
+{
+    use JWTMockTrait;
+    use UnitTestTrait;
+
+    public const RESOURCE_URI = '/api/company_datas/';
+
+    public static function setUpBeforeClass(): void
+    {
+        self::setUpJsonWebTokenMockCreator();
+        self::$unitTestConfig = new UnitTestConfig();
+    }
+
+    public function setUp(): void
+    {
+        parent::setUp();
+        self::$kernelBrowser->getCookieJar()->set(self::$cachedCookie);
+    }
+
+    protected function getDemoEntity(): CompanyData
+    {
+        $userProfileTestDummy = (new UserProfileTest())->getDemoEntity();
+        $this->persistAndFlush($userProfileTestDummy);
+
+        $companyData = new CompanyData();
+        $companyData->setCompanyName(self::$faker->company);
+        $companyData->setValueAddedTaxNumber((string)self::$faker->randomNumber());
+        $companyData->setUserProfile($userProfileTestDummy);
+        $companyData->setCreatedAt(self::$faker->dateTimeBetween('-200 days', 'now'));
+        $companyData->setUpdatedAt(self::$faker->dateTimeBetween($companyData->getCreatedAt(), 'now'));
+        return $companyData;
+    }
+
+    public function getDeleteDataForPermissionBundle(): ?UnitTestDeleteData
+    {
+        /** @var CompanyData $companyData */
+        $companyData = $this->findOne(CompanyData::class);
+        $userId = $companyData->getUserProfile()->getUserId();
+
+        return new UnitTestDeleteData(
+            self::RESOURCE_URI . $companyData->getId(),
+            'user-profile.company_data.delete',
+            $userId
+        );
+    }
+
+    public function getUpdateDataForPermissionBundle(): ?UnitTestUpdateData
+    {
+        /** @var CompanyData $companyData */
+        $companyData = $this->findOne(CompanyData::class);
+        $userId = $companyData->getUserProfile()->getUserId();
+
+        return new UnitTestUpdateData(
+            self::RESOURCE_URI . $companyData->getId(),
+            'user-profile.company_data.update.companyName',
+            $userId,
+            json_encode(
+                [
+                    'companyName' => 'new Company Name',
+                ]
+            ),
+            'companyName',
+            'new Company Name'
+        );
+    }
+
+    public function getPostDataForPermissionBundle(): ?UnitTestPostData
+    {
+        $companyData = $this->getDemoEntity();
+        $userId = $companyData->getUserProfile()->getUserId();
+
+        return new UnitTestPostData(
+            self::RESOURCE_URI,
+            'user-profile.company_data.create',
+            $userId,
+            json_encode(
+                [
+                    'companyName' => $companyData->getCompanyName(),
+                    'valueAddedTaxNumber' => $companyData->getValueAddedTaxNumber(),
+                    'userProfile' => '/api/user_profiles/' . $companyData->getUserProfile()->getId(),
+                ]
+            ),
+            'companyName',
+            'new Company Name'
+        );
+    }
+
+    public function getGetItemDataForPermissionBundle(): ?UnitTestGetItemData
+    {
+        /** @var CompanyData $companyData */
+        $companyData = $this->findOne(CompanyData::class);
+        $userId = $companyData->getUserProfile()->getUserId();
+
+        return new UnitTestGetItemData(
+            self::RESOURCE_URI . $companyData->getId(),
+            'user-profile.company_data.read',
+            $userId
+        );
+    }
+
+    public function getGetCollectionDataForPermissionBundle(): ?UnitTestGetCollectionData
+    {
+        /** @var CompanyData $companyData */
+        $companyData = $this->findOne(CompanyData::class);
+        $userId = $companyData->getUserProfile()->getUserId();
+
+        return new UnitTestGetCollectionData(
+            self::RESOURCE_URI,
+            'user-profile.company_data.read',
+            $userId,
+            1
+        );
+    }
+}
+```
+
+If your entity does not support every operation, you need to adjust the config:
+```php
+use Epubli\ApiPlatform\TestBundle\OrmApiPlatformTestCase;
+use Epubli\PermissionBundle\Traits\UnitTestTrait;
+use Epubli\PermissionBundle\UnitTestHelpers\UnitTestConfig;
+
+class ExampleTest extends OrmApiPlatformTestCase
+{
+    use UnitTestTrait;
+
+    public static function setUpBeforeClass(): void
+    {
+        self::$unitTestConfig = new UnitTestConfig();
+
+        // If you implemented the SelfPermissionInterface in your entity
+        // then set this to true (defaults to true):
+        self::$unitTestConfig->implementsSelfPermissionInterface = true;
+        
+        // If you do not have a DELETE route for your entity
+        // then set this to false (defaults to true):
+        self::$unitTestConfig->hasDeleteRoute = true;
+
+        // If your DELETE route requires no acccess control
+        // then set this to false (defaults to true):
+        self::$unitTestConfig->hasSecurityOnDeleteRoute = true;
+
+        //The config has booleans for every standard HTTP operation
+    }
+}
+```
+
+## Export Command
 To export the permissions of your microservice to the user microservice
 you need to execute the following __in the docker container__:
 ```console
