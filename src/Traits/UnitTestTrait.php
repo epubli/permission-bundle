@@ -166,7 +166,7 @@ trait UnitTestTrait
 
     public function testPermissionBundleSelfPut(): void
     {
-        if (!self::$unitTestConfig->hasPutRoute) {
+        if (!self::$unitTestConfig->hasSelfPut()) {
             self::assertTrue(true);
             return;
         }
@@ -283,7 +283,7 @@ trait UnitTestTrait
 
     public function testPermissionBundleSelfPatch(): void
     {
-        if (!self::$unitTestConfig->hasPatchRoute) {
+        if (!self::$unitTestConfig->hasSelfPatch()) {
             self::assertTrue(true);
             return;
         }
