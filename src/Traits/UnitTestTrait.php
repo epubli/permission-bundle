@@ -676,7 +676,7 @@ trait UnitTestTrait
         );
     }
 
-    public function testPermissionBundleSelfGetCollectionDeniedOnInvalidUser(): void
+    public function testPermissionBundleSelfGetCollectionEmptyOnInvalidUser(): void
     {
         if (!self::$unitTestConfig->hasSelfGetCollection()) {
             self::assertTrue(true);
