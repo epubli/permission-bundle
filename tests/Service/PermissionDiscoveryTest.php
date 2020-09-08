@@ -130,12 +130,12 @@ class PermissionDiscoveryTest extends TestCase
     ];
 
     /**
-     * @param string $pathToEntites
+     * @param string $pathToEntities
      * @param string $microserviceName
      * @return PermissionDiscovery
      */
     public static function createPermissionDiscovery(
-        $pathToEntites = '/tests/Helpers',
+        $pathToEntities = '/tests/Helpers',
         $microserviceName = 'test'
     ): PermissionDiscovery {
         $kernelProjectDir = substr(__DIR__, 0, strlen(__DIR__) - strlen('/tests/Service'));
@@ -143,7 +143,7 @@ class PermissionDiscoveryTest extends TestCase
             $microserviceName,
             new ParameterBag(['kernel.project_dir' => $kernelProjectDir]),
             new AnnotationReader(),
-            $pathToEntites,
+            $pathToEntities,
             'Epubli\\PermissionBundle\\Tests\\Helpers\\'
         );
     }
@@ -158,7 +158,7 @@ class PermissionDiscoveryTest extends TestCase
      * @throws ReflectionException
      */
     public function testPermissionKeys(
-        $entity,
+        object $entity,
         string $httpMethod,
         string $requestPath,
         array $permissionKey,
@@ -166,12 +166,13 @@ class PermissionDiscoveryTest extends TestCase
     ): void {
         $permissionDiscovery = self::createPermissionDiscovery();
 
-        $this->assertEqualsCanonicalizing(
+        self::assertEqualsCanonicalizing(
             $permissionKey,
             $permissionDiscovery->getPermissionKeys(
                 $entity,
                 $httpMethod,
                 $requestPath,
+                '',
                 $requestContent
             )
         );
@@ -269,12 +270,12 @@ class PermissionDiscoveryTest extends TestCase
     {
         $permissionDiscovery = self::createPermissionDiscovery();
 
-        $this->assertEquals('test', $permissionDiscovery->getMicroserviceName());
+        self::assertEquals('test', $permissionDiscovery->getMicroserviceName());
 
         $permissionKeys = array_column(self::PERMISSION_KEYS_WITH_DESCRIPTIONS, 'key');
-        $this->assertEqualsCanonicalizing($permissionKeys, $permissionDiscovery->getAllPermissionKeys());
+        self::assertEqualsCanonicalizing($permissionKeys, $permissionDiscovery->getAllPermissionKeys());
 
-        $this->assertEqualsCanonicalizing(
+        self::assertEqualsCanonicalizing(
             self::PERMISSION_KEYS_WITH_DESCRIPTIONS,
             $permissionDiscovery->getAllPermissionKeysWithDescriptions()
         );

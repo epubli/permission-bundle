@@ -106,6 +106,7 @@ class PermissionVoter extends Voter
             $subject,
             $request->getMethod(),
             $request->getPathInfo(),
+            $request->attributes->get('_route') ?? '',
             (string)$request->getContent()
         );
 
@@ -171,6 +172,7 @@ class PermissionVoter extends Voter
             $entity,
             $request->getMethod(),
             $request->getPathInfo(),
+            $request->attributes->get('_route') ?? '',
             (string)$request->getContent()
         );
 

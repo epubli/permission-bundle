@@ -81,12 +81,18 @@ class PermissionDiscovery
      * @param object $entity
      * @param string $httpMethod
      * @param string $requestPath
+     * @param string $routeName
      * @param string|null $requestContent
      * @return string[]
      * @throws ReflectionException
      */
-    public function getPermissionKeys($entity, string $httpMethod, string $requestPath, ?string $requestContent): array
-    {
+    public function getPermissionKeys(
+        object $entity,
+        string $httpMethod,
+        string $requestPath,
+        string $routeName,
+        ?string $requestContent
+    ): array {
         //Looks for a path which ends with a slash followed by a number and removes it
         $requestPath = preg_replace('/\/\d+$/', '', $requestPath, -1, $numberOfReplacements);
         $isItemOperation = $numberOfReplacements > 0;
@@ -107,6 +113,12 @@ class PermissionDiscovery
             $apiPlatformOperations = $apiPlatformAnnotation->itemOperations ?? ['get', 'put', 'patch', 'delete'];
         } else {
             $apiPlatformOperations = $apiPlatformAnnotation->collectionOperations ?? ['get', 'post'];
+            $apiPlatformOperations = array_merge(
+                $apiPlatformOperations,
+                self::getSpecialRouteNameOperations(
+                    $apiPlatformAnnotation->itemOperations ?? []
+                )
+            );
         }
         foreach ($apiPlatformOperations as $annotatedOperationName => $data) {
             if (is_string($data)) {
@@ -121,15 +133,23 @@ class PermissionDiscovery
                 continue;
             }
 
-            if (isset($data['path'])) {
-                $validOperationPath = rtrim($data['path'], '/');
-            } elseif ($apiPlatformAnnotation->shortName !== null) {
-                $validOperationPath = "/{$apiPlatformAnnotation->shortName}";
+            if (isset($data['route_name'])) {
+                if ($routeName === $data['route_name']) {
+                    $validOperationPath = $relevantPath;
+                } else {
+                    $validOperationPath = null;
+                }
             } else {
-                $validOperationPath = '/' . $underscorePathSegmentNameGenerator->getSegmentName(
-                        $reflectionClass->getShortName(),
-                        true
-                    );
+                if (isset($data['path'])) {
+                    $validOperationPath = rtrim($data['path'], '/');
+                } elseif ($apiPlatformAnnotation->shortName !== null) {
+                    $validOperationPath = "/{$apiPlatformAnnotation->shortName}";
+                } else {
+                    $validOperationPath = '/' . $underscorePathSegmentNameGenerator->getSegmentName(
+                            $reflectionClass->getShortName(),
+                            true
+                        );
+                }
             }
 
             if ($relevantPath !== $validOperationPath) {
@@ -178,6 +198,21 @@ class PermissionDiscovery
         }
 
         return substr($requestPath, strlen($path));
+    }
+
+    /**
+     * Returns all operations which have the "route_name" property
+     * @param array $itemOperations
+     * @return array
+     */
+    private static function getSpecialRouteNameOperations(array $itemOperations): array
+    {
+        return array_filter(
+            $itemOperations,
+            static function ($item) {
+                return isset($item['route_name']);
+            }
+        );
     }
 
     /**
