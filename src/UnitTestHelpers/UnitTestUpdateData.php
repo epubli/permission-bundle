@@ -12,22 +12,22 @@ class UnitTestUpdateData
     private $userId;
     /** @var string */
     private $payload;
-    /** @var string */
+    /** @var string|null */
     private $jsonKey;
-    /** @var string */
+    /** @var string|null */
     private $newValue;
 
     /**
      * UnitTestUpdateData constructor.
      * @param string $resourceURI
-     * @param string $permissionKey must grant access to delete this resource.
+     * @param string $permissionKey must grant access to update this resource.
      * @param int $userId needs to be valid for this $resourceURI.
      * Value is ignored if self::$unitTestConfig->implementsSelfPermissionInterface() is false
      * @param string $payload
-     * @param string $jsonKey
-     * @param string $newValue
+     * @param string|null $jsonKey the key in the response json for the new value. If <code>null</code> no check will be made.
+     * @param string|null $newValue the new value in the response. If <code>null</code> no check will be made.
      */
-    public function __construct(string $resourceURI, string $permissionKey, int $userId, string $payload, string $jsonKey, string $newValue)
+    public function __construct(string $resourceURI, string $permissionKey, int $userId, string $payload, ?string $jsonKey = null, ?string $newValue = null)
     {
         $this->resourceURI = $resourceURI;
         $this->permissionKey = $permissionKey;
@@ -70,17 +70,17 @@ class UnitTestUpdateData
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getJsonKey(): string
+    public function getJsonKey(): ?string
     {
         return $this->jsonKey;
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getNewValue(): string
+    public function getNewValue(): ?string
     {
         return $this->newValue;
     }

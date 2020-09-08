@@ -159,7 +159,9 @@ trait UnitTestTrait
         $json = $this->getJson();
 
         self::assertResponseStatusCodeSame(200);
-        self::assertEquals($json[$data->getJsonKey()], $data->getNewValue());
+        if ($data->getJsonKey() !== null) {
+            self::assertEquals($json[$data->getJsonKey()], $data->getNewValue());
+        }
     }
 
     public function testSelfPut(): void
@@ -184,7 +186,9 @@ trait UnitTestTrait
         $json = $this->getJson();
 
         self::assertResponseStatusCodeSame(200);
-        self::assertEquals($json[$data->getJsonKey()], $data->getNewValue());
+        if ($data->getJsonKey() !== null) {
+            self::assertEquals($json[$data->getJsonKey()], $data->getNewValue());
+        }
     }
 
     public function testPutDenied(): void
@@ -272,7 +276,9 @@ trait UnitTestTrait
         $json = $this->getJson();
 
         self::assertResponseStatusCodeSame(200);
-        self::assertEquals($json[$data->getJsonKey()], $data->getNewValue());
+        if ($data->getJsonKey() !== null) {
+            self::assertEquals($json[$data->getJsonKey()], $data->getNewValue());
+        }
     }
 
     public function testSelfPatch(): void
@@ -297,7 +303,9 @@ trait UnitTestTrait
         $json = $this->getJson();
 
         self::assertResponseStatusCodeSame(200);
-        self::assertEquals($json[$data->getJsonKey()], $data->getNewValue());
+        if ($data->getJsonKey() !== null) {
+            self::assertEquals($json[$data->getJsonKey()], $data->getNewValue());
+        }
     }
 
     public function testPatchDenied(): void
