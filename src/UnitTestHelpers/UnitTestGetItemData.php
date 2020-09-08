@@ -14,7 +14,7 @@ class UnitTestGetItemData
     /**
      * UnitTestGetItemData constructor.
      * @param string $resourceURI
-     * @param string $permissionKey must grant access to delete this resource.
+     * @param string $permissionKey must grant access to read this resource.
      * @param int $userId needs to be valid for this $resourceURI.
      * Value is ignored if self::$unitTestConfig->implementsSelfPermissionInterface() is false
      */
