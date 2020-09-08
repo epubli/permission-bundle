@@ -23,7 +23,7 @@ trait UnitTestTrait
      */
     abstract public function getDeleteDataForPermissionBundle(): ?UnitTestDeleteData;
 
-    public function testDelete(): void
+    public function testPermissionBundleDelete(): void
     {
         if (!self::$unitTestConfig->hasDeleteRoute) {
             self::assertTrue(true);
@@ -46,7 +46,7 @@ trait UnitTestTrait
         self::assertResponseStatusCodeSame(204);
     }
 
-    public function testSelfDelete(): void
+    public function testPermissionBundleSelfDelete(): void
     {
         if (!self::$unitTestConfig->hasSelfDelete()) {
             self::assertTrue(true);
@@ -69,7 +69,7 @@ trait UnitTestTrait
         self::assertResponseStatusCodeSame(204);
     }
 
-    public function testDeleteDenied(): void
+    public function testPermissionBundleDeleteDenied(): void
     {
         if (!self::$unitTestConfig->hasDeleteRoute
             || !self::$unitTestConfig->hasSecurityOnDeleteRoute) {
@@ -90,7 +90,7 @@ trait UnitTestTrait
         );
     }
 
-    public function testSelfDeleteDeniedOnInvalidUser(): void
+    public function testPermissionBundleSelfDeleteDeniedOnInvalidUser(): void
     {
         if (!self::$unitTestConfig->hasSelfDelete()) {
             self::assertTrue(true);
@@ -110,7 +110,7 @@ trait UnitTestTrait
         );
     }
 
-    public function testSelfDeleteDeniedOnInvalidPermission(): void
+    public function testPermissionBundleSelfDeleteDeniedOnInvalidPermission(): void
     {
         if (!self::$unitTestConfig->hasSelfDelete()) {
             self::assertTrue(true);
@@ -136,7 +136,7 @@ trait UnitTestTrait
      */
     abstract public function getUpdateDataForPermissionBundle(): ?UnitTestUpdateData;
 
-    public function testPut(): void
+    public function testPermissionBundlePut(): void
     {
         if (!self::$unitTestConfig->hasPutRoute) {
             self::assertTrue(true);
@@ -164,7 +164,7 @@ trait UnitTestTrait
         }
     }
 
-    public function testSelfPut(): void
+    public function testPermissionBundleSelfPut(): void
     {
         if (!self::$unitTestConfig->hasPutRoute) {
             self::assertTrue(true);
@@ -191,7 +191,7 @@ trait UnitTestTrait
         }
     }
 
-    public function testPutDenied(): void
+    public function testPermissionBundlePutDenied(): void
     {
         if (!self::$unitTestConfig->hasPutRoute
             || !self::$unitTestConfig->hasSecurityOnPutRoute) {
@@ -212,7 +212,7 @@ trait UnitTestTrait
         );
     }
 
-    public function testSelfPutDeniedOnInvalidUser(): void
+    public function testPermissionBundleSelfPutDeniedOnInvalidUser(): void
     {
         if (!self::$unitTestConfig->hasSelfPut()) {
             self::assertTrue(true);
@@ -232,7 +232,7 @@ trait UnitTestTrait
         );
     }
 
-    public function testSelfPutDeniedOnInvalidPermission(): void
+    public function testPermissionBundleSelfPutDeniedOnInvalidPermission(): void
     {
         if (!self::$unitTestConfig->hasSelfPut()) {
             self::assertTrue(true);
@@ -253,7 +253,7 @@ trait UnitTestTrait
         );
     }
 
-    public function testPatch(): void
+    public function testPermissionBundlePatch(): void
     {
         if (!self::$unitTestConfig->hasPatchRoute) {
             self::assertTrue(true);
@@ -281,7 +281,7 @@ trait UnitTestTrait
         }
     }
 
-    public function testSelfPatch(): void
+    public function testPermissionBundleSelfPatch(): void
     {
         if (!self::$unitTestConfig->hasPatchRoute) {
             self::assertTrue(true);
@@ -308,7 +308,7 @@ trait UnitTestTrait
         }
     }
 
-    public function testPatchDenied(): void
+    public function testPermissionBundlePatchDenied(): void
     {
         if (!self::$unitTestConfig->hasPatchRoute
             || !self::$unitTestConfig->hasSecurityOnPatchRoute) {
@@ -329,7 +329,7 @@ trait UnitTestTrait
         );
     }
 
-    public function testSelfPatchDeniedOnInvalidUser(): void
+    public function testPermissionBundleSelfPatchDeniedOnInvalidUser(): void
     {
         if (!self::$unitTestConfig->hasSelfPatch()) {
             self::assertTrue(true);
@@ -349,7 +349,7 @@ trait UnitTestTrait
         );
     }
 
-    public function testSelfPatchDeniedOnInvalidPermission(): void
+    public function testPermissionBundleSelfPatchDeniedOnInvalidPermission(): void
     {
         if (!self::$unitTestConfig->hasSelfPatch()) {
             self::assertTrue(true);
@@ -375,7 +375,7 @@ trait UnitTestTrait
      */
     abstract public function getPostDataForPermissionBundle(): ?UnitTestPostData;
 
-    public function testPost(): void
+    public function testPermissionBundlePost(): void
     {
         if (!self::$unitTestConfig->hasPostRoute) {
             self::assertTrue(true);
@@ -398,7 +398,7 @@ trait UnitTestTrait
         self::assertResponseStatusCodeSame(201);
     }
 
-    public function testSelfPost(): void
+    public function testPermissionBundleSelfPost(): void
     {
         if (!self::$unitTestConfig->hasSelfPost()) {
             self::assertTrue(true);
@@ -421,7 +421,7 @@ trait UnitTestTrait
         self::assertResponseStatusCodeSame(201);
     }
 
-    public function testPostDenied(): void
+    public function testPermissionBundlePostDenied(): void
     {
         if (!self::$unitTestConfig->hasPostRoute
             || !self::$unitTestConfig->hasSecurityOnPostRoute) {
@@ -442,7 +442,7 @@ trait UnitTestTrait
         );
     }
 
-    public function testSelfPostDeniedOnInvalidUser(): void
+    public function testPermissionBundleSelfPostDeniedOnInvalidUser(): void
     {
         if (!self::$unitTestConfig->hasSelfPost()) {
             self::assertTrue(true);
@@ -462,7 +462,7 @@ trait UnitTestTrait
         );
     }
 
-    public function testSelfPostDeniedOnInvalidPermission(): void
+    public function testPermissionBundleSelfPostDeniedOnInvalidPermission(): void
     {
         if (!self::$unitTestConfig->hasSelfPost()) {
             self::assertTrue(true);
@@ -488,7 +488,7 @@ trait UnitTestTrait
      */
     abstract public function getGetItemDataForPermissionBundle(): ?UnitTestGetItemData;
 
-    public function testGetItem(): void
+    public function testPermissionBundleGetItem(): void
     {
         if (!self::$unitTestConfig->hasGetItemRoute) {
             self::assertTrue(true);
@@ -511,7 +511,7 @@ trait UnitTestTrait
         self::assertResponseStatusCodeSame(200);
     }
 
-    public function testSelfGetItem(): void
+    public function testPermissionBundleSelfGetItem(): void
     {
         if (!self::$unitTestConfig->hasSelfGetItem()) {
             self::assertTrue(true);
@@ -534,7 +534,7 @@ trait UnitTestTrait
         self::assertResponseStatusCodeSame(200);
     }
 
-    public function testGetItemDenied(): void
+    public function testPermissionBundleGetItemDenied(): void
     {
         if (!self::$unitTestConfig->hasGetItemRoute
             || !self::$unitTestConfig->hasSecurityOnGetItemRoute) {
@@ -555,7 +555,7 @@ trait UnitTestTrait
         );
     }
 
-    public function testSelfGetItemNotFoundOnInvalidUser(): void
+    public function testPermissionBundleSelfGetItemNotFoundOnInvalidUser(): void
     {
         if (!self::$unitTestConfig->hasSelfGetItem()) {
             self::assertTrue(true);
@@ -575,7 +575,7 @@ trait UnitTestTrait
         );
     }
 
-    public function testSelfGetItemDeniedOnInvalidPermission(): void
+    public function testPermissionBundleSelfGetItemDeniedOnInvalidPermission(): void
     {
         if (!self::$unitTestConfig->hasSelfGetItem()) {
             self::assertTrue(true);
@@ -601,7 +601,7 @@ trait UnitTestTrait
      */
     abstract public function getGetCollectionDataForPermissionBundle(): ?UnitTestGetCollectionData;
 
-    public function testGetCollection(): void
+    public function testPermissionBundleGetCollection(): void
     {
         if (!self::$unitTestConfig->hasGetCollectionRoute) {
             self::assertTrue(true);
@@ -628,7 +628,7 @@ trait UnitTestTrait
         self::assertNotCount(0, $json['hydra:member']);
     }
 
-    public function testSelfGetCollection(): void
+    public function testPermissionBundleSelfGetCollection(): void
     {
         if (!self::$unitTestConfig->hasSelfGetCollection()) {
             self::assertTrue(true);
@@ -655,7 +655,7 @@ trait UnitTestTrait
         self::assertCount($data->getExpectedCount(), $json['hydra:member']);
     }
 
-    public function testGetCollectionDenied(): void
+    public function testPermissionBundleGetCollectionDenied(): void
     {
         if (!self::$unitTestConfig->hasGetCollectionRoute
             || !self::$unitTestConfig->hasSecurityOnGetCollectionRoute) {
@@ -676,7 +676,7 @@ trait UnitTestTrait
         );
     }
 
-    public function testSelfGetCollectionDeniedOnInvalidUser(): void
+    public function testPermissionBundleSelfGetCollectionDeniedOnInvalidUser(): void
     {
         if (!self::$unitTestConfig->hasSelfGetCollection()) {
             self::assertTrue(true);
@@ -702,7 +702,7 @@ trait UnitTestTrait
         self::assertCount(0, $json['hydra:member']);
     }
 
-    public function testSelfGetCollectionDeniedOnInvalidPermission(): void
+    public function testPermissionBundleSelfGetCollectionDeniedOnInvalidPermission(): void
     {
         if (!self::$unitTestConfig->hasSelfGetCollection()) {
             self::assertTrue(true);
