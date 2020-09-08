@@ -2,14 +2,8 @@
 
 namespace Epubli\PermissionBundle\UnitTestHelpers;
 
-class UnitTestPostData
+class UnitTestPostData extends UnitTestData
 {
-    /** @var string */
-    private $resourceURI;
-    /** @var string */
-    private $permissionKey;
-    /** @var int */
-    private $userId;
     /** @var string */
     private $payload;
 
@@ -23,34 +17,8 @@ class UnitTestPostData
      */
     public function __construct(string $resourceURI, string $permissionKey, int $userId, string $payload)
     {
-        $this->resourceURI = $resourceURI;
-        $this->permissionKey = $permissionKey;
-        $this->userId = $userId;
+        parent::__construct($resourceURI, $permissionKey, $userId);
         $this->payload = $payload;
-    }
-
-    /**
-     * @return string
-     */
-    public function getResourceURI(): string
-    {
-        return $this->resourceURI;
-    }
-
-    /**
-     * @return string
-     */
-    public function getPermissionKey(): string
-    {
-        return $this->permissionKey;
-    }
-
-    /**
-     * @return int
-     */
-    public function getUserId(): int
-    {
-        return $this->userId;
     }
 
     /**

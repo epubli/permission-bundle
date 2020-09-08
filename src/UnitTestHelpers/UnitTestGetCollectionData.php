@@ -2,14 +2,8 @@
 
 namespace Epubli\PermissionBundle\UnitTestHelpers;
 
-class UnitTestGetCollectionData
+class UnitTestGetCollectionData extends UnitTestData
 {
-    /** @var string */
-    private $resourceURI;
-    /** @var string */
-    private $permissionKey;
-    /** @var int */
-    private $userId;
     /** @var int */
     private $expectedCount;
 
@@ -23,34 +17,8 @@ class UnitTestGetCollectionData
      */
     public function __construct(string $resourceURI, string $permissionKey, int $userId, int $expectedCount)
     {
-        $this->resourceURI = $resourceURI;
-        $this->permissionKey = $permissionKey;
-        $this->userId = $userId;
+        parent::__construct($resourceURI, $permissionKey, $userId);
         $this->expectedCount = $expectedCount;
-    }
-
-    /**
-     * @return string
-     */
-    public function getResourceURI(): string
-    {
-        return $this->resourceURI;
-    }
-
-    /**
-     * @return string
-     */
-    public function getPermissionKey(): string
-    {
-        return $this->permissionKey;
-    }
-
-    /**
-     * @return int
-     */
-    public function getUserId(): int
-    {
-        return $this->userId;
     }
 
     /**
