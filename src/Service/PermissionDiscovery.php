@@ -113,6 +113,7 @@ class PermissionDiscovery
             $apiPlatformOperations = $apiPlatformAnnotation->itemOperations ?? ['get', 'put', 'patch', 'delete'];
         } else {
             $apiPlatformOperations = $apiPlatformAnnotation->collectionOperations ?? ['get', 'post'];
+            //Check for special routes in the itemOperations because these do not need to end with a number
             $apiPlatformOperations = array_merge(
                 $apiPlatformOperations,
                 self::getSpecialRouteNameOperations(
