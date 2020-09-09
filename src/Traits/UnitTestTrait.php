@@ -19,10 +19,14 @@ trait UnitTestTrait
     private static $unitTestConfig;
 
     /**
+     * This method needs to return the data used for testing the delete route.
      * @return UnitTestDeleteData|null
      */
     abstract public function getDeleteDataForPermissionBundle(): ?UnitTestDeleteData;
 
+    /**
+     * Do NOT call this method. It will be called automatically by PHPUnit
+     */
     public function testPermissionBundleDelete(): void
     {
         if (!self::$unitTestConfig->hasDeleteRoute) {
@@ -46,6 +50,9 @@ trait UnitTestTrait
         self::assertResponseStatusCodeSame(204);
     }
 
+    /**
+     * Do NOT call this method. It will be called automatically by PHPUnit
+     */
     public function testPermissionBundleSelfDelete(): void
     {
         if (!self::$unitTestConfig->hasSelfDelete()) {
@@ -69,6 +76,9 @@ trait UnitTestTrait
         self::assertResponseStatusCodeSame(204);
     }
 
+    /**
+     * Do NOT call this method. It will be called automatically by PHPUnit
+     */
     public function testPermissionBundleDeleteDenied(): void
     {
         if (!self::$unitTestConfig->hasDeleteRoute
@@ -90,6 +100,9 @@ trait UnitTestTrait
         );
     }
 
+    /**
+     * Do NOT call this method. It will be called automatically by PHPUnit
+     */
     public function testPermissionBundleSelfDeleteDeniedOnInvalidUser(): void
     {
         if (!self::$unitTestConfig->hasSelfDelete()) {
@@ -110,6 +123,9 @@ trait UnitTestTrait
         );
     }
 
+    /**
+     * Do NOT call this method. It will be called automatically by PHPUnit
+     */
     public function testPermissionBundleSelfDeleteDeniedOnInvalidPermission(): void
     {
         if (!self::$unitTestConfig->hasSelfDelete()) {
@@ -132,10 +148,14 @@ trait UnitTestTrait
     }
 
     /**
+     * This method needs to return the data used for testing the put and patch route.
      * @return UnitTestUpdateData|null
      */
     abstract public function getUpdateDataForPermissionBundle(): ?UnitTestUpdateData;
 
+    /**
+     * Do NOT call this method. It will be called automatically by PHPUnit
+     */
     public function testPermissionBundlePut(): void
     {
         if (!self::$unitTestConfig->hasPutRoute) {
@@ -164,6 +184,9 @@ trait UnitTestTrait
         }
     }
 
+    /**
+     * Do NOT call this method. It will be called automatically by PHPUnit
+     */
     public function testPermissionBundleSelfPut(): void
     {
         if (!self::$unitTestConfig->hasSelfPut()) {
@@ -191,6 +214,9 @@ trait UnitTestTrait
         }
     }
 
+    /**
+     * Do NOT call this method. It will be called automatically by PHPUnit
+     */
     public function testPermissionBundlePutDenied(): void
     {
         if (!self::$unitTestConfig->hasPutRoute
@@ -212,6 +238,9 @@ trait UnitTestTrait
         );
     }
 
+    /**
+     * Do NOT call this method. It will be called automatically by PHPUnit
+     */
     public function testPermissionBundleSelfPutDeniedOnInvalidUser(): void
     {
         if (!self::$unitTestConfig->hasSelfPut()) {
@@ -232,6 +261,9 @@ trait UnitTestTrait
         );
     }
 
+    /**
+     * Do NOT call this method. It will be called automatically by PHPUnit
+     */
     public function testPermissionBundleSelfPutDeniedOnInvalidPermission(): void
     {
         if (!self::$unitTestConfig->hasSelfPut()) {
@@ -253,6 +285,9 @@ trait UnitTestTrait
         );
     }
 
+    /**
+     * Do NOT call this method. It will be called automatically by PHPUnit
+     */
     public function testPermissionBundlePatch(): void
     {
         if (!self::$unitTestConfig->hasPatchRoute) {
@@ -281,6 +316,9 @@ trait UnitTestTrait
         }
     }
 
+    /**
+     * Do NOT call this method. It will be called automatically by PHPUnit
+     */
     public function testPermissionBundleSelfPatch(): void
     {
         if (!self::$unitTestConfig->hasSelfPatch()) {
@@ -308,6 +346,9 @@ trait UnitTestTrait
         }
     }
 
+    /**
+     * Do NOT call this method. It will be called automatically by PHPUnit
+     */
     public function testPermissionBundlePatchDenied(): void
     {
         if (!self::$unitTestConfig->hasPatchRoute
@@ -329,6 +370,9 @@ trait UnitTestTrait
         );
     }
 
+    /**
+     * Do NOT call this method. It will be called automatically by PHPUnit
+     */
     public function testPermissionBundleSelfPatchDeniedOnInvalidUser(): void
     {
         if (!self::$unitTestConfig->hasSelfPatch()) {
@@ -349,6 +393,9 @@ trait UnitTestTrait
         );
     }
 
+    /**
+     * Do NOT call this method. It will be called automatically by PHPUnit
+     */
     public function testPermissionBundleSelfPatchDeniedOnInvalidPermission(): void
     {
         if (!self::$unitTestConfig->hasSelfPatch()) {
@@ -371,10 +418,14 @@ trait UnitTestTrait
     }
 
     /**
+     * This method needs to return the data used for testing the post route.
      * @return UnitTestPostData|null
      */
     abstract public function getPostDataForPermissionBundle(): ?UnitTestPostData;
 
+    /**
+     * Do NOT call this method. It will be called automatically by PHPUnit
+     */
     public function testPermissionBundlePost(): void
     {
         if (!self::$unitTestConfig->hasPostRoute) {
@@ -398,6 +449,9 @@ trait UnitTestTrait
         self::assertResponseStatusCodeSame(201);
     }
 
+    /**
+     * Do NOT call this method. It will be called automatically by PHPUnit
+     */
     public function testPermissionBundleSelfPost(): void
     {
         if (!self::$unitTestConfig->hasSelfPost()) {
@@ -421,6 +475,9 @@ trait UnitTestTrait
         self::assertResponseStatusCodeSame(201);
     }
 
+    /**
+     * Do NOT call this method. It will be called automatically by PHPUnit
+     */
     public function testPermissionBundlePostDenied(): void
     {
         if (!self::$unitTestConfig->hasPostRoute
@@ -442,6 +499,9 @@ trait UnitTestTrait
         );
     }
 
+    /**
+     * Do NOT call this method. It will be called automatically by PHPUnit
+     */
     public function testPermissionBundleSelfPostDeniedOnInvalidUser(): void
     {
         if (!self::$unitTestConfig->hasSelfPost()) {
@@ -462,6 +522,9 @@ trait UnitTestTrait
         );
     }
 
+    /**
+     * Do NOT call this method. It will be called automatically by PHPUnit
+     */
     public function testPermissionBundleSelfPostDeniedOnInvalidPermission(): void
     {
         if (!self::$unitTestConfig->hasSelfPost()) {
@@ -484,10 +547,14 @@ trait UnitTestTrait
     }
 
     /**
+     * This method needs to return the data used for testing the get item route.
      * @return UnitTestGetItemData|null
      */
     abstract public function getGetItemDataForPermissionBundle(): ?UnitTestGetItemData;
 
+    /**
+     * Do NOT call this method. It will be called automatically by PHPUnit
+     */
     public function testPermissionBundleGetItem(): void
     {
         if (!self::$unitTestConfig->hasGetItemRoute) {
@@ -511,6 +578,9 @@ trait UnitTestTrait
         self::assertResponseStatusCodeSame(200);
     }
 
+    /**
+     * Do NOT call this method. It will be called automatically by PHPUnit
+     */
     public function testPermissionBundleSelfGetItem(): void
     {
         if (!self::$unitTestConfig->hasSelfGetItem()) {
@@ -534,6 +604,9 @@ trait UnitTestTrait
         self::assertResponseStatusCodeSame(200);
     }
 
+    /**
+     * Do NOT call this method. It will be called automatically by PHPUnit
+     */
     public function testPermissionBundleGetItemDenied(): void
     {
         if (!self::$unitTestConfig->hasGetItemRoute
@@ -555,6 +628,9 @@ trait UnitTestTrait
         );
     }
 
+    /**
+     * Do NOT call this method. It will be called automatically by PHPUnit
+     */
     public function testPermissionBundleSelfGetItemNotFoundOnInvalidUser(): void
     {
         if (!self::$unitTestConfig->hasSelfGetItem()) {
@@ -575,6 +651,9 @@ trait UnitTestTrait
         );
     }
 
+    /**
+     * Do NOT call this method. It will be called automatically by PHPUnit
+     */
     public function testPermissionBundleSelfGetItemDeniedOnInvalidPermission(): void
     {
         if (!self::$unitTestConfig->hasSelfGetItem()) {
@@ -597,10 +676,14 @@ trait UnitTestTrait
     }
 
     /**
+     * This method needs to return the data used for testing the get collection route.
      * @return UnitTestGetCollectionData|null
      */
     abstract public function getGetCollectionDataForPermissionBundle(): ?UnitTestGetCollectionData;
 
+    /**
+     * Do NOT call this method. It will be called automatically by PHPUnit
+     */
     public function testPermissionBundleGetCollection(): void
     {
         if (!self::$unitTestConfig->hasGetCollectionRoute) {
@@ -628,6 +711,9 @@ trait UnitTestTrait
         self::assertNotCount(0, $json['hydra:member']);
     }
 
+    /**
+     * Do NOT call this method. It will be called automatically by PHPUnit
+     */
     public function testPermissionBundleSelfGetCollection(): void
     {
         if (!self::$unitTestConfig->hasSelfGetCollection()) {
@@ -655,6 +741,9 @@ trait UnitTestTrait
         self::assertCount($data->getExpectedCount(), $json['hydra:member']);
     }
 
+    /**
+     * Do NOT call this method. It will be called automatically by PHPUnit
+     */
     public function testPermissionBundleGetCollectionDenied(): void
     {
         if (!self::$unitTestConfig->hasGetCollectionRoute
@@ -676,6 +765,9 @@ trait UnitTestTrait
         );
     }
 
+    /**
+     * Do NOT call this method. It will be called automatically by PHPUnit
+     */
     public function testPermissionBundleSelfGetCollectionEmptyOnInvalidUser(): void
     {
         if (!self::$unitTestConfig->hasSelfGetCollection()) {
@@ -702,6 +794,9 @@ trait UnitTestTrait
         self::assertCount(0, $json['hydra:member']);
     }
 
+    /**
+     * Do NOT call this method. It will be called automatically by PHPUnit
+     */
     public function testPermissionBundleSelfGetCollectionDeniedOnInvalidPermission(): void
     {
         if (!self::$unitTestConfig->hasSelfGetCollection()) {
@@ -724,6 +819,7 @@ trait UnitTestTrait
     }
 
     /**
+     * Sends a request with a specific cookie.
      * @param string $resourceURI
      * @param bool $setNewCookie
      * @param string[] $permissionKeys
@@ -756,6 +852,9 @@ trait UnitTestTrait
     }
 
     /**
+     * Sends a request and expects a AccessDeniedHttpException.
+     * This needs to be last call in the method.
+     * Nothing will be executed after this.
      * @param string $resourceURI
      * @param string[] $permissionKeys
      * @param int $userId
@@ -784,6 +883,9 @@ trait UnitTestTrait
     }
 
     /**
+     * Sends a request and expects a NotFoundHttpException.
+     * This needs to be last call in the method.
+     * Nothing will be executed after this.
      * @param string $resourceURI
      * @param string[] $permissionKeys
      * @param int $userId
@@ -812,6 +914,8 @@ trait UnitTestTrait
     }
 
     /**
+     * Clears all current cookies in the <code>self::$kernelBrowser</code>
+     * and adds a new one with the specified permission keys and user id.
      * @param string[] $permissionKeys
      * @param int $userId
      */
