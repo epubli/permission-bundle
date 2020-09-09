@@ -10,9 +10,24 @@ use Epubli\PermissionBundle\UnitTestHelpers\UnitTestGetItemData;
 use Epubli\PermissionBundle\UnitTestHelpers\UnitTestPostData;
 use Epubli\PermissionBundle\UnitTestHelpers\UnitTestUpdateData;
 use Negotiation\Exception\InvalidArgument;
+use Symfony\Bundle\FrameworkBundle\KernelBrowser;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
+/**
+ * Trait UnitTestTrait
+ * @package Epubli\PermissionBundle\Traits
+ * @method static void assertTrue($condition, string $message = '')
+ * @method static void assertResponseStatusCodeSame(int $expectedCode, string $message = '')
+ * @method static void assertEquals($expected, $actual, string $message = '', float $delta = 0.0, int $maxDepth = 10, bool $canonicalize = false, bool $ignoreCase = false)
+ * @method static void assertArrayHasKey($key, $array, string $message = '')
+ * @method static void assertNotCount(int $expectedCount, $haystack, string $message = '')
+ * @method static void assertCount(int $expectedCount, $haystack, string $message = '')
+ * @method array getJson()
+ * @method Response request(string $uri, string $method = 'GET', $content = null, array $files = [], array $parameters = [], array $headers = [], bool $changeHistory = true)
+ * @method void expectException(string $exception)
+ */
 trait UnitTestTrait
 {
     /** @var UnitTestConfig */
