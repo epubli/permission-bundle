@@ -57,7 +57,9 @@
         <service
                 id="epubli_permission.service.jwt_mock_creator"
                 class="Epubli\PermissionBundle\Service\JWTMockCreator"
-                public="true"/>
+                public="true">
+            <argument type="service" id="epubli_permission.guzzle.http"/>
+        </service>
         <service
                 id="Epubli\PermissionBundle\Service\JWTMockCreator"
                 alias="epubli_permission.service.jwt_mock_creator"

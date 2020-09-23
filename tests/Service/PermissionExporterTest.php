@@ -76,7 +76,10 @@ class PermissionExporterTest extends TestCase
         $customPermissionDiscovery = $customPermissionDiscovery ?? CustomPermissionDiscoveryTest::createCustomPermissionDiscovery(
             );
 
-        $jwtMockCreator = new JWTMockCreator(
+        $requestContainerForJWTMock = [];
+        $jwtMockCreator = JWTMockCreatorTest::createJWTMockCreator(
+            $requestContainerForJWTMock,
+            new MockHandler(),
             $permissionDiscovery,
             $customPermissionDiscovery
         );

@@ -8,7 +8,9 @@ use Epubli\PermissionBundle\Service\AccessToken;
 use Epubli\PermissionBundle\Service\JWTMockCreator;
 use Epubli\PermissionBundle\Tests\Helpers\TestEntityWithSelfPermissionInterface;
 use Epubli\PermissionBundle\Tests\Service\CustomPermissionDiscoveryTest;
+use Epubli\PermissionBundle\Tests\Service\JWTMockCreatorTest;
 use Epubli\PermissionBundle\Tests\Service\PermissionDiscoveryTest;
+use GuzzleHttp\Handler\MockHandler;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -34,7 +36,14 @@ class PermissionVoterTest extends TestCase
     ): PermissionVoter {
         $permissionDiscovery = PermissionDiscoveryTest::createPermissionDiscovery();
         $customPermissionDiscovery = CustomPermissionDiscoveryTest::createCustomPermissionDiscovery();
-        $jwtMockCreator = new JWTMockCreator($permissionDiscovery, $customPermissionDiscovery);
+
+        $requestContainer = [];
+        $jwtMockCreator = JWTMockCreatorTest::createJWTMockCreator(
+            $requestContainer,
+            new MockHandler(),
+            $permissionDiscovery,
+            $customPermissionDiscovery
+        );
 
         $serverOptions =
             [

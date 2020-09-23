@@ -24,6 +24,9 @@ class JWTMockCreator
     /** @var CustomPermissionDiscovery */
     private $customPermissionDiscovery;
 
+    /** @var Client */
+    private $client;
+
     /** @var string|null */
     private $jwtForAllPermissions;
 
@@ -32,13 +35,16 @@ class JWTMockCreator
 
     /**
      * JWTMockCreator constructor.
+     * @param Client $client
      * @param PermissionDiscovery $permissionDiscovery
      * @param CustomPermissionDiscovery $customPermissionDiscovery
      */
     public function __construct(
+        Client $client,
         PermissionDiscovery $permissionDiscovery,
         CustomPermissionDiscovery $customPermissionDiscovery
     ) {
+        $this->client = $client;
         $this->permissionDiscovery = $permissionDiscovery;
         $this->customPermissionDiscovery = $customPermissionDiscovery;
     }
@@ -92,27 +98,25 @@ class JWTMockCreator
             return $this->jwtForAllPermissions;
         }
 
-        $client = new Client(['base_uri' => 'http://user']);
         $jwt = $this->createJsonWebToken(['user.permission.read']);
-        $permissionKeys = $this->getAllPermissionKeys($client, $jwt, '/api/roles/permissions?page=1');
+        $permissionKeys = $this->getAllPermissionKeys($jwt, '/api/permissions?page=1');
 
         $this->jwtForAllPermissions = $this->createJsonWebToken($permissionKeys);
         return $this->jwtForAllPermissions;
     }
 
     /**
-     * @param Client $client
      * @param string $jsonWebToken
      * @param string $path
      * @return string[]
      * @throws Exception
      */
-    private function getAllPermissionKeys(Client $client, string $jsonWebToken, string $path): array
+    private function getAllPermissionKeys(string $jsonWebToken, string $path): array
     {
         try {
-            $response = $client->get(
+            $response = $this->client->get(
                 $path,
-                ['cookies' => $this->createCookieJar($jsonWebToken, $client->getConfig('base_uri') . $path)]
+                ['cookies' => $this->createCookieJar($jsonWebToken, $this->client->getConfig('base_uri') . $path)]
             );
 
             $json = json_decode($response->getBody(), true);
@@ -123,7 +127,7 @@ class JWTMockCreator
                 $nextPath = $json['hydra:view']['hydra:next'];
                 $permissionKeys = array_merge(
                     $permissionKeys,
-                    $this->getAllPermissionKeys($client, $jsonWebToken, $nextPath)
+                    $this->getAllPermissionKeys($jsonWebToken, $nextPath)
                 );
             }
 

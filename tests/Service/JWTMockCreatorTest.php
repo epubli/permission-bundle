@@ -3,18 +3,55 @@
 namespace Epubli\PermissionBundle\Tests\Service;
 
 use Epubli\PermissionBundle\Service\AccessToken;
+use Epubli\PermissionBundle\Service\CustomPermissionDiscovery;
 use Epubli\PermissionBundle\Service\JWTMockCreator;
+use Epubli\PermissionBundle\Service\PermissionDiscovery;
+use GuzzleHttp\Client;
+use GuzzleHttp\Handler\MockHandler;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Middleware;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 class JWTMockCreatorTest extends TestCase
 {
+    /**
+     * @param $requestContainer
+     * @param MockHandler $mockHandler
+     * @param PermissionDiscovery $permissionDiscovery
+     * @param CustomPermissionDiscovery $customPermissionDiscovery
+     * @return JWTMockCreator
+     */
+    public static function createJWTMockCreator(
+        &$requestContainer,
+        MockHandler $mockHandler,
+        PermissionDiscovery $permissionDiscovery,
+        CustomPermissionDiscovery $customPermissionDiscovery
+    ): JWTMockCreator {
+        $handlerStack = HandlerStack::create($mockHandler);
+
+        $history = Middleware::history($requestContainer);
+
+        $handlerStack->push($history);
+
+        $client = new Client(['handler' => $handlerStack]);
+
+        return new JWTMockCreator(
+            $client,
+            $permissionDiscovery,
+            $customPermissionDiscovery
+        );
+    }
+
     public function testGetMockAuthorizationHeader(): void
     {
         $permissionKey = 'permission.perm';
 
-        $jwtMockCreator = new JWTMockCreator(
+        $requestContainer = [];
+        $jwtMockCreator = self::createJWTMockCreator(
+            $requestContainer,
+            new MockHandler(),
             PermissionDiscoveryTest::createPermissionDiscovery(),
             CustomPermissionDiscoveryTest::createCustomPermissionDiscovery()
         );
@@ -34,7 +71,10 @@ class JWTMockCreatorTest extends TestCase
     {
         $permissionKey = 'permission.perm';
 
-        $jwtMockCreator = new JWTMockCreator(
+        $requestContainer = [];
+        $jwtMockCreator = self::createJWTMockCreator(
+            $requestContainer,
+            new MockHandler(),
             PermissionDiscoveryTest::createPermissionDiscovery(),
             CustomPermissionDiscoveryTest::createCustomPermissionDiscovery()
         );
@@ -64,7 +104,10 @@ class JWTMockCreatorTest extends TestCase
 
     public function testGetMockAuthorizationHeaderForThisMicroservice(): void
     {
-        $jwtMockCreator = new JWTMockCreator(
+        $requestContainer = [];
+        $jwtMockCreator = self::createJWTMockCreator(
+            $requestContainer,
+            new MockHandler(),
             PermissionDiscoveryTest::createPermissionDiscovery(),
             CustomPermissionDiscoveryTest::createCustomPermissionDiscovery()
         );
