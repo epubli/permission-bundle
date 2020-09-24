@@ -4,7 +4,6 @@ namespace Epubli\PermissionBundle\Tests\Service;
 
 use Epubli\PermissionBundle\DependencyInjection\Configuration;
 use Epubli\PermissionBundle\Exception\PermissionExportException;
-use Epubli\PermissionBundle\Service\JWTMockCreator;
 use Epubli\PermissionBundle\Service\PermissionExporter;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
@@ -32,17 +31,17 @@ class PermissionExporterTest extends TestCase
         $countOfPermissions =
             count(PermissionDiscoveryTest::PERMISSION_KEYS_WITH_DESCRIPTIONS)
             + count(CustomPermissionDiscoveryTest::PERMISSIONS);
-        $this->assertEquals($countOfPermissions, $permissionExporter->export());
+        self::assertEquals($countOfPermissions, $permissionExporter->export());
 
-        $this->assertCount(1, $requestContainer);
+        self::assertCount(1, $requestContainer);
 
         /** @var Request $request */
         $request = $requestContainer[0]['request'];
-        $this->assertEquals('POST', $request->getMethod());
+        self::assertEquals('POST', $request->getMethod());
         $json = json_decode((string)$request->getBody(), true);
 
-        $this->assertEquals('test', $json['microservice']);
-        $this->assertEqualsCanonicalizing(
+        self::assertEquals('test', $json['microservice']);
+        self::assertEqualsCanonicalizing(
             array_merge(
                 PermissionDiscoveryTest::PERMISSION_KEYS_WITH_DESCRIPTIONS,
                 CustomPermissionDiscoveryTest::PERMISSIONS
@@ -107,7 +106,7 @@ class PermissionExporterTest extends TestCase
         try {
             $permissionExporter->export();
         } catch (PermissionExportException $e) {
-            $this->assertEquals('Expected status code 204. Received instead: 200', $e->getMessage());
+            self::assertEquals('Expected status code 204. Received instead: 200', $e->getMessage());
         }
     }
 
@@ -125,7 +124,7 @@ class PermissionExporterTest extends TestCase
         try {
             $permissionExporter->export();
         } catch (PermissionExportException $e) {
-            $this->assertEquals('Status Code: 400\nBody: body', $e->getMessage());
+            self::assertEquals('Status Code: 400\nBody: body', $e->getMessage());
         }
     }
 
@@ -147,7 +146,7 @@ class PermissionExporterTest extends TestCase
         try {
             $permissionExporter->export();
         } catch (PermissionExportException $e) {
-            $this->assertEquals('Status Code: 400\nBody: body', $e->getMessage());
+            self::assertEquals('Status Code: 400\nBody: body', $e->getMessage());
         }
     }
 
@@ -168,9 +167,9 @@ class PermissionExporterTest extends TestCase
 
         try {
             $permissionExporter->export();
-            $this->assertTrue(false);
+            self::assertTrue(false);
         } catch (PermissionExportException $e) {
-            $this->assertEquals('Status Code: 500\nBody: body', $e->getMessage());
+            self::assertEquals('Status Code: 500\nBody: body', $e->getMessage());
         }
     }
 
@@ -188,17 +187,17 @@ class PermissionExporterTest extends TestCase
         $countOfPermissions =
             count(PermissionDiscoveryTest::PERMISSION_KEYS_WITH_DESCRIPTIONS)
             + count(CustomPermissionDiscoveryTest::PERMISSIONS);
-        $this->assertEquals($countOfPermissions, $permissionExporter->export());
+        self::assertEquals($countOfPermissions, $permissionExporter->export());
 
-        $this->assertCount(1, $requestContainer);
+        self::assertCount(1, $requestContainer);
 
         /** @var Request $request */
         $request = $requestContainer[0]['request'];
-        $this->assertEquals('POST', $request->getMethod());
+        self::assertEquals('POST', $request->getMethod());
         $json = json_decode((string)$request->getBody(), true);
 
-        $this->assertEquals('test', $json['microservice']);
-        $this->assertEqualsCanonicalizing(
+        self::assertEquals('test', $json['microservice']);
+        self::assertEqualsCanonicalizing(
             array_merge(
                 PermissionDiscoveryTest::PERMISSION_KEYS_WITH_DESCRIPTIONS,
                 CustomPermissionDiscoveryTest::PERMISSIONS
@@ -225,9 +224,9 @@ class PermissionExporterTest extends TestCase
 
         try {
             $permissionExporter->export();
-            $this->assertTrue(false);
+            self::assertTrue(false);
         } catch (PermissionExportException $e) {
-            $this->assertEquals(
+            self::assertEquals(
                 'Please make sure to set the name of your microservice in config/packages/epubli_permission.yaml!',
                 $e->getMessage()
             );
@@ -250,16 +249,16 @@ class PermissionExporterTest extends TestCase
         $permissionExporter = self::createPermissionExporter($requestContainer, $mockHandler, $permissionDiscovery);
 
         $countOfPermissions = count(CustomPermissionDiscoveryTest::PERMISSIONS);
-        $this->assertEquals($countOfPermissions, $permissionExporter->export());
+        self::assertEquals($countOfPermissions, $permissionExporter->export());
 
-        $this->assertCount(1, $requestContainer);
+        self::assertCount(1, $requestContainer);
 
         /** @var Request $request */
         $request = $requestContainer[0]['request'];
-        $this->assertEquals('POST', $request->getMethod());
+        self::assertEquals('POST', $request->getMethod());
         $json = json_decode((string)$request->getBody(), true);
 
-        $this->assertEqualsCanonicalizing(
+        self::assertEqualsCanonicalizing(
             CustomPermissionDiscoveryTest::PERMISSIONS,
             $json['permissions']
         );
@@ -286,16 +285,16 @@ class PermissionExporterTest extends TestCase
         );
 
         $countOfPermissions = count(PermissionDiscoveryTest::PERMISSION_KEYS_WITH_DESCRIPTIONS);
-        $this->assertEquals($countOfPermissions, $permissionExporter->export());
+        self::assertEquals($countOfPermissions, $permissionExporter->export());
 
-        $this->assertCount(1, $requestContainer);
+        self::assertCount(1, $requestContainer);
 
         /** @var Request $request */
         $request = $requestContainer[0]['request'];
-        $this->assertEquals('POST', $request->getMethod());
+        self::assertEquals('POST', $request->getMethod());
         $json = json_decode((string)$request->getBody(), true);
 
-        $this->assertEqualsCanonicalizing(
+        self::assertEqualsCanonicalizing(
             PermissionDiscoveryTest::PERMISSION_KEYS_WITH_DESCRIPTIONS,
             $json['permissions']
         );
@@ -324,8 +323,8 @@ class PermissionExporterTest extends TestCase
             $customPermissionDiscovery
         );
 
-        $this->assertEquals(0, $permissionExporter->export());
+        self::assertEquals(0, $permissionExporter->export());
 
-        $this->assertCount(0, $requestContainer);
+        self::assertCount(0, $requestContainer);
     }
 }

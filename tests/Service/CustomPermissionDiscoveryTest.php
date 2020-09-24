@@ -28,7 +28,7 @@ class CustomPermissionDiscoveryTest extends TestCase
     {
         $customPermissionDiscovery = self::createCustomPermissionDiscovery();
 
-        $this->assertEquals('test', $customPermissionDiscovery->getMicroserviceName());
+        self::assertEquals('test', $customPermissionDiscovery->getMicroserviceName());
     }
 
     /**
@@ -53,7 +53,7 @@ class CustomPermissionDiscoveryTest extends TestCase
     {
         $customPermissionDiscovery = self::createCustomPermissionDiscovery();
 
-        $this->assertEqualsCanonicalizing(
+        self::assertEqualsCanonicalizing(
             array_column(self::PERMISSIONS, 'key'),
             $customPermissionDiscovery->getAllPermissionKeys()
         );
@@ -63,7 +63,7 @@ class CustomPermissionDiscoveryTest extends TestCase
     {
         $customPermissionDiscovery = self::createCustomPermissionDiscovery();
 
-        $this->assertEqualsCanonicalizing(
+        self::assertEqualsCanonicalizing(
             self::PERMISSIONS,
             $customPermissionDiscovery->getAllPermissionKeysWithDescriptions()
         );

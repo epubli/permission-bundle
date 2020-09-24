@@ -21,12 +21,12 @@ class AccessTokenTest extends TestCase
             $this->createRequestStack([AccessToken::ACCESS_TOKEN_COOKIE_NAME => $accessToken])
         );
 
-        $this->assertTrue($accessToken->exists(), 'AccessToken does not exist');
-        $this->assertEquals('57e42448-ba5e-3af8-be01-b1c86379d517', $accessToken->getJTI());
-        $this->assertEquals(81, $accessToken->getUserId());
-        $this->assertTrue($accessToken->hasPermissionKey('user.user.read'));
-        $this->assertTrue($accessToken->hasPermissionKey('user.user.update.self'));
-        $this->assertFalse($accessToken->hasPermissionKey('user.user.update'));
+        self::assertTrue($accessToken->exists(), 'AccessToken does not exist');
+        self::assertEquals('57e42448-ba5e-3af8-be01-b1c86379d517', $accessToken->getJTI());
+        self::assertEquals(81, $accessToken->getUserId());
+        self::assertTrue($accessToken->hasPermissionKey('user.user.read'));
+        self::assertTrue($accessToken->hasPermissionKey('user.user.update.self'));
+        self::assertFalse($accessToken->hasPermissionKey('user.user.update'));
     }
 
     /**
@@ -52,12 +52,12 @@ class AccessTokenTest extends TestCase
             $this->createRequestStack([AccessToken::ACCESS_TOKEN_COOKIE_NAME => $refreshToken])
         );
 
-        $this->assertTrue($accessToken->exists(), 'RereshToken does not exist');
-        $this->assertEquals('57e42448-ba5e-3af8-be01-b1c86379d517', $accessToken->getJTI());
-        $this->assertEquals(81, $accessToken->getUserId());
-        $this->assertFalse($accessToken->hasPermissionKey('user.user.read'));
-        $this->assertFalse($accessToken->hasPermissionKey('user.user.update.self'));
-        $this->assertFalse($accessToken->hasPermissionKey('user.user.update'));
+        self::assertTrue($accessToken->exists(), 'RereshToken does not exist');
+        self::assertEquals('57e42448-ba5e-3af8-be01-b1c86379d517', $accessToken->getJTI());
+        self::assertEquals(81, $accessToken->getUserId());
+        self::assertFalse($accessToken->hasPermissionKey('user.user.read'));
+        self::assertFalse($accessToken->hasPermissionKey('user.user.update.self'));
+        self::assertFalse($accessToken->hasPermissionKey('user.user.update'));
     }
 
     public function testInvalidToken(): void
@@ -66,12 +66,12 @@ class AccessTokenTest extends TestCase
 
         $accessToken = new AccessToken($this->createRequestStack([AccessToken::ACCESS_TOKEN_COOKIE_NAME => $token]));
 
-        $this->assertFalse($accessToken->exists());
-        $this->assertNull($accessToken->getJTI());
-        $this->assertNull($accessToken->getUserId());
-        $this->assertFalse($accessToken->hasPermissionKey('user.user.read'));
-        $this->assertFalse($accessToken->hasPermissionKey('user.user.update.self'));
-        $this->assertFalse($accessToken->hasPermissionKey('user.user.update'));
+        self::assertFalse($accessToken->exists());
+        self::assertNull($accessToken->getJTI());
+        self::assertNull($accessToken->getUserId());
+        self::assertFalse($accessToken->hasPermissionKey('user.user.read'));
+        self::assertFalse($accessToken->hasPermissionKey('user.user.update.self'));
+        self::assertFalse($accessToken->hasPermissionKey('user.user.update'));
     }
 
     public function testEmptyToken(): void
@@ -80,11 +80,11 @@ class AccessTokenTest extends TestCase
 
         $accessToken = new AccessToken($this->createRequestStack([AccessToken::ACCESS_TOKEN_COOKIE_NAME => $token]));
 
-        $this->assertFalse($accessToken->exists());
-        $this->assertNull($accessToken->getJTI());
-        $this->assertNull($accessToken->getUserId());
-        $this->assertFalse($accessToken->hasPermissionKey('user.user.read'));
-        $this->assertFalse($accessToken->hasPermissionKey('user.user.update.self'));
-        $this->assertFalse($accessToken->hasPermissionKey('user.user.update'));
+        self::assertFalse($accessToken->exists());
+        self::assertNull($accessToken->getJTI());
+        self::assertNull($accessToken->getUserId());
+        self::assertFalse($accessToken->hasPermissionKey('user.user.read'));
+        self::assertFalse($accessToken->hasPermissionKey('user.user.update.self'));
+        self::assertFalse($accessToken->hasPermissionKey('user.user.update'));
     }
 }

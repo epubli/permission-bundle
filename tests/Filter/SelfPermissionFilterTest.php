@@ -55,7 +55,7 @@ class SelfPermissionFilterTest extends TestCase
 
         $filterStr = $this->getSelfPermissionFilter($voter, $testEntity);
 
-        $this->assertEquals('t.id = -1', $filterStr);
+        self::assertEquals('t.id = -1', $filterStr);
     }
 
     public function testSelfPermissionFilterOnGetCollection(): void
@@ -72,7 +72,7 @@ class SelfPermissionFilterTest extends TestCase
 
         $filterStr = $this->getSelfPermissionFilter($voter, $testEntity);
 
-        $this->assertEquals('t.id = -1', $filterStr);
+        self::assertEquals('t.id = -1', $filterStr);
     }
 
     public function testSelfPermissionFilterWithNoAccessToken(): void
@@ -91,7 +91,7 @@ class SelfPermissionFilterTest extends TestCase
 
         $filterStr = $this->getSelfPermissionFilter($voter, $testEntity);
 
-        $this->assertEquals('', $filterStr);
+        self::assertEquals('', $filterStr);
     }
 
     public function testSelfPermissionFilterWithPermissionToReadEverything(): void
@@ -108,7 +108,7 @@ class SelfPermissionFilterTest extends TestCase
 
         $filterStr = $this->getSelfPermissionFilter($voter, $testEntity);
 
-        $this->assertEquals('', $filterStr);
+        self::assertEquals('', $filterStr);
     }
 
     public function testSelfPermissionFilterWithoutImplementedInterface(): void
@@ -125,7 +125,7 @@ class SelfPermissionFilterTest extends TestCase
 
         $filterStr = $this->getSelfPermissionFilter($voter, $testEntity);
 
-        $this->assertEquals('', $filterStr);
+        self::assertEquals('', $filterStr);
     }
 
     public function testSelfPermissionFilterWithoutPermissions(): void
@@ -140,7 +140,7 @@ class SelfPermissionFilterTest extends TestCase
 
         $filterStr = $this->getSelfPermissionFilter($voter, $testEntity);
 
-        $this->assertEquals('', $filterStr);
+        self::assertEquals('', $filterStr);
     }
 
     public function testSelfPermissionFilterOnPatch(): void
@@ -157,7 +157,7 @@ class SelfPermissionFilterTest extends TestCase
 
         $filterStr = $this->getSelfPermissionFilter($voter, $testEntity);
 
-        $this->assertEquals('', $filterStr);
+        self::assertEquals('', $filterStr);
     }
 
     public function testSelfPermissionFilterOnPut(): void
@@ -174,7 +174,7 @@ class SelfPermissionFilterTest extends TestCase
 
         $filterStr = $this->getSelfPermissionFilter($voter, $testEntity);
 
-        $this->assertEquals('', $filterStr);
+        self::assertEquals('', $filterStr);
     }
 
     public function testSelfPermissionFilterOnDelete(): void
@@ -191,7 +191,7 @@ class SelfPermissionFilterTest extends TestCase
 
         $filterStr = $this->getSelfPermissionFilter($voter, $testEntity);
 
-        $this->assertEquals('', $filterStr);
+        self::assertEquals('', $filterStr);
     }
 
     public function testSelfPermissionFilterOnPost(): void
@@ -208,7 +208,7 @@ class SelfPermissionFilterTest extends TestCase
 
         $filterStr = $this->getSelfPermissionFilter($voter, $testEntity);
 
-        $this->assertEquals('', $filterStr);
+        self::assertEquals('', $filterStr);
     }
 
     public function testSelfPermissionFilterOnWrongEntity(): void
@@ -225,7 +225,7 @@ class SelfPermissionFilterTest extends TestCase
 
         $filterStr = $this->getSelfPermissionFilter($voter, $testEntity);
 
-        $this->assertEquals('', $filterStr);
+        self::assertEquals('', $filterStr);
     }
 
     public function testSelfPermissionFilterOnGetSingleEntityWithoutUserIdProperty(): void
@@ -242,7 +242,7 @@ class SelfPermissionFilterTest extends TestCase
 
         $filterStr = $this->getSelfPermissionFilter($voter, $testEntity);
 
-        $this->assertEquals('t.id IN (2,3)', $filterStr);
+        self::assertEquals('t.id IN (2,3)', $filterStr);
     }
 
     public function testSelfPermissionFilterOnGetCollectionWithoutUserIdProperty(): void
@@ -259,6 +259,6 @@ class SelfPermissionFilterTest extends TestCase
 
         $filterStr = $this->getSelfPermissionFilter($voter, $testEntity);
 
-        $this->assertEquals('t.id IN (2,3)', $filterStr);
+        self::assertEquals('t.id IN (2,3)', $filterStr);
     }
 }

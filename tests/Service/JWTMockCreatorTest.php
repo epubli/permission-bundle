@@ -57,14 +57,14 @@ class JWTMockCreatorTest extends TestCase
         );
         $jwt = $jwtMockCreator->createJsonWebToken([$permissionKey]);
 
-        $this->assertNotNull($jwt);
-        $this->assertNotEmpty($jwt);
+        self::assertNotNull($jwt);
+        self::assertNotEmpty($jwt);
 
         $accessToken = $this->createAccessToken($jwt);
 
-        $this->assertTrue($accessToken->exists());
-        $this->assertTrue($accessToken->hasPermissionKey($permissionKey));
-        $this->assertEquals(-1, $accessToken->getUserId());
+        self::assertTrue($accessToken->exists());
+        self::assertTrue($accessToken->hasPermissionKey($permissionKey));
+        self::assertEquals(-1, $accessToken->getUserId());
     }
 
     public function testGetMockAuthorizationHeaderWithSpecificUserId(): void
@@ -80,14 +80,14 @@ class JWTMockCreatorTest extends TestCase
         );
         $jwt = $jwtMockCreator->createJsonWebToken([$permissionKey], 52);
 
-        $this->assertNotNull($jwt);
-        $this->assertNotEmpty($jwt);
+        self::assertNotNull($jwt);
+        self::assertNotEmpty($jwt);
 
         $accessToken = $this->createAccessToken($jwt);
 
-        $this->assertTrue($accessToken->exists());
-        $this->assertTrue($accessToken->hasPermissionKey($permissionKey));
-        $this->assertEquals(52, $accessToken->getUserId());
+        self::assertTrue($accessToken->exists());
+        self::assertTrue($accessToken->hasPermissionKey($permissionKey));
+        self::assertEquals(52, $accessToken->getUserId());
     }
 
     /**
@@ -113,14 +113,14 @@ class JWTMockCreatorTest extends TestCase
         );
         $jwt = $jwtMockCreator->createJsonWebTokenForThisMicroservice();
 
-        $this->assertNotNull($jwt);
-        $this->assertNotEmpty($jwt);
+        self::assertNotNull($jwt);
+        self::assertNotEmpty($jwt);
 
         $accessToken = $this->createAccessToken($jwt);
 
-        $this->assertTrue($accessToken->exists());
-        $this->assertTrue($accessToken->hasPermissionKey('test.test_entity_with_everything.create'));
-        $this->assertTrue($accessToken->hasPermissionKey('test.test_entity_with_everything.read'));
-        $this->assertTrue($accessToken->hasPermissionKey('test.test_entity_with_everything.delete'));
+        self::assertTrue($accessToken->exists());
+        self::assertTrue($accessToken->hasPermissionKey('test.test_entity_with_everything.create'));
+        self::assertTrue($accessToken->hasPermissionKey('test.test_entity_with_everything.read'));
+        self::assertTrue($accessToken->hasPermissionKey('test.test_entity_with_everything.delete'));
     }
 }

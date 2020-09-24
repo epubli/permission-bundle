@@ -5,7 +5,6 @@ namespace Epubli\PermissionBundle\Tests\Security;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Epubli\PermissionBundle\Security\PermissionVoter;
 use Epubli\PermissionBundle\Service\AccessToken;
-use Epubli\PermissionBundle\Service\JWTMockCreator;
 use Epubli\PermissionBundle\Tests\Helpers\TestEntityWithSelfPermissionInterface;
 use Epubli\PermissionBundle\Tests\Service\CustomPermissionDiscoveryTest;
 use Epubli\PermissionBundle\Tests\Service\JWTMockCreatorTest;
@@ -89,7 +88,7 @@ class PermissionVoterTest extends TestCase
 
         $entity = new TestEntityWithSelfPermissionInterface(-1);
 
-        $this->assertEquals(
+        self::assertEquals(
             PermissionVoter::ACCESS_GRANTED,
             $voter->vote($this->createMock(TokenInterface::class), $entity, [null])
         );
@@ -110,7 +109,7 @@ class PermissionVoterTest extends TestCase
 
         $entity = new TestEntityWithSelfPermissionInterface(-1);
 
-        $this->assertEquals(
+        self::assertEquals(
             PermissionVoter::ACCESS_GRANTED,
             $voter->vote($this->createMock(TokenInterface::class), $entity, [null])
         );
@@ -126,7 +125,7 @@ class PermissionVoterTest extends TestCase
 
         $entity = new TestEntityWithSelfPermissionInterface(-1);
 
-        $this->assertEquals(
+        self::assertEquals(
             PermissionVoter::ACCESS_GRANTED,
             $voter->vote($this->createMock(TokenInterface::class), $entity, [null])
         );
@@ -149,7 +148,7 @@ class PermissionVoterTest extends TestCase
 
         $entity = new TestEntityWithSelfPermissionInterface(-1);
 
-        $this->assertEquals(
+        self::assertEquals(
             PermissionVoter::ACCESS_GRANTED,
             $voter->vote($this->createMock(TokenInterface::class), $entity, [null])
         );
@@ -172,7 +171,7 @@ class PermissionVoterTest extends TestCase
 
         $entity = new TestEntityWithSelfPermissionInterface(-1);
 
-        $this->assertEquals(
+        self::assertEquals(
             PermissionVoter::ACCESS_GRANTED,
             $voter->vote($this->createMock(TokenInterface::class), $entity, [null])
         );
@@ -191,7 +190,7 @@ class PermissionVoterTest extends TestCase
         $entity = new TestEntityWithSelfPermissionInterface(3);
 
         $this->expectException(AccessDeniedHttpException::class);
-        $this->assertEquals(
+        self::assertEquals(
             PermissionVoter::ACCESS_DENIED,
             $voter->vote($this->createMock(TokenInterface::class), $entity, [null])
         );
@@ -213,7 +212,7 @@ class PermissionVoterTest extends TestCase
         $entity = new TestEntityWithSelfPermissionInterface(3);
 
         $this->expectException(AccessDeniedHttpException::class);
-        $this->assertEquals(
+        self::assertEquals(
             PermissionVoter::ACCESS_DENIED,
             $voter->vote($this->createMock(TokenInterface::class), $entity, [null])
         );
@@ -236,7 +235,7 @@ class PermissionVoterTest extends TestCase
         $entity = new TestEntityWithSelfPermissionInterface(-1);
 
         $this->expectException(AccessDeniedHttpException::class);
-        $this->assertEquals(
+        self::assertEquals(
             PermissionVoter::ACCESS_DENIED,
             $voter->vote($this->createMock(TokenInterface::class), $entity, [null])
         );
@@ -254,7 +253,7 @@ class PermissionVoterTest extends TestCase
 
         $entity = new TestEntityWithSelfPermissionInterface(3);
 
-        $this->assertEquals(
+        self::assertEquals(
             PermissionVoter::ACCESS_DENIED,
             $voter->vote($this->createMock(TokenInterface::class), $entity, [null])
         );
@@ -274,7 +273,7 @@ class PermissionVoterTest extends TestCase
 
         $entity = new TestEntityWithSelfPermissionInterface(3);
 
-        $this->assertEquals(
+        self::assertEquals(
             PermissionVoter::ACCESS_DENIED,
             $voter->vote($this->createMock(TokenInterface::class), $entity, [null])
         );
