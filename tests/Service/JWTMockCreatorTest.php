@@ -11,8 +11,6 @@ use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Middleware;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\RequestStack;
 
 class JWTMockCreatorTest extends TestCase
 {
@@ -35,10 +33,12 @@ class JWTMockCreatorTest extends TestCase
 
         $handlerStack->push($history);
 
-        $client = new Client(['handler' => $handlerStack]);
+        $client = new Client(['handler' => $handlerStack, 'base_uri' => 'http://user']);
 
         return new JWTMockCreator(
             $client,
+            '/api/permissions?page=1',
+            'user.permission.read',
             $permissionDiscovery,
             $customPermissionDiscovery
         );
@@ -96,10 +96,15 @@ class JWTMockCreatorTest extends TestCase
      */
     private function createAccessToken(string $jwt): AccessToken
     {
-        $requestStack = new RequestStack();
-        $request = new Request([], [], [], [AccessToken::ACCESS_TOKEN_COOKIE_NAME => $jwt], [], []);
-        $requestStack->push($request);
-        return new AccessToken($requestStack);
+        $requestContainer = [];
+        return AccessTokenTest::createAccessToken(
+            $requestContainer,
+            new MockHandler(),
+            '',
+            '',
+            [AccessToken::ACCESS_TOKEN_COOKIE_NAME => $jwt],
+            $this->createMock(JWTMockCreator::class)
+        );
     }
 
     public function testGetMockAuthorizationHeaderForThisMicroservice(): void

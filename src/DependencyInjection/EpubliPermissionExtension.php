@@ -13,7 +13,7 @@ use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
  */
 class EpubliPermissionExtension extends Extension
 {
-    public function load(array $configs, ContainerBuilder $container)
+    public function load(array $configs, ContainerBuilder $container): void
     {
         $configuration = $this->getConfiguration($configs, $container);
         $config = $this->processConfiguration($configuration, $configs);
@@ -30,10 +30,25 @@ class EpubliPermissionExtension extends Extension
         $definition = $container->getDefinition('epubli_permission.service.custom_permission_discovery');
         $definition->setArgument(0, $config['microservice_name']);
 
-        $definition = $container->getDefinition('epubli_permission.guzzle.http');
-        $definition->setArgument(0, ['base_uri' => $config['base_uri']]);
+        $definition = $container->getDefinition('epubli_permission.guzzle.http.for_permission_export');
+        $definition->setArgument(0, ['base_uri' => $config['permission_export_route']['base_uri']]);
+
+        $definition = $container->getDefinition('epubli_permission.guzzle.http.for_aggregated_permissions');
+        $definition->setArgument(0, ['base_uri' => $config['aggregated_permissions_route']['base_uri']]);
+
+        $definition = $container->getDefinition('epubli_permission.guzzle.http.for_all_permissions');
+        $definition->setArgument(0, ['base_uri' => $config['all_permissions_route']['base_uri']]);
 
         $definition = $container->getDefinition('epubli_permission.service.permission_exporter');
-        $definition->setArgument(1, $config['path']);
+        $definition->setArgument(1, $config['permission_export_route']['path']);
+        $definition->setArgument(2, $config['permission_export_route']['permission']);
+
+        $definition = $container->getDefinition('epubli_permission.service.access_token');
+        $definition->setArgument(1, $config['aggregated_permissions_route']['path']);
+        $definition->setArgument(2, $config['aggregated_permissions_route']['permission']);
+
+        $definition = $container->getDefinition('epubli_permission.service.jwt_mock_creator');
+        $definition->setArgument(1, $config['all_permissions_route']['path']);
+        $definition->setArgument(2, $config['all_permissions_route']['permission']);
     }
 }

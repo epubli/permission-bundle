@@ -26,10 +26,14 @@ class PermissionExporter
     /** @var string */
     private $path;
 
+    /** @var string */
+    private $permissionKeyForExportPermissionsRoute;
+
     /**
      * PermissionExporter constructor.
      * @param Client $client
      * @param string $path
+     * @param string $permissionKeyForExportPermissionsRoute
      * @param PermissionDiscovery $permissionDiscovery
      * @param CustomPermissionDiscovery $customPermissionDiscovery
      * @param JWTMockCreator $jwtMockCreator
@@ -37,12 +41,14 @@ class PermissionExporter
     public function __construct(
         Client $client,
         string $path,
+        string $permissionKeyForExportPermissionsRoute,
         PermissionDiscovery $permissionDiscovery,
         CustomPermissionDiscovery $customPermissionDiscovery,
         JWTMockCreator $jwtMockCreator
     ) {
         $this->client = $client;
         $this->path = $path;
+        $this->permissionKeyForExportPermissionsRoute = $permissionKeyForExportPermissionsRoute;
         $this->permissionDiscovery = $permissionDiscovery;
         $this->customPermissionDiscovery = $customPermissionDiscovery;
         $this->jwtMockCreator = $jwtMockCreator;
@@ -55,7 +61,9 @@ class PermissionExporter
      */
     public function export(): int
     {
-        if ($this->permissionDiscovery->getMicroserviceName() === Configuration::DEFAULT_MICROSERVICE_NAME) {
+        if (strtoupper(
+                $this->permissionDiscovery->getMicroserviceName()
+            ) === Configuration::DEFAULT_MICROSERVICE_NAME) {
             throw new PermissionExportException(
                 'Please make sure to set the name of your microservice in config/packages/epubli_permission.yaml!'
             );
@@ -113,7 +121,7 @@ class PermissionExporter
                     ],
                     'cookies' => $this->jwtMockCreator->createCookieJar(
                         $this->jwtMockCreator->createJsonWebToken(
-                            ['user.permission.create_permissions']
+                            [$this->permissionKeyForExportPermissionsRoute]
                         ),
                         $this->client->getConfig('base_uri') ?? $this->path
                     )

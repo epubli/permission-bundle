@@ -57,9 +57,26 @@ Example:
 // config/packages/epubli_permission.yaml
 
 epubli_permission:
-  microservice_name: REPLACE_ME_WITH_THE_NAME_OF_YOUR_MICROSERVICE
-  base_uri: http://user
-  path: /api/roles/permissions/import
+  microservice_name: CHANGE_ME_TO_THE_NAME_OF_YOUR_MICROSERVICE
+
+  # where the permissions of this microservice should be send to
+  permission_export_route:
+    base_uri: http://user
+    path: /api/permissions/import
+    permission: user.permission.create_permissions
+
+  # where to get all permissions for a specific role
+  aggregated_permissions_route:
+    base_uri: http://user
+    # {role_id} will be dynamically replaced
+    path: /api/roles/{role_id}/aggregated-permissions
+    permission: user.role.role_get_aggregated_permissions
+
+  # where to get all possible permissions
+  all_permissions_route:
+    base_uri: http://user
+    path: /api/permissions?page=1
+    permission: user.permission.read
 ```
 Activate the doctrine filter in `config/packages/doctrine.yaml`:
 ```yaml
@@ -530,6 +547,10 @@ $ php bin/console epubli:export-permissions
 ## Testing
 
 Execute the following:
+```console
+$ make unit_test
+```
+or
 ```console
 $ ./vendor/bin/simple-phpunit
 ```

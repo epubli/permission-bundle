@@ -88,6 +88,7 @@ class PermissionExporterTest extends TestCase
         return new PermissionExporter(
             $client,
             '',
+            '',
             $permissionDiscovery,
             $customPermissionDiscovery,
             $jwtMockCreator
@@ -107,6 +108,7 @@ class PermissionExporterTest extends TestCase
 
         try {
             $permissionExporter->export();
+            self::assertTrue(false);
         } catch (PermissionExportException $e) {
             self::assertEquals('Expected status code 204. Received instead: 200', $e->getMessage());
         }
@@ -125,6 +127,7 @@ class PermissionExporterTest extends TestCase
 
         try {
             $permissionExporter->export();
+            self::assertTrue(false);
         } catch (PermissionExportException $e) {
             self::assertEquals('Status Code: 400\nBody: body', $e->getMessage());
         }
@@ -147,6 +150,7 @@ class PermissionExporterTest extends TestCase
 
         try {
             $permissionExporter->export();
+            self::assertTrue(false);
         } catch (PermissionExportException $e) {
             self::assertEquals('Status Code: 400\nBody: body', $e->getMessage());
         }

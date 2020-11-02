@@ -10,6 +10,7 @@ use GuzzleHttp\Cookie\CookieJar;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ServerException;
 use ReflectionException;
+use RuntimeException;
 use Symfony\Component\HttpFoundation\Cookie;
 
 /**
@@ -27,6 +28,12 @@ class JWTMockCreator
     /** @var Client */
     private $client;
 
+    /** @var string */
+    private $path;
+
+    /** @var string */
+    private $permissionKeyForGetPermissionsRoute;
+
     /** @var string|null */
     private $jwtForAllPermissions;
 
@@ -36,15 +43,21 @@ class JWTMockCreator
     /**
      * JWTMockCreator constructor.
      * @param Client $client
+     * @param string $path
+     * @param string $permissionKeyForGetPermissionsRoute
      * @param PermissionDiscovery $permissionDiscovery
      * @param CustomPermissionDiscovery $customPermissionDiscovery
      */
     public function __construct(
         Client $client,
+        string $path,
+        string $permissionKeyForGetPermissionsRoute,
         PermissionDiscovery $permissionDiscovery,
         CustomPermissionDiscovery $customPermissionDiscovery
     ) {
         $this->client = $client;
+        $this->path = $path;
+        $this->permissionKeyForGetPermissionsRoute = $permissionKeyForGetPermissionsRoute;
         $this->permissionDiscovery = $permissionDiscovery;
         $this->customPermissionDiscovery = $customPermissionDiscovery;
     }
@@ -98,8 +111,8 @@ class JWTMockCreator
             return $this->jwtForAllPermissions;
         }
 
-        $jwt = $this->createJsonWebToken(['user.permission.read']);
-        $permissionKeys = $this->getAllPermissionKeys($jwt, '/api/permissions?page=1');
+        $jwt = $this->createJsonWebToken([$this->permissionKeyForGetPermissionsRoute]);
+        $permissionKeys = $this->getAllPermissionKeys($jwt, $this->path);
 
         $this->jwtForAllPermissions = $this->createJsonWebToken($permissionKeys);
         return $this->jwtForAllPermissions;
@@ -134,7 +147,7 @@ class JWTMockCreator
             return $permissionKeys;
         } catch (ServerException | ClientException $exp) {
             $statusCode = $exp->getResponse()->getStatusCode();
-            throw new Exception('Could not get all permissions. Returned status code: ' . $statusCode);
+            throw new RuntimeException('Could not get all permissions. Returned status code: ' . $statusCode);
         }
     }
 

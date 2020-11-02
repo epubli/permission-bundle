@@ -7,7 +7,9 @@
         <defaults autowire="true" autoconfigure="true" public="false"/>
         <service
                 id="epubli_permission.service.access_token"
-                class="Epubli\PermissionBundle\Service\AccessToken"/>
+                class="Epubli\PermissionBundle\Service\AccessToken">
+            <argument type="service" id="epubli_permission.guzzle.http.for_aggregated_permissions"/>
+        </service>
         <service
                 id="Epubli\PermissionBundle\Service\AccessToken"
                 alias="epubli_permission.service.access_token"/>
@@ -26,14 +28,20 @@
                 id="Epubli\PermissionBundle\Service\CustomPermissionDiscovery"
                 alias="epubli_permission.service.custom_permission_discovery"/>
 
-        <service id="epubli_permission.guzzle.http"
+        <service id="epubli_permission.guzzle.http.for_permission_export"
+                 class="GuzzleHttp\Client"/>
+
+        <service id="epubli_permission.guzzle.http.for_aggregated_permissions"
+                 class="GuzzleHttp\Client"/>
+
+        <service id="epubli_permission.guzzle.http.for_all_permissions"
                  class="GuzzleHttp\Client"/>
 
         <service
                 id="epubli_permission.service.permission_exporter"
                 class="Epubli\PermissionBundle\Service\PermissionExporter"
                 public="true">
-            <argument type="service" id="epubli_permission.guzzle.http"/>
+            <argument type="service" id="epubli_permission.guzzle.http.for_permission_export"/>
         </service>
         <service
                 id="Epubli\PermissionBundle\Service\PermissionExporter"
@@ -58,7 +66,7 @@
                 id="epubli_permission.service.jwt_mock_creator"
                 class="Epubli\PermissionBundle\Service\JWTMockCreator"
                 public="true">
-            <argument type="service" id="epubli_permission.guzzle.http"/>
+            <argument type="service" id="epubli_permission.guzzle.http.for_all_permissions"/>
         </service>
         <service
                 id="Epubli\PermissionBundle\Service\JWTMockCreator"
