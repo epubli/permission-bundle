@@ -545,7 +545,6 @@ $ php bin/console epubli:export-permissions
 ```
 
 ## Testing
-
 Execute the following:
 ```console
 $ make unit_test
@@ -554,6 +553,36 @@ or
 ```console
 $ ./vendor/bin/simple-phpunit
 ```
+
+## How to change/add code to this bundle
+The easiest way to further develop this bundle is to copy the `src` folder oder to another project (e.g. user microservice).
+
+Create a folder named `permission-bundle` in the project and copy the `src`  folder into it.
+
+Then look for this in `composer.json`:
+```
+  "autoload": {
+    "psr-4": {
+      "App\\": "src/"
+    }
+  },
+```
+and replace it with:
+```
+  "autoload": {
+    "psr-4": {
+      "App\\": "src/",
+      "Epubli\\PermissionBundle\\": "permission-bundle/src"
+    }
+  },
+```
+Delete the original `permission-bundle` in the `vendor` folder.
+
+Execute:
+```console
+$ composer dump-autoload
+```
+You may need to delete a few things in `var/cache/dev`.
 
 ## Problems
 When requesting multiple entities through a GET-Request `hydra:totalItems` can be incorrect when using the `SelfPermissionInterface`.
