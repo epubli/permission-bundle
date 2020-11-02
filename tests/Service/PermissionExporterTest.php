@@ -4,6 +4,8 @@ namespace Epubli\PermissionBundle\Tests\Service;
 
 use Epubli\PermissionBundle\DependencyInjection\Configuration;
 use Epubli\PermissionBundle\Exception\PermissionExportException;
+use Epubli\PermissionBundle\Service\CustomPermissionDiscovery;
+use Epubli\PermissionBundle\Service\PermissionDiscovery;
 use Epubli\PermissionBundle\Service\PermissionExporter;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
@@ -53,15 +55,15 @@ class PermissionExporterTest extends TestCase
     /**
      * @param $requestContainer
      * @param MockHandler $mockHandler
-     * @param null $permissionDiscovery
-     * @param null $customPermissionDiscovery
+     * @param PermissionDiscovery|null $permissionDiscovery
+     * @param CustomPermissionDiscovery|null $customPermissionDiscovery
      * @return PermissionExporter
      */
     private static function createPermissionExporter(
         &$requestContainer,
         MockHandler $mockHandler,
-        $permissionDiscovery = null,
-        $customPermissionDiscovery = null
+        PermissionDiscovery $permissionDiscovery = null,
+        CustomPermissionDiscovery $customPermissionDiscovery = null
     ): PermissionExporter {
         $handlerStack = HandlerStack::create($mockHandler);
 
