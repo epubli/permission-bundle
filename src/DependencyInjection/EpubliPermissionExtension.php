@@ -48,7 +48,8 @@ class EpubliPermissionExtension extends Extension
         $definition->setArgument(2, $config['aggregated_permissions_route']['permission']);
 
         $definition = $container->getDefinition('epubli_permission.service.jwt_mock_creator');
-        $definition->setArgument(1, $config['all_permissions_route']['path']);
-        $definition->setArgument(2, $config['all_permissions_route']['permission']);
+        $definition->setArgument(1, $config['is_test_environment']);
+        $definition->setArgument(2, $config['all_permissions_route']['path']);
+        $definition->setArgument(3, $config['all_permissions_route']['permission']);
     }
 }

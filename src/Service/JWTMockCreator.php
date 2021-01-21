@@ -28,6 +28,9 @@ class JWTMockCreator
     /** @var Client */
     private $client;
 
+    /** @var bool */
+    private $isTestEnvironment;
+
     /** @var string */
     private $path;
 
@@ -43,6 +46,7 @@ class JWTMockCreator
     /**
      * JWTMockCreator constructor.
      * @param Client $client
+     * @param bool $isTestEnvironment
      * @param string $path
      * @param string $permissionKeyForGetPermissionsRoute
      * @param PermissionDiscovery $permissionDiscovery
@@ -50,12 +54,14 @@ class JWTMockCreator
      */
     public function __construct(
         Client $client,
+        bool $isTestEnvironment,
         string $path,
         string $permissionKeyForGetPermissionsRoute,
         PermissionDiscovery $permissionDiscovery,
         CustomPermissionDiscovery $customPermissionDiscovery
     ) {
         $this->client = $client;
+        $this->isTestEnvironment = $isTestEnvironment;
         $this->path = $path;
         $this->permissionKeyForGetPermissionsRoute = $permissionKeyForGetPermissionsRoute;
         $this->permissionDiscovery = $permissionDiscovery;
@@ -126,6 +132,10 @@ class JWTMockCreator
      */
     private function getAllPermissionKeys(string $jsonWebToken, string $path): array
     {
+        if ($this->isTestEnvironment) {
+            return [];
+        }
+
         try {
             $response = $this->client->get(
                 $path,

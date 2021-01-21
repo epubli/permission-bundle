@@ -10,6 +10,8 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Middleware;
+use GuzzleHttp\Psr7\Request;
+use GuzzleHttp\Psr7\Response;
 use PHPUnit\Framework\TestCase;
 
 class JWTMockCreatorTest extends TestCase
@@ -19,13 +21,15 @@ class JWTMockCreatorTest extends TestCase
      * @param MockHandler $mockHandler
      * @param PermissionDiscovery $permissionDiscovery
      * @param CustomPermissionDiscovery $customPermissionDiscovery
+     * @param bool $isTestEnvironment
      * @return JWTMockCreator
      */
     public static function createJWTMockCreator(
         &$requestContainer,
         MockHandler $mockHandler,
         PermissionDiscovery $permissionDiscovery,
-        CustomPermissionDiscovery $customPermissionDiscovery
+        CustomPermissionDiscovery $customPermissionDiscovery,
+        $isTestEnvironment = false
     ): JWTMockCreator {
         $handlerStack = HandlerStack::create($mockHandler);
 
@@ -37,6 +41,7 @@ class JWTMockCreatorTest extends TestCase
 
         return new JWTMockCreator(
             $client,
+            $isTestEnvironment,
             '/api/permissions?page=1',
             'user.permission.read',
             $permissionDiscovery,
@@ -127,5 +132,93 @@ class JWTMockCreatorTest extends TestCase
         self::assertTrue($accessToken->hasPermissionKey('test.test_entity_with_everything.create'));
         self::assertTrue($accessToken->hasPermissionKey('test.test_entity_with_everything.read'));
         self::assertTrue($accessToken->hasPermissionKey('test.test_entity_with_everything.delete'));
+    }
+
+    public function testCreateJsonWebTokenForAllPermissions()
+    {
+        $requestContainer = [];
+
+        $mockHandler = new MockHandler(
+            [
+                new Response(
+                    200,
+                    [],
+                    json_encode(
+                        [
+                            'hydra:member' => [
+                                ['key' => 'test.test_entity.create']
+                            ],
+                            'hydra:view' => [
+                                'hydra:next' => '/nextPage'
+                            ]
+                        ]
+                    )
+                ),
+                new Response(
+                    200,
+                    [],
+                    json_encode(
+                        [
+                            'hydra:member' => [
+                                ['key' => 'test.test_entity.read']
+                            ]
+                        ]
+                    )
+                ),
+            ]
+        );
+
+        $jwtMockCreator = self::createJWTMockCreator(
+            $requestContainer,
+            $mockHandler,
+            PermissionDiscoveryTest::createPermissionDiscovery(),
+            CustomPermissionDiscoveryTest::createCustomPermissionDiscovery()
+        );
+        $jwt = $jwtMockCreator->createJsonWebTokenForAllPermissions();
+
+        self::assertCount(2, $requestContainer);
+
+        /** @var Request $request */
+        $request = $requestContainer[0]['request'];
+        self::assertEquals('GET', $request->getMethod());
+        self::assertEquals('/api/permissions', $request->getUri()->getPath());
+        self::assertEquals('page=1', $request->getUri()->getQuery());
+        self::assertEquals('user', $request->getUri()->getHost());
+
+        /** @var Request $request */
+        $request = $requestContainer[1]['request'];
+        self::assertEquals('GET', $request->getMethod());
+        self::assertEquals('/nextPage', $request->getUri()->getPath());
+
+        self::assertNotNull($jwt);
+        self::assertNotEmpty($jwt);
+
+        $accessToken = $this->createAccessToken($jwt);
+        self::assertTrue($accessToken->exists());
+        self::assertTrue($accessToken->hasPermissionKey('test.test_entity.create'));
+        self::assertTrue($accessToken->hasPermissionKey('test.test_entity.read'));
+    }
+
+    public function testCreateJsonWebTokenForAllPermissionsInTestingEnvironment()
+    {
+        $requestContainer = [];
+        $jwtMockCreator = self::createJWTMockCreator(
+            $requestContainer,
+            new MockHandler(),
+            PermissionDiscoveryTest::createPermissionDiscovery(),
+            CustomPermissionDiscoveryTest::createCustomPermissionDiscovery(),
+            true
+        );
+        $jwt = $jwtMockCreator->createJsonWebTokenForAllPermissions();
+
+        self::assertCount(0, $requestContainer);
+
+        self::assertNotNull($jwt);
+        self::assertNotEmpty($jwt);
+
+        $accessToken = $this->createAccessToken($jwt);
+        self::assertTrue($accessToken->exists());
+        self::assertFalse($accessToken->hasPermissionKey('test.test_entity.create'));
+        self::assertFalse($accessToken->hasPermissionKey('test.test_entity.read'));
     }
 }
