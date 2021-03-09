@@ -34,7 +34,7 @@ interface SelfPermissionInterface
 
     /**
      * If true then <code>getFieldNameOfUserIdForPermissionBundle()</code> will be used.
-     * If false then <code>getValidIds(...)</code> will be used
+     * If false then <code>getPrimaryIdsWhichBelongToUser(...)</code> will be used
      * in the filter
      * @return bool
      */
