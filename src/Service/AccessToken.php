@@ -233,6 +233,9 @@ class AccessToken
      */
     public function hasPermissionKeys(array $permissionKeys, bool $testForAlternatives = false): bool
     {
+        if (!$this->isInitialized) {
+            $this->initialize();
+        }
         if ($this->hasAccessToEverything) {
             return true;
         }
