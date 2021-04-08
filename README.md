@@ -65,18 +65,19 @@ epubli_permission:
     path: /api/permissions/import
     permission: user.permission.create_permissions
 
-  # where to get all permissions for a specific role
+  # where to get all permissions for a specific user
   aggregated_permissions_route:
     base_uri: http://user
-    # {role_id} will be dynamically replaced
-    path: /api/roles/{role_id}/aggregated-permissions
-    permission: user.role.role_get_aggregated_permissions
+    # {user_id} will be dynamically replaced
+    path: /api/users/{user_id}/aggregated-permissions
+    permission: user.user.user_get_aggregated_permissions
+```
+Create this file if it doesn't already exist `config/packages/test/epubli_permission.yaml`:
+```yaml
+// config/packages/test/epubli_permission.yaml
 
-  # where to get all possible permissions
-  all_permissions_route:
-    base_uri: http://user
-    path: /api/permissions?page=1
-    permission: user.permission.read
+epubli_permission:
+  is_test_environment: true
 ```
 Activate the doctrine filter in `config/packages/doctrine.yaml`:
 ```yaml

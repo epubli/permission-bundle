@@ -61,23 +61,6 @@ class Configuration implements ConfigurationInterface
                         ->end()
                     ->end()
                 ->end()
-                ->arrayNode('all_permissions_route')
-                    ->addDefaultsIfNotSet()
-                    ->children()
-                        ->scalarNode('base_uri')
-                            ->cannotBeEmpty()
-                            ->defaultValue('http://user')
-                        ->end()
-                        ->scalarNode('path')
-                            ->cannotBeEmpty()
-                            ->defaultValue('/api/permissions?page=1')
-                        ->end()
-                        ->scalarNode('permission')
-                            ->cannotBeEmpty()
-                            ->defaultValue('user.permission.read')
-                        ->end()
-                    ->end()
-                ->end()
             ->end();
 
         return $treeBuilder;

@@ -40,10 +40,7 @@ class PermissionVoterTest extends TestCase
         $permissionDiscovery = PermissionDiscoveryTest::createPermissionDiscovery();
         $customPermissionDiscovery = CustomPermissionDiscoveryTest::createCustomPermissionDiscovery();
 
-        $requestContainer = [];
         $jwtMockCreator = JWTMockCreatorTest::createJWTMockCreator(
-            $requestContainer,
-            new MockHandler(),
             $permissionDiscovery,
             $customPermissionDiscovery
         );
@@ -95,6 +92,7 @@ class PermissionVoterTest extends TestCase
             new Client(['handler' => $handlerStack, 'base_uri' => 'http://user']),
             '',
             '',
+            true,
             $requestStack,
             (new self)->createMock(JWTMockCreator::class)
         );

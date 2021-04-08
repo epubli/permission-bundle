@@ -34,9 +34,6 @@
         <service id="epubli_permission.guzzle.http.for_aggregated_permissions"
                  class="GuzzleHttp\Client"/>
 
-        <service id="epubli_permission.guzzle.http.for_all_permissions"
-                 class="GuzzleHttp\Client"/>
-
         <service
                 id="epubli_permission.service.permission_exporter"
                 class="Epubli\PermissionBundle\Service\PermissionExporter"
@@ -66,7 +63,6 @@
                 id="epubli_permission.service.jwt_mock_creator"
                 class="Epubli\PermissionBundle\Service\JWTMockCreator"
                 public="true">
-            <argument type="service" id="epubli_permission.guzzle.http.for_all_permissions"/>
         </service>
         <service
                 id="Epubli\PermissionBundle\Service\JWTMockCreator"

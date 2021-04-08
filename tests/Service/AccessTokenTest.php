@@ -26,6 +26,7 @@ class AccessTokenTest extends TestCase
      * @param string $permissionKey
      * @param array $cookies
      * @param JWTMockCreator $jwtMockCreator
+     * @param bool $isTestEnvironment
      * @return AccessToken
      */
     public static function createAccessToken(
@@ -34,7 +35,8 @@ class AccessTokenTest extends TestCase
         string $path,
         string $permissionKey,
         array $cookies,
-        JWTMockCreator $jwtMockCreator
+        JWTMockCreator $jwtMockCreator,
+        bool $isTestEnvironment = true
     ): AccessToken {
         $handlerStack = HandlerStack::create($mockHandler);
         $history = Middleware::history($requestContainer);
@@ -49,6 +51,7 @@ class AccessTokenTest extends TestCase
             $client,
             $path,
             $permissionKey,
+            $isTestEnvironment,
             $requestStack,
             $jwtMockCreator
         );
@@ -75,7 +78,7 @@ class AccessTokenTest extends TestCase
         self::assertTrue($accessToken->exists(), 'AccessToken does not exist');
         self::assertEquals('57e42448-ba5e-3af8-be01-b1c86379d517', $accessToken->getJTI());
         self::assertEquals(81, $accessToken->getUserId());
-        self::assertNull($accessToken->getRoleId());
+        self::assertEmpty($accessToken->getRoleIds());
         self::assertTrue($accessToken->hasPermissionKey('user.user.read'));
         self::assertTrue($accessToken->hasPermissionKey('user.user.update.self'));
         self::assertFalse($accessToken->hasPermissionKey('user.user.update'));
@@ -102,7 +105,7 @@ class AccessTokenTest extends TestCase
         self::assertTrue($accessToken->exists(), 'RereshToken does not exist');
         self::assertEquals('57e42448-ba5e-3af8-be01-b1c86379d517', $accessToken->getJTI());
         self::assertEquals(81, $accessToken->getUserId());
-        self::assertNull($accessToken->getRoleId());
+        self::assertEmpty($accessToken->getRoleIds());
         self::assertFalse($accessToken->hasPermissionKey('user.user.read'));
         self::assertFalse($accessToken->hasPermissionKey('user.user.update.self'));
         self::assertFalse($accessToken->hasPermissionKey('user.user.update'));
@@ -126,7 +129,7 @@ class AccessTokenTest extends TestCase
         self::assertFalse($accessToken->exists());
         self::assertNull($accessToken->getJTI());
         self::assertNull($accessToken->getUserId());
-        self::assertNull($accessToken->getRoleId());
+        self::assertEmpty($accessToken->getRoleIds());
         self::assertFalse($accessToken->hasPermissionKey('user.user.read'));
         self::assertFalse($accessToken->hasPermissionKey('user.user.update.self'));
         self::assertFalse($accessToken->hasPermissionKey('user.user.update'));
@@ -150,14 +153,14 @@ class AccessTokenTest extends TestCase
         self::assertFalse($accessToken->exists());
         self::assertNull($accessToken->getJTI());
         self::assertNull($accessToken->getUserId());
-        self::assertNull($accessToken->getRoleId());
+        self::assertEmpty($accessToken->getRoleIds());
         self::assertFalse($accessToken->hasPermissionKey('user.user.read'));
         self::assertFalse($accessToken->hasPermissionKey('user.user.update.self'));
         self::assertFalse($accessToken->hasPermissionKey('user.user.update'));
         self::assertCount(0, $requestContainer);
     }
 
-    public function testGetPermissionsOfRole(): void
+    public function testGetPermissionsOfUser(): void
     {
         $token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiIsImtpZCI6InNpbTIifQ.eyJpc3MiOiJodHRwczpcL1wvZXB1Y'
             . 'mxpLmRlIiwic3ViIjoicy56aWNrQGVwdWJsaS5jb20iLCJ1c2VyX2lkIjo3LCJqdGkiOiI5MDlhMGM4OS0xZGYwLTRkYm'
@@ -168,7 +171,7 @@ class AccessTokenTest extends TestCase
         $jwtMockCreator = $this->createMock(JWTMockCreator::class);
         $jwtMockCreator->expects(self::once())
             ->method('createJsonWebToken')
-            ->with(['user.role.role_get_aggregated_permissions'])
+            ->with(['user.user.user_get_aggregated_permissions'])
             ->willReturn('jsonWebToken');
         $jwtMockCreator->expects(self::once())
             ->method('createCookieJar')
@@ -182,16 +185,16 @@ class AccessTokenTest extends TestCase
                     new Response(200, [], json_encode(["user.user.read"])),
                 ]
             ),
-            'api/roles/{role_id}/aggregated-permissions',
-            'user.role.role_get_aggregated_permissions',
+            'api/users/{user_id}/aggregated-permissions',
+            'user.user.user_get_aggregated_permissions',
             [AccessToken::ACCESS_TOKEN_COOKIE_NAME => $token],
-            $jwtMockCreator
+            $jwtMockCreator,
+            false
         );
 
         self::assertTrue($accessToken->exists(), 'AccessToken does not exist');
         self::assertEquals('909a0c89-1df0-4dbd-923d-bf9c661a232d', $accessToken->getJTI());
         self::assertEquals(7, $accessToken->getUserId());
-        self::assertEquals(3, $accessToken->getRoleId());
         self::assertTrue($accessToken->hasPermissionKey('user.user.read'));
         self::assertFalse($accessToken->hasPermissionKey('user.user.update.self'));
         self::assertFalse($accessToken->hasPermissionKey('user.user.update'));
@@ -200,10 +203,10 @@ class AccessTokenTest extends TestCase
         /** @var \GuzzleHttp\Psr7\Request $request */
         $request = $requestContainer[0]['request'];
         self::assertEquals('GET', $request->getMethod());
-        self::assertEquals('http://user/api/roles/3/aggregated-permissions', $request->getUri());
+        self::assertEquals('http://user/api/users/7/aggregated-permissions', $request->getUri());
     }
 
-    public function testGetPermissionsOfRoleWithoutReplacementOfRoleId(): void
+    public function testGetPermissionsOfUserWithoutReplacementOfUserId(): void
     {
         $token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiIsImtpZCI6InNpbTIifQ.eyJpc3MiOiJodHRwczpcL1wvZXB1Y'
             . 'mxpLmRlIiwic3ViIjoicy56aWNrQGVwdWJsaS5jb20iLCJ1c2VyX2lkIjo3LCJqdGkiOiI5MDlhMGM4OS0xZGYwLTRkYm'
@@ -223,10 +226,11 @@ class AccessTokenTest extends TestCase
                     new Response(200, [], json_encode(["user.user.read"])),
                 ]
             ),
-            'api/roles/aggregated-permissions',
-            'user.role.role_get_aggregated_permissions',
+            'api/users/aggregated-permissions',
+            'user.user.user_get_aggregated_permissions',
             [AccessToken::ACCESS_TOKEN_COOKIE_NAME => $token],
-            $jwtMockCreator
+            $jwtMockCreator,
+            false
         );
 
         self::assertTrue($accessToken->exists(), 'AccessToken does not exist');
@@ -236,7 +240,29 @@ class AccessTokenTest extends TestCase
         /** @var \GuzzleHttp\Psr7\Request $request */
         $request = $requestContainer[0]['request'];
         self::assertEquals('GET', $request->getMethod());
-        self::assertEquals('http://user/api/roles/aggregated-permissions', $request->getUri());
+        self::assertEquals('http://user/api/users/aggregated-permissions', $request->getUri());
+    }
+
+    public function testGetPermissionsOfUserWithNegativeUserId(): void
+    {
+        $token = 'ImVtcHR5Ig==.eyJpc3MiOiJodHRwczpcL1wvZXB1YmxpLmRlIiwic3ViIjoiLTEiLCJ1c2VyX2lkIjotMSwia'
+            . 'nRpIjoiLTEiLCJleHAiOjE2MTc4NzIyNTgsInJvbGVzIjpbImFjY2Vzc190b2tlbiJdLCJwZXJtaXNzaW9ucyI6Wy'
+            . 'JwZXJtaXNzaW9uLnBlcm0iXX0=.ImVtcHR5Ig==';
+
+        $requestContainer = [];
+        $accessToken = self::createAccessToken(
+            $requestContainer,
+            new MockHandler(),
+            'api/users/aggregated-permissions',
+            'user.user.user_get_aggregated_permissions',
+            [AccessToken::ACCESS_TOKEN_COOKIE_NAME => $token],
+            $this->createMock(JWTMockCreator::class),
+            false
+        );
+
+        self::assertTrue($accessToken->exists(), 'AccessToken does not exist');
+
+        self::assertCount(0, $requestContainer);
     }
 
     /**
@@ -244,7 +270,7 @@ class AccessTokenTest extends TestCase
      * @param MockHandler $mockHandler
      * @param string $expectedError
      */
-    public function testGetPermissionsOfRoleOnError(MockHandler $mockHandler, string $expectedError): void
+    public function testGetPermissionsOfUserOnError(MockHandler $mockHandler, string $expectedError): void
     {
         $token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiIsImtpZCI6InNpbTIifQ.eyJpc3MiOiJodHRwczpcL1wvZXB1Y'
             . 'mxpLmRlIiwic3ViIjoicy56aWNrQGVwdWJsaS5jb20iLCJ1c2VyX2lkIjo3LCJqdGkiOiI5MDlhMGM4OS0xZGYwLTRkYm'
@@ -263,7 +289,8 @@ class AccessTokenTest extends TestCase
             '',
             '',
             [AccessToken::ACCESS_TOKEN_COOKIE_NAME => $token],
-            $jwtMockCreator
+            $jwtMockCreator,
+            false
         );
 
         try {

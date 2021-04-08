@@ -36,9 +36,6 @@ class EpubliPermissionExtension extends Extension
         $definition = $container->getDefinition('epubli_permission.guzzle.http.for_aggregated_permissions');
         $definition->setArgument(0, ['base_uri' => $config['aggregated_permissions_route']['base_uri']]);
 
-        $definition = $container->getDefinition('epubli_permission.guzzle.http.for_all_permissions');
-        $definition->setArgument(0, ['base_uri' => $config['all_permissions_route']['base_uri']]);
-
         $definition = $container->getDefinition('epubli_permission.service.permission_exporter');
         $definition->setArgument(1, $config['permission_export_route']['path']);
         $definition->setArgument(2, $config['permission_export_route']['permission']);
@@ -46,10 +43,6 @@ class EpubliPermissionExtension extends Extension
         $definition = $container->getDefinition('epubli_permission.service.access_token');
         $definition->setArgument(1, $config['aggregated_permissions_route']['path']);
         $definition->setArgument(2, $config['aggregated_permissions_route']['permission']);
-
-        $definition = $container->getDefinition('epubli_permission.service.jwt_mock_creator');
-        $definition->setArgument(1, $config['is_test_environment']);
-        $definition->setArgument(2, $config['all_permissions_route']['path']);
-        $definition->setArgument(3, $config['all_permissions_route']['permission']);
+        $definition->setArgument(3, $config['is_test_environment']);
     }
 }
