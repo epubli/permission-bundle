@@ -103,7 +103,7 @@ class JWTMockCreator
             'user_id' => $userId,
             'jti' => '-1',
             'exp' => (new DateTime())->add(new DateInterval('PT60M'))->getTimestamp(),
-            'roles' => ['access_token'],
+            'type' => 'access_token',
             'permissions' => $permissionKeys,
         ];
 
