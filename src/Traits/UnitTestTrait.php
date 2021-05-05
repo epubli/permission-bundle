@@ -320,7 +320,7 @@ trait UnitTestTrait
             self::$unitTestConfig->hasSecurityOnPatchRoute,
             [$data->getPermissionKey()],
             -1,
-            'PUT',
+            'PATCH',
             $data->getPayload()
         );
         $json = $this->getJson();
@@ -350,7 +350,7 @@ trait UnitTestTrait
             true,
             [$data->getPermissionKey() . EndpointWithPermission::SELF_PERMISSION],
             $data->getUserId(),
-            'PUT',
+            'PATCH',
             $data->getPayload()
         );
         $json = $this->getJson();
