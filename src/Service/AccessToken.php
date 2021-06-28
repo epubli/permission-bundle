@@ -63,6 +63,7 @@ class AccessToken
      * @param Client $client
      * @param string $path
      * @param string $permissionKeyForAggregatedPermissionsRoute
+     * @param bool $isTestEnvironment
      * @param RequestStack $requestStack
      * @param JWTMockCreator $jwtMockCreator
      */
