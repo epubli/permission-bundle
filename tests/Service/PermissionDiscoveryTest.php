@@ -16,6 +16,10 @@ class PermissionDiscoveryTest extends TestCase
 {
     public const PERMISSION_KEYS_WITH_DESCRIPTIONS = [
         [
+            'key' => 'test.test_entity_in_sub_directory.read',
+            'description' => 'Can \'read\' an entity of type \'test_entity_in_sub_directory\' regardless of ownership'
+        ],
+        [
             'key' => 'test.test_entity_with_self_permission_interface.read',
             'description' => 'Can \'read\' an entity of type \'test_entity_with_self_permission_interface\' regardless of ownership'
         ],

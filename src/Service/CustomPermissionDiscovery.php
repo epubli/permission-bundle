@@ -147,7 +147,14 @@ class CustomPermissionDiscovery
 
         /** @var SplFileInfo $file */
         foreach ($finder as $file) {
-            $classPath = $namespace . $file->getBasename('.php');
+            $relativeFilePath = $file->getRelativePathname();
+            // Remove suffix
+            $suffix = '.php';
+            $relativeFilePath = substr($relativeFilePath, 0, -strlen($suffix));
+            // Replace slashes with backslashes
+            $relativeFilePath = str_replace('/', '\\', $relativeFilePath);
+
+            $classPath = $namespace . $relativeFilePath;
 
             $reflectionClass = new ReflectionClass($classPath);
 
