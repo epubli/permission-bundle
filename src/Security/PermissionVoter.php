@@ -123,7 +123,7 @@ class PermissionVoter extends Voter
         if ($subject instanceof SelfPermissionInterface) {
             $userHasAlternativePermission = $this->accessToken->hasPermissionKeys($permissionKeys, true);
 
-            if ($userHasAlternativePermission && $this->accessToken->exists()) {
+            if ($userHasAlternativePermission) {
                 if ($isGetRequestOnCollection) {
                     //At this point SelfPermissionFilter::addFilterConstraint(...) has already been run.
                     //It has filtered the get request so that only entities which belong to the user will be returned.
@@ -131,8 +131,7 @@ class PermissionVoter extends Voter
                     return true;
                 }
 
-                $userId = $subject->getUserIdForPermissionBundle();
-                if ($this->accessToken->getUserId() === $userId) {
+                if ($this->accessToken->getUserId() === $subject->getUserIdForPermissionBundle()) {
                     return true;
                 }
             }
